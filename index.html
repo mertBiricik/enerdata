@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; text-align: center; }
+        .filters-container { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #eee;}
+        .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 150px; }
+        .filter-group label { font-weight: bold; font-size: 0.9em; margin-bottom: 3px; }
+        .filter-group input[type=\"number\"], .filter-group select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; }
+        .series-checkboxes { max-height: 150px; overflow-y: auto; border: 1px solid #eee; padding: 10px; background-color: #fff; border-radius: 4px;}
+        .series-checkboxes label { display: block; font-weight: normal; font-size: 0.9em; }
+        .tabs { display: flex; margin-bottom: 1px; }
+        .tab-link { padding: 10px 15px; cursor: pointer; background-color: #e9e9e9; border: 1px solid #ccc; border-bottom: none; margin-right: 5px; border-radius: 5px 5px 0 0; }
+        .tab-link.active { background-color: #0073aa; color: white; border-color: #0073aa; }
+        .tab-content { display: none; padding: 20px; border: 1px solid #0073aa; border-radius: 0 5px 5px 5px; background-color: #fff; }
+        .tab-content.active { display: block; }
+        .chart-container { width: 100%; max-width: 800px; margin: 20px auto; }
+        .download-buttons { margin-top: 30px; text-align: center; display: flex; gap: 15px; justify-content: center;}
+        .download-buttons button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        .download-buttons button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 0.9em;}
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Energy Data Analysis Tool</h1>
+
+        <div class="filters-container">
+            <div class="filter-group">
+                <label for="startYear">Start Year:</label>
+                <input type="number" id="startYear" value="1923">
+            </div>
+            <div class="filter-group">
+                <label for="endYear">End Year:</label>
+                <input type="number" id="endYear" value="1927">
+            </div>
+            <div class="filter-group" style="flex-grow: 1;">
+                <label>Data Series:</label>
+                <div id="seriesCheckboxes" class="series-checkboxes">
+                    <!-- Checkboxes will be populated by JS -->
+                </div>
+            </div>
+            <div class="filter-group" style="align-self: flex-end;">
+                <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #0073aa; color: white; border: none; border-radius: 5px; cursor: pointer;">Apply Filters</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-link active" onclick="openTab(event, 'tableTab')">Data Table</button>
+            <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Line Chart</button>
+            <button class="tab-link" onclick="openTab(event, 'barChartTab')">Bar Chart</button>
+        </div>
+
+        <div id="tableTab" class="tab-content active">
+            <h2>Filtered Data Table</h2>
+            <div id="dataTableContainer" style="overflow-x: auto;">
+                 <!-- Table will be populated by JS -->
+            </div>
+        </div>
+
+        <div id="lineChartTab" class="tab-content">
+            <h2>Line Chart</h2>
+            <div class="chart-container">
+                <canvas id="myLineChart"></canvas>
+            </div>
+        </div>
+
+        <div id="barChartTab" class="tab-content">
+            <h2>Bar Chart (Data for End Year)</h2>
+             <div class="filter-group" style="margin-bottom:15px; max-width: 200px;">
+                <label for="barChartYear">Select Year for Bar Chart:</label>
+                <input type="number" id="barChartYear" value="1927">
+            </div>
+            <div class="chart-container">
+                <canvas id="myBarChart"></canvas>
+            </div>
+        </div>
+
+        <div class="download-buttons">
+            <button id="downloadFullDataset">Download Full Dataset (CSV)</button>
+            <button id="downloadFilteredData">Download Filtered Table Data (CSV)</button>
+        </div>
+    </div>
+
+    <script>
+        // --- EMBEDDED DATA (Sample) ---
+        const embeddedRawData = [
+            // Data is row-oriented: category name, then values per year
+            { category: "Net Üretim", 1923: 41, 1924: 41, 1925: 42, 1926: 61, 1927: 63, 1928: 81, 1929: 89, 1930: 97 },
+            { category: "İthalat (+)", 1923: 0, 1924: 0, 1925: 0, 1926: 0, 1927: 0, 1928: 0, 1929: 0, 1930: 0 },
+            { category: "İhracat (-)", 1923: 0, 1924: 0, 1925: 0, 1926: 0, 1927: 0, 1928: 0, 1929: 0, 1930: 0 },
+            { category: "Elektrik Arzı", 1923: 41, 1924: 41, 1925: 42, 1926: 61, 1927: 63, 1928: 81, 1929: 89, 1930: 97 },
+            { category: "Sanayi Tüketimi", 1923: 33, 1924: 33, 1925: 34, 1926: 48, 1927: 51, 1928: 65, 1929: 71, 1930: 77 },
+            { category: "Gıda", 1923: 5, 1924: 5, 1925: 6, 1926: 7, 1927: 8, 1928: 9, 1929: 10, 1930: 11 }, // Sample data
+            { category: "Tekstil", 1923: 10, 1924: 10, 1925: 11, 1926: 12, 1927: 13, 1928: 14, 1929: 15, 1930: 16 } // Sample data
+        ];
+        // Extract all unique years from the sample data keys (excluding 'category')
+        const allYearsInData = [...new Set(embeddedRawData.flatMap(item => Object.keys(item).filter(key => key !== 'category')))].map(Number).sort((a,b) => a-b);
+
+        let lineChartInstance;
+        let barChartInstance;
+        let currentFilteredDataForTable = []; // To store data used for the table
+
+        // --- DOM Elements ---
+        const startYearEl = document.getElementById('startYear');
+        const endYearEl = document.getElementById('endYear');
+        const seriesCheckboxesEl = document.getElementById('seriesCheckboxes');
+        const applyFiltersButtonEl = document.getElementById('applyFiltersButton');
+        const barChartYearEl = document.getElementById('barChartYear');
+        const dataTableContainerEl = document.getElementById('dataTableContainer');
+
+        // --- Utility Functions ---
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 200); // Avoid too light colors
+            const g = Math.floor(Math.random() * 200);
+            const b = Math.floor(Math.random() * 200);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set year filter defaults from actual data
+            startYearEl.min = Math.min(...allYearsInData);
+            startYearEl.max = Math.max(...allYearsInData);
+            startYearEl.value = Math.min(...allYearsInData);
+            
+            endYearEl.min = Math.min(...allYearsInData);
+            endYearEl.max = Math.max(...allYearsInData);
+            endYearEl.value = Math.max(...allYearsInData);
+
+            barChartYearEl.min = Math.min(...allYearsInData);
+            barChartYearEl.max = Math.max(...allYearsInData);
+            barChartYearEl.value = Math.max(...allYearsInData);
+
+
+            populateSeriesFilter();
+            applyFiltersAndRender(); // Initial render
+
+            applyFiltersButtonEl.addEventListener('click', applyFiltersAndRender);
+            barChartYearEl.addEventListener('change', renderBarChart); // Re-render bar chart if its specific year changes
+
+            document.getElementById('downloadFullDataset').addEventListener('click', downloadFullDataset);
+            document.getElementById('downloadFilteredData').addEventListener('click', downloadFilteredTableData);
+        });
+
+        // --- Filter Population ---
+        function populateSeriesFilter() {
+            embeddedRawData.forEach(item => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'series-' + item.category.replace(/\W/g, '_'); // Sanitize ID
+                checkbox.value = item.category;
+                checkbox.checked = (item.category === "Net Üretim"); // Default "Net Üretim" checked
+
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = item.category;
+
+                const div = document.createElement('div');
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                seriesCheckboxesEl.appendChild(div);
+            });
+        }
+
+        // --- Event Handlers & Main Logic ---
+        function applyFiltersAndRender() {
+            const startYear = parseInt(startYearEl.value);
+            const endYear = parseInt(endYearEl.value);
+            const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
+                                          .map(cb => cb.value);
+
+            if (startYear > endYear) {
+                alert("Start year cannot be after end year.");
+                return;
+            }
+
+            // Filter data for charts and table
+            const yearsForCharts = allYearsInData.filter(year => year >= startYear && year <= endYear);
+            
+            const chartDataSets = selectedSeriesNames.map(seriesName => {
+                const seriesObj = embeddedRawData.find(s => s.category === seriesName);
+                if (!seriesObj) return null;
+                
+                const dataPoints = yearsForCharts.map(year => seriesObj[year] || 0); // Use 0 if year data missing for series
+                return {
+                    label: seriesName,
+                    data: dataPoints,
+                    borderColor: getRandomColor(),
+                    backgroundColor: getRandomColor(), // For bar chart, line chart uses borderColor
+                    fill: false,
+                    tension: 0.1
+                };
+            }).filter(ds => ds !== null); // Remove nulls if a series wasn't found
+
+            renderLineChart(yearsForCharts, chartDataSets);
+            renderBarChart(); // Bar chart will use its own year and currently selected series
+            renderDataTable(startYear, endYear, selectedSeriesNames);
+        }
+        
+        function renderDataTable(startYear, endYear, selectedSeriesNames) {
+            dataTableContainerEl.innerHTML = ''; // Clear previous table
+            if (selectedSeriesNames.length === 0) {
+                dataTableContainerEl.innerHTML = '<p>No data series selected.</p>';
+                currentFilteredDataForTable = [];
+                return;
+            }
+
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            // Header Row
+            const headerRow = document.createElement('tr');
+            const thCategory = document.createElement('th');
+            thCategory.textContent = 'Category';
+            headerRow.appendChild(thCategory);
+
+            const yearsToDisplay = allYearsInData.filter(year => year >= startYear && year <= endYear);
+            yearsToDisplay.forEach(year => {
+                const thYear = document.createElement('th');
+                thYear.textContent = year;
+                headerRow.appendChild(thYear);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Data Rows & Prepare data for CSV download
+            currentFilteredDataForTable = [];
+            const headerForCsv = ['Category', ...yearsToDisplay.map(String)];
+            currentFilteredDataForTable.push(headerForCsv);
+
+            selectedSeriesNames.forEach(seriesName => {
+                const seriesObj = embeddedRawData.find(s => s.category === seriesName);
+                if (seriesObj) {
+                    const dataRow = document.createElement('tr');
+                    const tdCategory = document.createElement('td');
+                    tdCategory.textContent = seriesName;
+                    dataRow.appendChild(tdCategory);
+
+                    const csvRowData = [seriesName];
+                    yearsToDisplay.forEach(year => {
+                        const value = seriesObj[year] !== undefined ? seriesObj[year] : 'N/A';
+                        const tdValue = document.createElement('td');
+                        tdValue.textContent = value;
+                        dataRow.appendChild(tdValue);
+                        csvRowData.push(value);
+                    });
+                    tbody.appendChild(dataRow);
+                    currentFilteredDataForTable.push(csvRowData);
+                }
+            });
+            table.appendChild(tbody);
+            dataTableContainerEl.appendChild(table);
+        }
+
+
+        // --- Chart Rendering ---
+        function renderLineChart(labels, datasets) {
+            const ctx = document.getElementById('myLineChart').getContext('2d');
+            if (lineChartInstance) {
+                lineChartInstance.destroy();
+            }
+            if (datasets.length === 0) return; // Don't render if no data
+
+            lineChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels, // Years
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Value' } },
+                        x: { title: { display: true, text: 'Year' } }
+                    },
+                    plugins: {
+                        legend: { position: 'top'},
+                        title: { display: true, text: 'Energy Data Over Time' }
+                    }
+                }
+            });
+        }
+
+        function renderBarChart() {
+            const selectedYear = parseInt(barChartYearEl.value);
+            const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
+                                          .map(cb => cb.value);
+
+            if (isNaN(selectedYear) || selectedSeriesNames.length === 0) {
+                 if (barChartInstance) barChartInstance.destroy(); // Clear chart if no data
+                return;
+            }
+            
+            const barChartLabels = selectedSeriesNames;
+            const barChartDataValues = selectedSeriesNames.map(seriesName => {
+                const seriesObj = embeddedRawData.find(s => s.category === seriesName);
+                return seriesObj && seriesObj[selectedYear] !== undefined ? seriesObj[selectedYear] : 0;
+            });
+
+            const datasets = [{
+                label: `Data for ${selectedYear}`,
+                data: barChartDataValues,
+                backgroundColor: selectedSeriesNames.map(() => getRandomColor()), // Different color for each bar
+                borderColor: selectedSeriesNames.map(() => '#333'),
+                borderWidth: 1
+            }];
+            
+            const ctx = document.getElementById('myBarChart').getContext('2d');
+            if (barChartInstance) {
+                barChartInstance.destroy();
+            }
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: barChartLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Value' } },
+                        x: { title: { display: true, text: 'Category' } }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top' }, // Show legend for the year
+                        title: { display: true, text: `Energy Data for ${selectedYear}` }
+                    }
+                }
+            });
+        }
+
+        // --- Tab Switching ---
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+            
+            // Special handling: bar chart might need re-render if its year selector is independent
+            // and tab becomes active. For now, applyFiltersAndRender handles line chart.
+            // Bar chart is re-rendered if its year changes or applyFilters is clicked.
+             if (tabName === 'barChartTab') renderBarChart(); // Ensure bar chart is up-to-date when tab is viewed
+             if (tabName === 'lineChartTab' || tabName === 'tableTab') { // Ensure line chart and table are up-to-date
+                 applyFiltersAndRender(); // This will re-render line chart and table
+             }
+        }
+
+        // --- Data Download ---
+        function convertToCSV(dataArray) { // Expects array of arrays
+            return dataArray.map(row => 
+                row.map(String).map(v => v.includes(',') ? `"${v}"` : v).join(',')
+            ).join('\r\n');
+        }
+
+        function triggerDownload(csvString, fileName) {
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadFullDataset() {
+            // Convert embeddedRawData to CSV format
+            // Header: Category, Year1, Year2, ...
+            const headers = ['Category', ...allYearsInData.map(String)];
+            const rows = embeddedRawData.map(series => {
+                const row = [series.category];
+                allYearsInData.forEach(year => {
+                    row.push(series[year] !== undefined ? series[year] : 'N/A');
+                });
+                return row;
+            });
+            const fullCsvData = [headers, ...rows];
+            const csvString = convertToCSV(fullCsvData);
+            triggerDownload(csvString, 'full_energy_dataset.csv');
+        }
+
+        function downloadFilteredTableData() {
+            if (currentFilteredDataForTable.length === 0) {
+                alert("No data in the table to download. Apply filters first.");
+                return;
+            }
+            const csvString = convertToCSV(currentFilteredDataForTable);
+            triggerDownload(csvString, 'filtered_energy_data.csv');
+        }
+
+        // Set default tab to be active on load
+        document.querySelector('.tab-link.active').click();
+
+    </script>
+</body>
+</html> 
