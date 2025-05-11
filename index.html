@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Data Visualization</title>
+    <title>Enerji Tüketimi Verisi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
@@ -31,56 +31,56 @@
 </head>
 <body>
     <div class="container">
-        <h1>Energy Data Analysis Tool</h1>
+        <h1>Enerji Tüketimi Verisi</h1>
 
         <div class="filters-container">
             <div class="filter-group">
-                <label for="startYear">Start Year:</label>
+                <label for="startYear">Başlangıç Yılı:</label>
                 <input type="number" id="startYear" value="1923">
             </div>
             <div class="filter-group">
-                <label for="endYear">End Year:</label>
+                <label for="endYear">Bitiş Yılı:</label>
                 <input type="number" id="endYear" value="1927">
             </div>
             <div class="filter-group" style="flex-grow: 1;">
-                <label>Data Series:</label>
+                <label>Veri Serileri:</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 5px;">
-                    <button type="button" id="selectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Select All</button>
-                    <button type="button" id="deselectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Deselect All</button>
+                    <button type="button" id="selectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Hepsini Seç</button>
+                    <button type="button" id="deselectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Hiçbirini Seçme</button>
                 </div>
                 <div id="seriesCheckboxes" class="series-checkboxes" style="margin-top: 0;">
                     <!-- Checkboxes will be populated by JS -->
                 </div>
             </div>
             <div class="filter-group" style="align-self: flex-end;">
-                <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #0073aa; color: white; border: none; border-radius: 5px; cursor: pointer;">Apply Filters</button>
+                <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #0073aa; color: white; border: none; border-radius: 5px; cursor: pointer;">Filtrele</button>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab-link active" onclick="openTab(event, 'tableTab')">Data Table</button>
-            <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Line Chart</button>
-            <button class="tab-link" onclick="openTab(event, 'barChartTab')">Bar Chart</button>
+            <button class="tab-link active" onclick="openTab(event, 'tableTab')">Veri Tablosu</button>
+            <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Çizgi Grafik</button>
+            <button class="tab-link" onclick="openTab(event, 'barChartTab')">Sütun Grafik</button>
         </div>
 
         <div id="tableTab" class="tab-content active">
-            <h2>Filtered Data Table</h2>
+            <h2>Filtrelenen Veri Tablosu</h2>
             <div id="dataTableContainer" style="overflow-x: auto;">
                  <!-- Table will be populated by JS -->
             </div>
         </div>
 
         <div id="lineChartTab" class="tab-content">
-            <h2>Line Chart</h2>
+            <h2>Çizgi Grafik</h2>
             <div class="chart-container">
                 <canvas id="myLineChart"></canvas>
             </div>
         </div>
 
         <div id="barChartTab" class="tab-content">
-            <h2>Bar Chart (Data for End Year)</h2>
+            <h2>Sütun Grafik (Bitiş Yılı)</h2>
              <div class="filter-group" style="margin-bottom:15px; max-width: 200px;">
-                <label for="barChartYear">Select Year for Bar Chart:</label>
+                <label for="barChartYear">Bitiş Yılı Seçiniz:</label>
                 <input type="number" id="barChartYear" value="1927">
             </div>
             <div class="chart-container">
@@ -89,8 +89,8 @@
         </div>
 
         <div class="download-buttons">
-            <button id="downloadFullDataset">Download Full Dataset (CSV)</button>
-            <button id="downloadFilteredData">Download Filtered Table Data (CSV)</button>
+            <button id="downloadFullDataset">Tam Veri (CSV)</button>
+            <button id="downloadFilteredData">Filtrelenen Veri (CSV)</button>
         </div>
     </div>
 
