@@ -34,6 +34,23 @@ All data is embedded and processed client-side for maximum transparency and repr
 
 ---
 
+## Recently Added Features
+
+- **Sticky First Column in Table:** The first column ("Kategori") remains visible when scrolling horizontally.
+- **Striped Table Rows:** Odd and even rows have different background colors for better readability.
+- **Vibrant Material Color Palette:** Charts use a modern, vibrant Material Design color palette for all series.
+- **Export Options for Charts:**
+  - Export as PNG and JPG (with white background for JPG).
+  - Export as TikZ code for use in LaTeX documents.
+- **Bar Chart Aggregation Toggle:**
+  - Users can choose to display the sum or average for each series over the selected year range (default is sum).
+- **Unified Year Range Selection:**
+  - Both line and bar charts use the same year range slider and numeric inputs.
+- **Improved Turkish Labels:**
+  - UI labels and buttons have been updated for clarity and consistency (e.g., "Temsil Türü", "Filtrelenmiş Veri").
+
+---
+
 ## Data Sources & Structure
 
 ### Main Data
