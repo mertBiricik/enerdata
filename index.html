@@ -3570,7 +3570,9 @@
             const rows = embeddedRawData.map(series => {
                 const row = [series.Kategori];
                 allYearsInData.forEach(year => {
-                    row.push(series[year] !== undefined ? series[year] : 'N/A');
+                    let v = series[year];
+                    if (v === null || v === undefined) v = '';
+                    row.push(v);
                 });
                 return row;
             });
@@ -3584,7 +3586,9 @@
                 alert("No data in the table to download. Apply filters first.");
                 return;
             }
-            const csvString = convertToCSV(currentFilteredDataForTable);
+            // Replace null/undefined in filtered data with empty string for CSV
+            const cleaned = currentFilteredDataForTable.map(row => row.map(v => (v === null || v === undefined) ? '' : v));
+            const csvString = convertToCSV(cleaned);
             triggerDownload(csvString, 'filtered_energy_data.csv');
         }
 
