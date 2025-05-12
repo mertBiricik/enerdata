@@ -169,10 +169,11 @@
         </div>
 
         <div id="barChartTab" class="tab-content">
-            <h2>Sütun Grafik (Bitiş Yılı)</h2>
-             <div class="filter-group" style="margin-bottom:15px; max-width: 200px;">
-                <label for="barChartYear">Bitiş Yılı Seçiniz:</label>
-                <input type="number" id="barChartYear" value="1927">
+            <h2>Sütun Grafik</h2>
+            <div class="bar-agg-toggle" style="text-align:center; margin-bottom:15px;">
+                <label style="font-weight:bold; margin-right:10px;">Temsil Türü:</label>
+                <button id="barAggSum" class="bar-agg-btn active" style="padding:6px 16px; border-radius:4px; border:1px solid #006400; background:#006400; color:#fff; margin-right:5px; cursor:pointer;">Toplam</button>
+                <button id="barAggAvg" class="bar-agg-btn" style="padding:6px 16px; border-radius:4px; border:1px solid #006400; background:#fff; color:#006400; cursor:pointer;">Ortalama</button>
             </div>
             <div class="chart-container">
                 <canvas id="myBarChart"></canvas>
@@ -186,7 +187,7 @@
 
         <div class="download-buttons">
             <button id="downloadFullDataset">Tam Veri (CSV)</button>
-            <button id="downloadFilteredData">Filtrelenen Veri (CSV)</button>
+            <button id="downloadFilteredData">Filtrelenmiş Veri (CSV)</button>
         </div>
     </div>
 
@@ -3230,11 +3231,26 @@
         const dataTableContainerEl = document.getElementById('dataTableContainer');
 
         // --- Utility Functions ---
-        function getRandomColor() {
-            const r = Math.floor(Math.random() * 200); // Avoid too light colors
-            const g = Math.floor(Math.random() * 200);
-            const b = Math.floor(Math.random() * 200);
-            return `rgb(${r}, ${g}, ${b})`;
+        // Material Design Vibrant Palette
+        const materialColors = [
+            '#1E88E5', // Blue
+            '#D81B60', // Pink
+            '#43A047', // Green
+            '#F4511E', // Orange
+            '#8E24AA', // Purple
+            '#00ACC1', // Teal
+            '#FDD835', // Yellow
+            '#3949AB', // Indigo
+            '#6D4C41', // Brown
+            '#C0CA33', // Lime
+            '#FB8C00', // Deep Orange
+            '#5E35B1', // Deep Purple
+            '#039BE5', // Light Blue
+            '#7CB342', // Light Green
+            '#F06292', // Light Pink
+        ];
+        function getMaterialColor(idx) {
+            return materialColors[idx % materialColors.length];
         }
 
         // --- Initialization ---
@@ -3391,16 +3407,15 @@
             // Filter data for charts and table
             const yearsForCharts = allYearsInData.filter(year => year >= startYear && year <= endYear);
             
-            const chartDataSets = selectedSeriesNames.map(seriesName => {
+            const chartDataSets = selectedSeriesNames.map((seriesName, idx) => {
                 const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
                 if (!seriesObj) return null;
-                
                 const dataPoints = yearsForCharts.map(year => parseRedValue(seriesObj[year]));
                 return {
                     label: seriesName,
                     data: dataPoints,
-                    borderColor: getRandomColor(),
-                    backgroundColor: getRandomColor(), // For bar chart, line chart uses borderColor
+                    borderColor: getMaterialColor(idx),
+                    backgroundColor: getMaterialColor(idx), // For bar chart, line chart uses borderColor
                     fill: false,
                     tension: 0.1
                 };
@@ -3509,29 +3524,34 @@
         }
 
         function renderBarChart() {
-            const selectedYear = parseInt(barChartYearEl.value);
+            // Use the main year range for aggregation
             const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
                                           .map(cb => cb.value);
-
-            if (isNaN(selectedYear) || selectedSeriesNames.length === 0) {
-                 if (barChartInstance) barChartInstance.destroy(); // Clear chart if no data
+            if (selectedSeriesNames.length === 0) {
+                if (barChartInstance) barChartInstance.destroy();
                 return;
             }
-            
+            const yearsForBar = allYearsInData.filter(year => year >= startYear && year <= endYear);
             const barChartLabels = selectedSeriesNames;
             const barChartDataValues = selectedSeriesNames.map(seriesName => {
                 const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
-                return seriesObj && seriesObj[selectedYear] !== undefined ? parseRedValue(seriesObj[selectedYear]) : 0;
+                if (!seriesObj) return 0;
+                if (barAggMode === 'avg') {
+                    const vals = yearsForBar.map(year => parseRedValue(seriesObj[year]));
+                    const validVals = vals.filter(v => typeof v === 'number' && !isNaN(v));
+                    return validVals.length > 0 ? validVals.reduce((a, b) => a + b, 0) / validVals.length : 0;
+                } else {
+                    // Sum
+                    return yearsForBar.reduce((sum, year) => sum + parseRedValue(seriesObj[year]), 0);
+                }
             });
-
             const datasets = [{
-                label: `Data for ${selectedYear}`,
+                label: barAggMode === 'avg' ? `Ortalama (${startYear} - ${endYear})` : `Toplam (${startYear} - ${endYear})`,
                 data: barChartDataValues,
-                backgroundColor: selectedSeriesNames.map(() => getRandomColor()), // Different color for each bar
-                borderColor: selectedSeriesNames.map(() => '#333'),
+                backgroundColor: selectedSeriesNames.map((_, idx) => getMaterialColor(idx)),
+                borderColor: selectedSeriesNames.map((_, idx) => getMaterialColor(idx)),
                 borderWidth: 1
             }];
-            
             const ctx = document.getElementById('myBarChart').getContext('2d');
             if (barChartInstance) {
                 barChartInstance.destroy();
@@ -3546,12 +3566,12 @@
                     responsive: true,
                     maintainAspectRatio: true,
                     scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Value' } },
+                        y: { beginAtZero: true, title: { display: true, text: barAggMode === 'avg' ? 'Ortalama Değer' : 'Toplam Değer' } },
                         x: { title: { display: true, text: 'Kategori' } }
                     },
                     plugins: {
-                        legend: { display: true, position: 'top' }, // Show legend for the year
-                        title: { display: true, text: `Energy Data for ${selectedYear}` }
+                        legend: { display: true, position: 'top' },
+                        title: { display: true, text: barAggMode === 'avg' ? `Enerji Verisi Ortalaması (${startYear} - ${endYear})` : `Enerji Verisi Toplamı (${startYear} - ${endYear})` }
                     }
                 }
             });
@@ -3720,6 +3740,32 @@
         document.getElementById('exportBarTikz').onclick = function() {
             exportChartAsTikz(barChartInstance, 'bar_chart.tex');
         };
+
+        // --- Aggregation State ---
+        let barAggMode = 'sum'; // 'sum' or 'avg'
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... existing code ...
+            document.getElementById('barAggSum').onclick = function() {
+                barAggMode = 'sum';
+                document.getElementById('barAggSum').classList.add('active');
+                document.getElementById('barAggSum').style.background = '#006400';
+                document.getElementById('barAggSum').style.color = '#fff';
+                document.getElementById('barAggAvg').classList.remove('active');
+                document.getElementById('barAggAvg').style.background = '#fff';
+                document.getElementById('barAggAvg').style.color = '#006400';
+                renderBarChart();
+            };
+            document.getElementById('barAggAvg').onclick = function() {
+                barAggMode = 'avg';
+                document.getElementById('barAggAvg').classList.add('active');
+                document.getElementById('barAggAvg').style.background = '#006400';
+                document.getElementById('barAggAvg').style.color = '#fff';
+                document.getElementById('barAggSum').classList.remove('active');
+                document.getElementById('barAggSum').style.background = '#fff';
+                document.getElementById('barAggSum').style.color = '#006400';
+                renderBarChart();
+            };
+        });
     </script>
 </body>
 </html> 
