@@ -91,6 +91,24 @@
         #yearRangeSlider .noUi-handle:after {
             background: #006400 !important;
         }
+        /* Sticky first column */
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background: #f9f9f9;
+            z-index: 2;
+            box-shadow: 2px 0 2px -1px #ccc1;
+        }
+        thead th.sticky-col {
+            z-index: 3;
+        }
+        /* Row striping */
+        .data-table-striped tbody tr:nth-child(odd) {
+            background-color: #f7fafc;
+        }
+        .data-table-striped tbody tr:nth-child(even) {
+            background-color: #eef3f7;
+        }
     </style>
 </head>
 <body>
@@ -3387,6 +3405,7 @@
             }
 
             const table = document.createElement('table');
+            table.classList.add('data-table-striped');
             const thead = document.createElement('thead');
             const tbody = document.createElement('tbody');
 
@@ -3394,6 +3413,7 @@
             const headerRow = document.createElement('tr');
             const thKategori = document.createElement('th');
             thKategori.textContent = 'Kategori';
+            thKategori.classList.add('sticky-col');
             headerRow.appendChild(thKategori);
 
             const yearsToDisplay = allYearsInData.filter(year => year >= startYear && year <= endYear);
@@ -3410,12 +3430,13 @@
             const headerForCsv = ['Kategori', ...yearsToDisplay.map(String)];
             currentFilteredDataForTable.push(headerForCsv);
 
-            selectedSeriesNames.forEach(seriesName => {
+            selectedSeriesNames.forEach((seriesName, rowIdx) => {
                 const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
                 if (seriesObj) {
                     const dataRow = document.createElement('tr');
                     const tdKategori = document.createElement('td');
                     tdKategori.textContent = seriesName;
+                    tdKategori.classList.add('sticky-col');
                     dataRow.appendChild(tdKategori);
 
                     const csvRowData = [seriesName];
