@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enerji Tüketimi Verisi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
         .container {
@@ -16,7 +18,11 @@
             max-width: 1200px;
             margin: 20px auto;
         }
-        h1, h2 { color: #333; text-align: center; }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            font-family: inherit !important;
+        }
         .filters-container {
             display: flex;
             flex-direction: column;
@@ -78,13 +84,12 @@
         <h1>Enerji Tüketimi Verisi</h1>
 
         <div class="filters-container">
-            <div class="filter-group">
-                <label for="startYear">Başlangıç Yılı:</label>
-                <input type="number" id="startYear" value="1923">
-            </div>
-            <div class="filter-group">
-                <label for="endYear">Bitiş Yılı:</label>
-                <input type="number" id="endYear" value="1927">
+            <div class="filter-group" style="width: 100%; max-width: 600px;">
+                <label style="min-width: 120px;">Yıl Aralığı:</label>
+                <div id="yearRangeSlider" style="flex: 1; min-width: 200px; margin-right: 16px;"></div>
+                <input type="number" id="yearInputStart" style="width: 70px; font-weight: bold; text-align: center; margin-right: 6px;" min="" max="" />
+                <span style="font-weight: bold;">-</span>
+                <input type="number" id="yearInputEnd" style="width: 70px; font-weight: bold; text-align: center; margin-left: 6px;" min="" max="" />
             </div>
             <div class="filter-group" style="flex-wrap: wrap; align-items: flex-start;">
                 <label style="min-width: 120px;">Veri Serileri:</label>
@@ -108,7 +113,7 @@
         </div>
 
         <div id="tableTab" class="tab-content active">
-            <h2>Filtrelenen Veri Tablosu</h2>
+            <h2>Veri Tablosu</h2>
             <div id="dataTableContainer" style="overflow-x: auto;">
                  <!-- Table will be populated by JS -->
             </div>
@@ -3165,9 +3170,13 @@
         let barChartInstance;
         let currentFilteredDataForTable = []; // To store data used for the table
 
+        // --- GLOBAL YEAR VARIABLES ---
+        let minYear, maxYear, startYear, endYear;
+
         // --- DOM Elements ---
-        const startYearEl = document.getElementById('startYear');
-        const endYearEl = document.getElementById('endYear');
+        const yearRangeSlider = document.getElementById('yearRangeSlider');
+        const yearInputStart = document.getElementById('yearInputStart');
+        const yearInputEnd = document.getElementById('yearInputEnd');
         const seriesCheckboxesEl = document.getElementById('seriesCheckboxes');
         const applyFiltersButtonEl = document.getElementById('applyFiltersButton');
         const barChartYearEl = document.getElementById('barChartYear');
@@ -3184,17 +3193,77 @@
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             // Set year filter defaults from actual data
-            startYearEl.min = Math.min(...allYearsInData);
-            startYearEl.max = Math.max(...allYearsInData);
-            startYearEl.value = Math.min(...allYearsInData);
-            
-            endYearEl.min = Math.min(...allYearsInData);
-            endYearEl.max = Math.max(...allYearsInData);
-            endYearEl.value = Math.max(...allYearsInData);
-
-            barChartYearEl.min = Math.min(...allYearsInData);
-            barChartYearEl.max = Math.max(...allYearsInData);
-            barChartYearEl.value = Math.max(...allYearsInData);
+            minYear = Math.min(...allYearsInData);
+            maxYear = Math.max(...allYearsInData);
+            startYear = minYear;
+            endYear = maxYear;
+            yearInputStart.min = minYear;
+            yearInputStart.max = maxYear;
+            yearInputEnd.min = minYear;
+            yearInputEnd.max = maxYear;
+            yearInputStart.value = minYear;
+            yearInputEnd.value = maxYear;
+            noUiSlider.create(yearRangeSlider, {
+                start: [minYear, maxYear],
+                connect: true,
+                step: 1,
+                range: {
+                    'min': minYear,
+                    'max': maxYear
+                },
+                tooltips: false,
+                format: {
+                    to: value => Math.round(value),
+                    from: value => Math.round(value)
+                }
+            });
+            // Custom tooltips that only show while dragging
+            const handles = yearRangeSlider.querySelectorAll('.noUi-handle');
+            const tooltips = [document.createElement('div'), document.createElement('div')];
+            tooltips.forEach((tt, i) => {
+                tt.className = 'custom-slider-tooltip';
+                tt.style.position = 'absolute';
+                tt.style.display = 'none';
+                tt.style.background = '#fff';
+                tt.style.border = '1px solid #ccc';
+                tt.style.borderRadius = '6px';
+                tt.style.padding = '2px 8px';
+                tt.style.fontWeight = 'bold';
+                tt.style.fontSize = '1.2em';
+                tt.style.transform = 'translate(-50%, -120%)';
+                handles[i].appendChild(tt);
+            });
+            function showTooltip(index, value) {
+                tooltips[index].textContent = value;
+                tooltips[index].style.display = 'block';
+            }
+            function hideTooltip(index) {
+                tooltips[index].style.display = 'none';
+            }
+            yearRangeSlider.noUiSlider.on('start', function(values, handle) {
+                showTooltip(handle, values[handle]);
+            });
+            yearRangeSlider.noUiSlider.on('slide', function(values, handle) {
+                showTooltip(handle, values[handle]);
+            });
+            yearRangeSlider.noUiSlider.on('end', function(values, handle) {
+                hideTooltip(handle);
+            });
+            function updateYearInputs(values) {
+                yearInputStart.value = values[0];
+                yearInputEnd.value = values[1];
+            }
+            yearRangeSlider.noUiSlider.on('update', function(values) {
+                startYear = parseInt(values[0]);
+                endYear = parseInt(values[1]);
+                updateYearInputs([startYear, endYear]);
+            });
+            yearRangeSlider.noUiSlider.on('set', function(values) {
+                startYear = parseInt(values[0]);
+                endYear = parseInt(values[1]);
+                applyFiltersAndRender();
+            });
+            updateYearInputs([startYear, endYear]);
 
             document.getElementById('selectAllBtn').onclick = function() {
                 document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = true);
@@ -3211,6 +3280,32 @@
 
             document.getElementById('downloadFullDataset').addEventListener('click', downloadFullDataset);
             document.getElementById('downloadFilteredData').addEventListener('click', downloadFilteredTableData);
+
+            // --- FIX: Year input manual change handlers ---
+            function setSliderAndApply(start, end) {
+                // Clamp values
+                start = Math.max(minYear, Math.min(start, end));
+                end = Math.min(maxYear, Math.max(end, start));
+                // Only update slider if values are different
+                const current = yearRangeSlider.noUiSlider.get().map(Number);
+                if (current[0] !== start || current[1] !== end) {
+                    yearRangeSlider.noUiSlider.set([start, end]);
+                } else {
+                    // If slider already at correct value, just apply filter
+                    applyFiltersAndRender();
+                }
+            }
+            function handleYearInputChange() {
+                let start = parseInt(yearInputStart.value);
+                let end = parseInt(yearInputEnd.value);
+                if (isNaN(start)) start = minYear;
+                if (isNaN(end)) end = maxYear;
+                setSliderAndApply(start, end);
+            }
+            yearInputStart.addEventListener('change', handleYearInputChange);
+            yearInputStart.addEventListener('blur', handleYearInputChange);
+            yearInputEnd.addEventListener('change', handleYearInputChange);
+            yearInputEnd.addEventListener('blur', handleYearInputChange);
         });
 
         // --- Filter Population ---
@@ -3237,8 +3332,7 @@
 
         // --- Event Handlers & Main Logic ---
         function applyFiltersAndRender() {
-            const startYear = parseInt(startYearEl.value);
-            const endYear = parseInt(endYearEl.value);
+            // startYear and endYear are set by the slider
             const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
                                           .map(cb => cb.value);
 
@@ -3474,6 +3568,9 @@
 
         // Set default tab to be active on load
         document.querySelector('.tab-link.active').click();
+
+        // Optional: Hide tooltips on page load
+        document.querySelectorAll('.custom-slider-tooltip').forEach(tt => tt.style.display = 'none');
 
     </script>
 </body>
