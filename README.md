@@ -1,3 +1,192 @@
+# Enerji Tüketimi Verisi (Enerji Tüketimi Veri Görselleştirme Aracı)
+
+## Genel Bakış
+
+Bu proje, Türkiye'nin 1923-2023 yılları arasındaki enerji üretimi, tüketimi ve sektörel dağılımlarını keşfetmek için etkileşimli, web tabanlı bir veri görselleştirme aracıdır. [Our World in Data](https://ourworldindata.org) sitesinin tarzı ve kullanılabilirliğinden esinlenilmiştir. Kullanıcılar şunları yapabilir:
+
+- Enerji verilerini tablo, çizgi grafik veya sütun grafik olarak görüntüleyebilir.
+- Yıl aralığı ve veri serisine (ör. Net Üretim, İthalat, İhracat, sektörel tüketim) göre filtreleme yapabilir.
+- Tüm veri setini veya filtrelenmiş alt kümeleri CSV olarak indirebilir.
+
+Tüm veriler istemci tarafında gömülü ve işlenmektedir; bu da maksimum şeffaflık ve tekrarlanabilirlik sağlar.
+
+---
+
+## Özellikler
+
+- **Etkileşimli Filtreler:**  
+  - Hem çizgi hem de sütun grafik için kullanılan yıl aralığı seçimi (slider ve sayısal girişlerle).
+  - Veri serileri (kategori/sektör) için çoklu seçim.
+  - Seri seçimleri için "Hepsini Seç" ve "Hiçbirini Seçme" kısayol butonları.
+
+- **Sekmeli Görselleştirme:**  
+  - **Tablo:** Seçilen yıllar ve seriler için ham verileri görüntüleyin. İlk sütun ("Kategori") yatay kaydırmada her zaman görünür (sabit). Satırlar okunabilirlik için şeritli (çizgili) renklendirilmiştir.
+  - **Çizgi Grafik:** Herhangi bir seri kombinasyonu için zaman içindeki eğilimleri, canlı Material Design renk paletiyle görselleştirin.
+  - **Sütun Grafik:** Seçilen yıl aralığı için seriler arasında karşılaştırma yapın. Kullanıcılar, her serinin toplamını veya ortalamasını göstermek arasında geçiş yapabilir.
+
+- **Veri İndirme & Dışa Aktarma:**  
+  - Tüm veri setini CSV olarak indirin.
+  - Şu anda filtrelenmiş verileri CSV olarak indirin.
+  - Grafikleri PNG ve JPG (JPG için beyaz arka plan) olarak dışa aktarın.
+  - Grafikleri LaTeX belgelerinde kullanmak için TikZ kodu olarak dışa aktarın.
+
+- **Duyarlı Arayüz & Türkçe Yerelleştirme:**  
+  - Geliştirilmiş Türkçe etiketlerle (ör. "Temsil Türü", "Filtrelenmiş Veri") temiz, modern tasarım.
+  - Masaüstü ve mobilde sorunsuz çalışır.
+
+---
+
+## Veri Kaynakları & Yapısı
+
+### Ana Veri
+
+- **Dosya:** `index.html` içinde `embeddedRawData` olarak gömülü (isteğe bağlı olarak `embedded_data.js` dosyasında da mevcut).
+- **Kaynak:** Aslen `source.xlsx` ve `1923-2023.csv` dosyalarından.
+- **Kategoriler:**  
+  - Üst düzey: Net Üretim, İthalat (+), İhracat (-), Elektrik Arzı vb.
+  - Sektörel: Gıda, Tekstil, Kimya-Petrokimya, Ulaştırma vb.
+- **Yıllar:** 1923–2023 (her seri tüm yıllara sahip olmayabilir).
+- **Özel Değerler:**  
+  - Parantez içindeki sayılar (ör. `(100)`) orijinal Excel'de kırmızıyla vurgulanan değerleri gösterir (genellikle negatif veya özel durumlar).
+
+### Kategori Metaverisi
+
+- **Dosya:** `categories.csv`
+- **Amaç:** Sektörel dağılımlar için üst ve alt kategorileri eşler.
+
+### Veri İşleme
+
+- **Excel'den JS'ye:**  
+  - `excel_to_js.py`, `source.xlsx`'i okuyup kırmızı/parantezli değerleri koruyarak `embedded_data.js` üretir.
+- **CSV'den JS'ye:**  
+  - `csv_to_js.py`, `1923-2023.csv`'yi okuyup `embedded_data.js` üretir.
+
+---
+
+## Nasıl Çalışır?
+
+### 1. Veri Gömme
+
+Tüm veriler, hızlı ve çevrimdışı erişim için `index.html` içinde bir JavaScript dizisi (`embeddedRawData`) olarak gömülüdür.
+
+### 2. Arayüz & Görselleştirme
+
+- **Filtreler:**  
+  - Yıl aralığı noUiSlider ve sayısal girişlerle kontrol edilir.
+  - Veri serileri, veriden otomatik olarak oluşturulan onay kutuları ile seçilir.
+
+- **Sekmeler:**  
+  - Tablo, Çizgi Grafik ve Sütun Grafik görünümleri arasında geçiş yapın.
+
+- **Grafikler:**  
+  - [Chart.js](https://www.chartjs.org/) ile oluşturulur.
+  - Her seri için benzersiz ve canlı bir renk atanır.
+  - Sütun grafik, ana yıl aralığına bağlıdır ve toplama/ortalama seçimi yapılabilir.
+
+- **İndirme:**  
+  - "Tam Veri (CSV)" tüm veri setini indirir.
+  - "Filtrelenmiş Veri (CSV)" yalnızca tabloda gösterilen verileri indirir.
+
+### 3. Veri İndirme
+
+- CSV'ler, mevcut filtre durumuna veya tüm veri setine göre istemci tarafında oluşturulur.
+
+---
+
+## Dosya Yapısı
+
+```
+.
+├── index.html              # Ana uygulama, tüm mantık ve veri gömülü
+├── embedded_data.js        # (İsteğe bağlı) Ayrı JS veri dizisi, Excel/CSV'den üretilir
+├── source.xlsx             # Orijinal Excel veri kaynağı
+├── 1923-2023.csv           # Ana CSV veri kaynağı
+├── categories.csv          # Kategori/alt kategori eşlemesi
+├── excel_to_js.py          # Excel'den JS veri dizisine dönüştürme scripti
+├── csv_to_js.py            # CSV'den JS veri dizisine dönüştürme scripti
+├── code_analysis_report.md # (Referans) Gereksinim ve kod analizi
+├── data-section-requirements.md # (Referans) Proje gereksinimleri
+```
+
+---
+
+## Kullanım
+
+### Kullanıcı Olarak
+
+1. **`index.html` dosyasını tarayıcınızda açın.**
+2. Üstteki filtreleri kullanarak yıl aralığı ve veri serilerini seçin.
+3. Tablo, Çizgi Grafik ve Sütun Grafik sekmeleri arasında geçiş yapın.
+4. İndirme butonlarını kullanarak verileri CSV olarak dışa aktarın.
+
+### Geliştirici Olarak
+
+#### Veriyi Güncellemek İçin
+
+1. **`source.xlsx` veya `1923-2023.csv`** dosyalarını yeni verilerle güncelleyin.
+2. Uygun scripti çalıştırın:
+   - Excel için:  
+     ```
+     python excel_to_js.py
+     ```
+   - CSV için:  
+     ```
+     python csv_to_js.py
+     ```
+3. Yeni `embedded_data.js` içeriğini `index.html`'deki `<script>` bölümüne kopyalayın (veya ayrı dosya olarak dahil edin).
+
+#### Kategorileri Değiştirmek İçin
+
+- Kategori/alt kategori eşleşmelerini güncellemek için `categories.csv` dosyasını düzenleyin.
+
+---
+
+## Gereksinimler
+
+- Sunucu gerekmez; statik HTML dosyası olarak çalışır.
+- Modern tarayıcı (Chrome, Firefox, Edge, Safari).
+- [Chart.js](https://cdn.jsdelivr.net/npm/chart.js) ve [noUiSlider](https://cdn.jsdelivr.net/npm/nouislider) CDN üzerinden yüklenir.
+
+---
+
+## Referans & Tasarım
+
+- **Tasarım esin kaynağı:** [Our World in Data](https://ourworldindata.org/grapher/global-energy-substitution)
+- **Gereksinimler:** Tam detay için `data-section-requirements.md` dosyasına bakınız.
+
+---
+
+## Genişletme & Özelleştirme
+
+- **Yeni veri serisi eklemek:**  
+  - Veri kaynağınızı güncelleyin ve `embedded_data.js`'yi yeniden oluşturun.
+- **Renk paletini değiştirmek:**  
+  - `index.html` içindeki renk fonksiyonunu güncelleyin.
+- **Yeni grafik veya filtre eklemek:**  
+  - Gerekli JavaScript kodunu `index.html`'e ekleyin.
+
+---
+
+## Lisans
+
+Bu proje eğitim ve ticari olmayan kullanım için açıktır.  
+Veri kaynakları uygun şekilde belirtilmelidir.
+
+---
+
+## İletişim
+
+Sorularınız veya katkılarınız için lütfen bir issue açın veya proje sorumlusuyla iletişime geçin.
+
+---
+
+**Context7**:  
+Bu README, Context7 ile tam kod ve veri bağlamı kullanılarak oluşturulmuştur; tüm talimatlar ve açıklamalar güncel ve uygulanabilirdir.
+
+---
+
+# English Version Below
+
 # Enerji Tüketimi Verisi (Energy Consumption Data Visualization)
 
 ## Overview
