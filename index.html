@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enerji Tüketimi Verisi</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.19/canvas2svg.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <script src="svg-export.min.js"></script>
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
         .container {
@@ -109,6 +111,9 @@
         .data-table-striped tbody tr:nth-child(even) {
             background-color: #eef3f7;
         }
+        .series-checkboxes input[type="checkbox"] {
+            accent-color: #006400;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +161,11 @@
             <div class="chart-container">
                 <canvas id="myLineChart"></canvas>
             </div>
+            <div class="download-buttons" id="lineChartExportBtns">
+                <button id="exportLinePng">PNG</button>
+                <button id="exportLineJpg">JPG</button>
+                <button id="exportLineTikz">TikZ</button>
+            </div>
         </div>
 
         <div id="barChartTab" class="tab-content">
@@ -166,6 +176,11 @@
             </div>
             <div class="chart-container">
                 <canvas id="myBarChart"></canvas>
+            </div>
+            <div class="download-buttons" id="barChartExportBtns">
+                <button id="exportBarPng">PNG</button>
+                <button id="exportBarJpg">JPG</button>
+                <button id="exportBarTikz">TikZ</button>
             </div>
         </div>
 
@@ -3626,6 +3641,85 @@
             return typeof val === 'number' ? val : (Number(val) || 0);
         }
 
+        // --- Chart Export Logic ---
+        function exportChartAsImage(chartInstance, type, fileName) {
+            if (!chartInstance) return;
+            const canvas = chartInstance.canvas;
+            let mimeType = 'image/png';
+            if (type === 'jpg' || type === 'jpeg') mimeType = 'image/jpeg';
+            if (type === 'jpg' || type === 'jpeg') {
+                // Draw white background for JPG
+                const tmpCanvas = document.createElement('canvas');
+                tmpCanvas.width = canvas.width;
+                tmpCanvas.height = canvas.height;
+                const ctx = tmpCanvas.getContext('2d');
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+                ctx.drawImage(canvas, 0, 0);
+                const url = tmpCanvas.toDataURL(mimeType);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                return;
+            }
+            // PNG (and fallback)
+            const url = chartInstance.toBase64Image(mimeType);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportChartAsTikz(chartInstance, fileName) {
+            // Basic TikZ export: we can only export the data as a TikZ plot, not the full style
+            if (!chartInstance) return;
+            const data = chartInstance.data;
+            let tikz = '% Basic TikZ/PGFPlots code\n';
+            tikz += '\n\\begin{tikzpicture}\n  \\begin{axis}[xlabel={X}, ylabel={Y}]\n';
+            if (data && data.datasets) {
+                data.datasets.forEach(ds => {
+                    tikz += '    \\addplot coordinates { ';
+                    (ds.data || []).forEach((y, i) => {
+                        let x = data.labels && data.labels[i] ? data.labels[i] : i;
+                        tikz += `(${x},${y}) `;
+                    });
+                    tikz += '};\n';
+                    tikz += `    \\addlegendentry{${ds.label || ''}}\n`;
+                });
+            }
+            tikz += '  \\end{axis}\n\\end{tikzpicture}\n';
+            const blob = new Blob([tikz], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.getElementById('exportLinePng').onclick = function() {
+            exportChartAsImage(lineChartInstance, 'png', 'line_chart.png');
+        };
+        document.getElementById('exportLineJpg').onclick = function() {
+            exportChartAsImage(lineChartInstance, 'jpg', 'line_chart.jpg');
+        };
+        document.getElementById('exportLineTikz').onclick = function() {
+            exportChartAsTikz(lineChartInstance, 'line_chart.tex');
+        };
+        document.getElementById('exportBarPng').onclick = function() {
+            exportChartAsImage(barChartInstance, 'png', 'bar_chart.png');
+        };
+        document.getElementById('exportBarJpg').onclick = function() {
+            exportChartAsImage(barChartInstance, 'jpg', 'bar_chart.jpg');
+        };
+        document.getElementById('exportBarTikz').onclick = function() {
+            exportChartAsTikz(barChartInstance, 'bar_chart.tex');
+        };
     </script>
 </body>
 </html> 
