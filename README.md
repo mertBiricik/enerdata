@@ -15,39 +15,24 @@ All data is embedded and processed client-side for maximum transparency and repr
 ## Features
 
 - **Interactive Filters:**  
-  - Year range selection via slider and numeric inputs.
+  - Year range selection via slider and numeric inputs (used for both line and bar charts).
   - Multi-select for data series (categories/sectors).
   - Quick "Select All" and "Deselect All" buttons for series.
 
 - **Tabbed Visualization:**  
-  - **Table:** See raw data for selected years and series.
-  - **Line Chart:** Visualize trends over time for any combination of series.
-  - **Bar Chart:** Compare values across series for a single year.
+  - **Table:** See raw data for selected years and series. The first column ("Kategori") is always visible (sticky) when scrolling horizontally. Odd and even rows are striped for readability.
+  - **Line Chart:** Visualize trends over time for any combination of series, using a vibrant Material Design color palette.
+  - **Bar Chart:** Compare values across series for a selected year range. Users can toggle between displaying the sum or average for each series over the selected range.
 
-- **Data Download:**  
+- **Data Download & Export:**  
   - Download the entire dataset as CSV.
   - Download the currently filtered data as CSV.
+  - Export charts as PNG and JPG (with white background for JPG).
+  - Export charts as TikZ code for use in LaTeX documents.
 
-- **Responsive UI:**  
-  - Clean, modern design.
+- **Responsive UI & Turkish Localization:**  
+  - Clean, modern design with improved Turkish labels (e.g., "Temsil Türü", "Filtrelenmiş Veri").
   - Works on desktop and mobile.
-
----
-
-## Recently Added Features
-
-- **Sticky First Column in Table:** The first column ("Kategori") remains visible when scrolling horizontally.
-- **Striped Table Rows:** Odd and even rows have different background colors for better readability.
-- **Vibrant Material Color Palette:** Charts use a modern, vibrant Material Design color palette for all series.
-- **Export Options for Charts:**
-  - Export as PNG and JPG (with white background for JPG).
-  - Export as TikZ code for use in LaTeX documents.
-- **Bar Chart Aggregation Toggle:**
-  - Users can choose to display the sum or average for each series over the selected year range (default is sum).
-- **Unified Year Range Selection:**
-  - Both line and bar charts use the same year range slider and numeric inputs.
-- **Improved Turkish Labels:**
-  - UI labels and buttons have been updated for clarity and consistency (e.g., "Temsil Türü", "Filtrelenmiş Veri").
 
 ---
 
