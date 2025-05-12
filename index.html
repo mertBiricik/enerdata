@@ -67,16 +67,30 @@
         }
         .tabs { display: flex; margin-bottom: 1px; }
         .tab-link { padding: 10px 15px; cursor: pointer; background-color: #e9e9e9; border: 1px solid #ccc; border-bottom: none; margin-right: 5px; border-radius: 5px 5px 0 0; }
-        .tab-link.active { background-color: #0073aa; color: white; border-color: #0073aa; }
-        .tab-content { display: none; padding: 20px; border: 1px solid #0073aa; border-radius: 0 5px 5px 5px; background-color: #fff; }
+        .tab-link.active { background-color: #006400; color: white; border-color: #006400; }
+        .tab-content { display: none; padding: 20px; border: 1px solid #006400; border-radius: 0 5px 5px 5px; background-color: #fff; }
         .tab-content.active { display: block; }
         .chart-container { width: 100%; max-width: 800px; margin: 20px auto; }
         .download-buttons { margin-top: 30px; text-align: center; display: flex; gap: 15px; justify-content: center;}
-        .download-buttons button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
-        .download-buttons button:hover { background-color: #218838; }
+        .download-buttons button { padding: 10px 15px; background-color: #006400; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        .download-buttons button:hover { background-color: #006400; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 0.9em;}
         th { background-color: #f2f2f2; }
+        .red-value { color: #d00; }
+        /* Custom noUiSlider color */
+        #yearRangeSlider .noUi-connect {
+            background: #006400 !important;
+        }
+        #yearRangeSlider .noUi-handle {
+            border-color: #006400 !important;
+            background: #fff !important;
+            box-shadow: 0 0 4px #00640055;
+        }
+        #yearRangeSlider .noUi-handle:before,
+        #yearRangeSlider .noUi-handle:after {
+            background: #006400 !important;
+        }
     </style>
 </head>
 <body>
@@ -87,9 +101,9 @@
             <div class="filter-group" style="width: 100%; max-width: 600px;">
                 <label style="min-width: 120px;">Yıl Aralığı:</label>
                 <div id="yearRangeSlider" style="flex: 1; min-width: 200px; margin-right: 16px;"></div>
-                <input type="number" id="yearInputStart" style="width: 70px; font-weight: bold; text-align: center; margin-right: 6px;" min="" max="" />
-                <span style="font-weight: bold;">-</span>
-                <input type="number" id="yearInputEnd" style="width: 70px; font-weight: bold; text-align: center; margin-left: 6px;" min="" max="" />
+                <input type="number" id="yearInputStart" style="width: 70px; text-align: center; margin-right: 6px;" min="" max="" />
+                <span style="">-</span>
+                <input type="number" id="yearInputEnd" style="width: 70px; text-align: center; margin-left: 6px;" min="" max="" />
             </div>
             <div class="filter-group" style="flex-wrap: wrap; align-items: flex-start;">
                 <label style="min-width: 120px;">Veri Serileri:</label>
@@ -102,7 +116,7 @@
                 </div>
             </div>
             <div class="filter-group">
-                <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #0073aa; color: white; border: none; border-radius: 5px; cursor: pointer;">Filtrele</button>
+                <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #006400; color: white; border: none; border-radius: 5px; cursor: pointer;">Filtrele</button>
             </div>
         </div>
 
@@ -147,7 +161,7 @@
         // --- EMBEDDED DATA (Sample) ---
         const embeddedRawData = [
   {
-    "category": "Net Üretim",
+    "Kategori": "Net Üretim",
     "1923": 41,
     "1924": 41,
     "1925": 41,
@@ -251,7 +265,7 @@
     "2023": 282747
   },
   {
-    "category": "İthalat (+)",
+    "Kategori": "İthalat (+)",
     "1923": "(0)",
     "1924": "(0)",
     "1925": "(0)",
@@ -355,7 +369,7 @@
     "2023": 6094
   },
   {
-    "category": "İhracat (-)",
+    "Kategori": "İhracat (-)",
     "1923": "(0)",
     "1924": "(0)",
     "1925": "(0)",
@@ -459,7 +473,7 @@
     "2023": -2076
   },
   {
-    "category": "Elektrik Arzı",
+    "Kategori": "Elektrik Arzı",
     "1923": 41,
     "1924": 41,
     "1925": 41,
@@ -563,7 +577,7 @@
     "2023": 286765
   },
   {
-    "category": "Çevrim ve Enerji Sektörü",
+    "Kategori": "Çevrim ve Enerji Sektörü",
     "1923": 41,
     "1924": 41,
     "1925": 41,
@@ -667,7 +681,7 @@
     "2023": 282747
   },
   {
-    "category": "Elektrik Santralları Brüt Üretimi",
+    "Kategori": "Elektrik Santralları Brüt Üretimi",
     "1923": 44,
     "1924": 44,
     "1925": 45,
@@ -771,7 +785,7 @@
     "2023": 331149
   },
   {
-    "category": "Petrol Rafinerileri Tüketimi",
+    "Kategori": "Petrol Rafinerileri Tüketimi",
     "1923": "(0)",
     "1924": "(0)",
     "1925": "(0)",
@@ -875,7 +889,7 @@
     "2023": -2607
   },
   {
-    "category": "İç Tüketim ve Kayıp",
+    "Kategori": "İç Tüketim ve Kayıp",
     "1923": -3,
     "1924": -3,
     "1925": -3,
@@ -979,7 +993,7 @@
     "2023": -45796
   },
   {
-    "category": "Nihai Tüketim",
+    "Kategori": "Nihai Tüketim",
     "1923": 41,
     "1924": 41,
     "1925": 41,
@@ -1083,7 +1097,7 @@
     "2023": 286765
   },
   {
-    "category": "Sanayi Tüketimi",
+    "Kategori": "Sanayi Tüketimi",
     "1923": "(33)",
     "1924": "(33)",
     "1925": "(33)",
@@ -1187,7 +1201,7 @@
     "2023": 127665
   },
   {
-    "category": "Gıda",
+    "Kategori": "Gıda",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1291,7 +1305,7 @@
     "2023": 8794
   },
   {
-    "category": "Şeker",
+    "Kategori": "Şeker",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1395,7 +1409,7 @@
     "2023": 832
   },
   {
-    "category": "Tekstil",
+    "Kategori": "Tekstil",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1499,7 +1513,7 @@
     "2023": 17290
   },
   {
-    "category": "Kağıt",
+    "Kategori": "Kağıt",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1603,7 +1617,7 @@
     "2023": 4389
   },
   {
-    "category": "Seramik",
+    "Kategori": "Seramik",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1707,7 +1721,7 @@
     "2023": 2732
   },
   {
-    "category": "Cam ve Cam Ürünleri",
+    "Kategori": "Cam ve Cam Ürünleri",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1811,7 +1825,7 @@
     "2023": 2424
   },
   {
-    "category": "Kimya-Petrokimya",
+    "Kategori": "Kimya-Petrokimya",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -1915,7 +1929,7 @@
     "2023": 16662
   },
   {
-    "category": "Gübre",
+    "Kategori": "Gübre",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -2019,7 +2033,7 @@
     "2023": 659
   },
   {
-    "category": "Çimento",
+    "Kategori": "Çimento",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -2123,7 +2137,7 @@
     "2023": 10900
   },
   {
-    "category": "Demirçelik",
+    "Kategori": "Demirçelik",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -2227,7 +2241,7 @@
     "2023": 27155
   },
   {
-    "category": "Demirdışı Metaller",
+    "Kategori": "Demirdışı Metaller",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -2331,7 +2345,7 @@
     "2023": 4745
   },
   {
-    "category": "Motorlu Kara Taşıt Sanayi",
+    "Kategori": "Motorlu Kara Taşıt Sanayi",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -2435,7 +2449,7 @@
     "2023": 3433
   },
   {
-    "category": "Diğer Sanayi",
+    "Kategori": "Diğer Sanayi",
     "1923": null,
     "1924": null,
     "1925": null,
@@ -2539,7 +2553,7 @@
     "2023": 27645
   },
   {
-    "category": "Ulaştırma",
+    "Kategori": "Ulaştırma",
     "1923": "(2)",
     "1924": "(2)",
     "1925": "(2)",
@@ -2643,7 +2657,7 @@
     "2023": 1733
   },
   {
-    "category": "Demiryolları",
+    "Kategori": "Demiryolları",
     "1923": "(2)",
     "1924": "(2)",
     "1925": "(2)",
@@ -2747,7 +2761,7 @@
     "2023": 1567
   },
   {
-    "category": "Boru Hatları",
+    "Kategori": "Boru Hatları",
     "1923": "(0)",
     "1924": "(0)",
     "1925": "(0)",
@@ -2851,7 +2865,7 @@
     "2023": 166
   },
   {
-    "category": "Diğer Sektörler",
+    "Kategori": "Diğer Sektörler",
     "1923": "(5)",
     "1924": "(5)",
     "1925": "(5)",
@@ -2955,7 +2969,7 @@
     "2023": 157366
   },
   {
-    "category": "Konut, Ticarethane ve Hizmetler",
+    "Kategori": "Konut, Ticarethane ve Hizmetler",
     "1923": "(5)",
     "1924": "(5)",
     "1925": "(5)",
@@ -3059,7 +3073,7 @@
     "2023": 144065
   },
   {
-    "category": "Tarım ve Hayvancılık",
+    "Kategori": "Tarım ve Hayvancılık",
     "1923": "(0)",
     "1924": "(0)",
     "1925": "(0)",
@@ -3163,8 +3177,8 @@
     "2023": 13301
   }
 ];
-        // Extract all unique years from the sample data keys (excluding 'category')
-        const allYearsInData = [...new Set(embeddedRawData.flatMap(item => Object.keys(item).filter(key => key !== 'category')))].map(Number).sort((a,b) => a-b);
+        // Extract all unique years from the sample data keys (excluding 'Kategori')
+        const allYearsInData = [...new Set(embeddedRawData.flatMap(item => Object.keys(item).filter(key => key !== 'Kategori')))].map(Number).sort((a,b) => a-b);
 
         let lineChartInstance;
         let barChartInstance;
@@ -3314,13 +3328,13 @@
             embeddedRawData.forEach(item => {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.id = 'series-' + item.category.replace(/\W/g, '_'); // Sanitize ID
-                checkbox.value = item.category;
+                checkbox.id = 'series-' + item.Kategori.replace(/\W/g, '_'); // Sanitize ID
+                checkbox.value = item.Kategori;
                 checkbox.checked = true; // Enable all filters by default
 
                 const label = document.createElement('label');
                 label.htmlFor = checkbox.id;
-                label.textContent = item.category;
+                label.textContent = item.Kategori;
 
                 const wrapper = document.createElement('span');
                 wrapper.className = 'checkbox-inline';
@@ -3345,10 +3359,10 @@
             const yearsForCharts = allYearsInData.filter(year => year >= startYear && year <= endYear);
             
             const chartDataSets = selectedSeriesNames.map(seriesName => {
-                const seriesObj = embeddedRawData.find(s => s.category === seriesName);
+                const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
                 if (!seriesObj) return null;
                 
-                const dataPoints = yearsForCharts.map(year => seriesObj[year] || 0); // Use 0 if year data missing for series
+                const dataPoints = yearsForCharts.map(year => parseRedValue(seriesObj[year]));
                 return {
                     label: seriesName,
                     data: dataPoints,
@@ -3378,9 +3392,9 @@
 
             // Header Row
             const headerRow = document.createElement('tr');
-            const thCategory = document.createElement('th');
-            thCategory.textContent = 'Category';
-            headerRow.appendChild(thCategory);
+            const thKategori = document.createElement('th');
+            thKategori.textContent = 'Kategori';
+            headerRow.appendChild(thKategori);
 
             const yearsToDisplay = allYearsInData.filter(year => year >= startYear && year <= endYear);
             yearsToDisplay.forEach(year => {
@@ -3393,24 +3407,32 @@
 
             // Data Rows & Prepare data for CSV download
             currentFilteredDataForTable = [];
-            const headerForCsv = ['Category', ...yearsToDisplay.map(String)];
+            const headerForCsv = ['Kategori', ...yearsToDisplay.map(String)];
             currentFilteredDataForTable.push(headerForCsv);
 
             selectedSeriesNames.forEach(seriesName => {
-                const seriesObj = embeddedRawData.find(s => s.category === seriesName);
+                const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
                 if (seriesObj) {
                     const dataRow = document.createElement('tr');
-                    const tdCategory = document.createElement('td');
-                    tdCategory.textContent = seriesName;
-                    dataRow.appendChild(tdCategory);
+                    const tdKategori = document.createElement('td');
+                    tdKategori.textContent = seriesName;
+                    dataRow.appendChild(tdKategori);
 
                     const csvRowData = [seriesName];
                     yearsToDisplay.forEach(year => {
                         const value = seriesObj[year] !== undefined ? seriesObj[year] : 'N/A';
                         const tdValue = document.createElement('td');
-                        tdValue.textContent = value;
+                        let isRed = false;
+                        let displayValue = value;
+                        if (typeof value === 'string' && /^\(.*\)$/.test(value)) {
+                            isRed = true;
+                            displayValue = value.replace(/[()]/g, '');
+                        }
+                        tdValue.textContent = displayValue;
+                        if (isRed) tdValue.classList.add('red-value');
                         dataRow.appendChild(tdValue);
-                        csvRowData.push(value);
+                        // For CSV, add parens only in download
+                        csvRowData.push(isRed ? `(${displayValue})` : displayValue);
                     });
                     tbody.appendChild(dataRow);
                     currentFilteredDataForTable.push(csvRowData);
@@ -3462,8 +3484,8 @@
             
             const barChartLabels = selectedSeriesNames;
             const barChartDataValues = selectedSeriesNames.map(seriesName => {
-                const seriesObj = embeddedRawData.find(s => s.category === seriesName);
-                return seriesObj && seriesObj[selectedYear] !== undefined ? seriesObj[selectedYear] : 0;
+                const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                return seriesObj && seriesObj[selectedYear] !== undefined ? parseRedValue(seriesObj[selectedYear]) : 0;
             });
 
             const datasets = [{
@@ -3489,7 +3511,7 @@
                     maintainAspectRatio: true,
                     scales: {
                         y: { beginAtZero: true, title: { display: true, text: 'Value' } },
-                        x: { title: { display: true, text: 'Category' } }
+                        x: { title: { display: true, text: 'Kategori' } }
                     },
                     plugins: {
                         legend: { display: true, position: 'top' }, // Show legend for the year
@@ -3543,10 +3565,10 @@
 
         function downloadFullDataset() {
             // Convert embeddedRawData to CSV format
-            // Header: Category, Year1, Year2, ...
-            const headers = ['Category', ...allYearsInData.map(String)];
+            // Header: Kategori, Year1, Year2, ...
+            const headers = ['Kategori', ...allYearsInData.map(String)];
             const rows = embeddedRawData.map(series => {
-                const row = [series.category];
+                const row = [series.Kategori];
                 allYearsInData.forEach(year => {
                     row.push(series[year] !== undefined ? series[year] : 'N/A');
                 });
@@ -3571,6 +3593,13 @@
 
         // Optional: Hide tooltips on page load
         document.querySelectorAll('.custom-slider-tooltip').forEach(tt => tt.style.display = 'none');
+
+        function parseRedValue(val) {
+            if (typeof val === 'string' && /^\(.*\)$/.test(val)) {
+                return Number(val.replace(/[()]/g, ''));
+            }
+            return typeof val === 'number' ? val : (Number(val) || 0);
+        }
 
     </script>
 </body>
