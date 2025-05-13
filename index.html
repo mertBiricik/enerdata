@@ -228,8 +228,9 @@
                     <!-- Checkboxes will be populated by JS -->
                 </div>
             </div>
-            <div class="filter-group">
+            <div class="filter-group" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
                 <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #006400; color: white; border: none; border-radius: 5px; cursor: pointer;">Filtrele</button>
+                <button id="downloadOfflinePageButton" style="padding: 8px 12px; background-color: #006400; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em;">Sayfayı İndir</button>
             </div>
         </div>
 
@@ -3897,6 +3898,37 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+                // --- Download Page for Offline Use ---
+                function downloadCurrentPageForOfflineUse() {
+            // Temporarily remove the download button itself from the downloaded HTML
+            const downloadButton = document.getElementById('downloadOfflinePageButton');
+            let originalDisplay = '';
+            if (downloadButton) {
+                originalDisplay = downloadButton.style.display;
+                downloadButton.style.display = 'none';
+            }
+
+            const pageHTML = document.documentElement.outerHTML;
+
+            // Restore the button's display
+            if (downloadButton) {
+                downloadButton.style.display = originalDisplay;
+            }
+
+            const blob = new Blob([pageHTML], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'çevrimdışı_enerji_verisi.html';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Add this inside your DOMContentLoaded event listener
+        const downloadOfflineButton = document.getElementById('downloadOfflinePageButton');
+        if (downloadOfflineButton) {
+            downloadOfflineButton.addEventListener('click', downloadCurrentPageForOfflineUse);
         }
     </script>
 </body>
