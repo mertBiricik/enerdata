@@ -169,10 +169,14 @@
         </div>
 
         <div id="barChartTab" class="tab-content">
-            <h2>Sütun Grafik (Bitiş Yılı)</h2>
-             <div class="filter-group" style="margin-bottom:15px; max-width: 200px;">
-                <label for="barChartYear">Bitiş Yılı Seçiniz:</label>
-                <input type="number" id="barChartYear" value="1927">
+            <h2>Sütun Grafik</h2>
+             <div class="filter-group" style="margin-bottom:15px; max-width: 300px;">
+                <label>Hesaplama Yöntemi:</label>
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <label><input type="radio" name="barChartMode" value="last" checked> Son Yıl Değerleri</label>
+                    <label><input type="radio" name="barChartMode" value="sum"> Toplam</label>
+                    <label><input type="radio" name="barChartMode" value="average"> Ortalama</label>
+                </div>
             </div>
             <div class="chart-container">
                 <canvas id="myBarChart"></canvas>
@@ -3226,15 +3230,33 @@
         const yearInputEnd = document.getElementById('yearInputEnd');
         const seriesCheckboxesEl = document.getElementById('seriesCheckboxes');
         const applyFiltersButtonEl = document.getElementById('applyFiltersButton');
-        const barChartYearEl = document.getElementById('barChartYear');
         const dataTableContainerEl = document.getElementById('dataTableContainer');
 
+        // --- Material Design Color Palette (500 series) ---
+        const materialColors = [
+            '#1E88E5', // Blue
+            '#D81B60', // Pink
+            '#43A047', // Green
+            '#F4511E', // Orange
+            '#8E24AA', // Purple
+            '#00ACC1', // Teal
+            '#FDD835', // Yellow
+            '#3949AB', // Indigo
+            '#6D4C41', // Brown
+            '#C0CA33', // Lime
+            '#FB8C00', // Deep Orange
+            '#5E35B1', // Deep Purple
+            '#039BE5', // Light Blue
+            '#7CB342', // Light Green
+            '#F06292', // Light Pink
+        ];
+        let colorIndex = 0;
+
         // --- Utility Functions ---
-        function getRandomColor() {
-            const r = Math.floor(Math.random() * 200); // Avoid too light colors
-            const g = Math.floor(Math.random() * 200);
-            const b = Math.floor(Math.random() * 200);
-            return `rgb(${r}, ${g}, ${b})`;
+        function getNextMaterialColor() {
+            const color = materialColors[colorIndex % materialColors.length];
+            colorIndex++;
+            return color;
         }
 
         // --- Initialization ---
@@ -3323,7 +3345,11 @@
             applyFiltersAndRender(); // Initial render
 
             applyFiltersButtonEl.addEventListener('click', applyFiltersAndRender);
-            barChartYearEl.addEventListener('change', renderBarChart); // Re-render bar chart if its specific year changes
+
+            // Add event listeners for bar chart calculation mode radio buttons
+            document.querySelectorAll('input[name="barChartMode"]').forEach(radio => {
+                radio.addEventListener('change', renderBarChart);
+            });
 
             document.getElementById('downloadFullDataset').addEventListener('click', downloadFullDataset);
             document.getElementById('downloadFilteredData').addEventListener('click', downloadFilteredTableData);
@@ -3396,18 +3422,22 @@
                 if (!seriesObj) return null;
                 
                 const dataPoints = yearsForCharts.map(year => parseRedValue(seriesObj[year]));
+                const seriesColor = getNextMaterialColor(); // Get a color from the Material palette
                 return {
                     label: seriesName,
                     data: dataPoints,
-                    borderColor: getRandomColor(),
-                    backgroundColor: getRandomColor(), // For bar chart, line chart uses borderColor
+                    borderColor: seriesColor,    // Use the same color for border
+                    backgroundColor: seriesColor, // and background
                     fill: false,
                     tension: 0.1
                 };
             }).filter(ds => ds !== null); // Remove nulls if a series wasn't found
 
+            // Reset colorIndex for the next chart draw if needed, or manage globally
+            colorIndex = 0; 
+
             renderLineChart(yearsForCharts, chartDataSets);
-            renderBarChart(); // Bar chart will use its own year and currently selected series
+            renderBarChart(); // Bar chart will use currently selected series and calculation mode
             renderDataTable(startYear, endYear, selectedSeriesNames);
         }
         
@@ -3509,26 +3539,74 @@
         }
 
         function renderBarChart() {
-            const selectedYear = parseInt(barChartYearEl.value);
             const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
                                           .map(cb => cb.value);
-
-            if (isNaN(selectedYear) || selectedSeriesNames.length === 0) {
-                 if (barChartInstance) barChartInstance.destroy(); // Clear chart if no data
+            
+            if (selectedSeriesNames.length === 0) {
+                if (barChartInstance) barChartInstance.destroy(); // Clear chart if no data
                 return;
             }
             
+            // Get the selected calculation mode
+            const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
+            
+            // Get years in range for calculations
+            const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
+            if (yearsInRange.length === 0) return;
+            
             const barChartLabels = selectedSeriesNames;
-            const barChartDataValues = selectedSeriesNames.map(seriesName => {
-                const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
-                return seriesObj && seriesObj[selectedYear] !== undefined ? parseRedValue(seriesObj[selectedYear]) : 0;
-            });
+            let barChartDataValues = [];
+            let calculationTitle = '';
+            
+            switch (calculationMode) {
+                case 'last':
+                    // Use the last (latest) year in the selected range
+                    const lastYear = Math.max(...yearsInRange);
+                    calculationTitle = `Son Yıl Değerleri (${lastYear})`;
+                    barChartDataValues = selectedSeriesNames.map(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        return seriesObj && seriesObj[lastYear] !== undefined ? parseRedValue(seriesObj[lastYear]) : 0;
+                    });
+                    break;
+                
+                case 'sum':
+                    calculationTitle = `Toplam (${startYear}-${endYear})`;
+                    barChartDataValues = selectedSeriesNames.map(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        if (!seriesObj) return 0;
+                        
+                        return yearsInRange.reduce((sum, year) => {
+                            const val = seriesObj[year] !== undefined ? parseRedValue(seriesObj[year]) : 0;
+                            return sum + val;
+                        }, 0);
+                    });
+                    break;
+                
+                case 'average':
+                    calculationTitle = `Ortalama (${startYear}-${endYear})`;
+                    barChartDataValues = selectedSeriesNames.map(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        if (!seriesObj) return 0;
+                        
+                        const validValues = yearsInRange.map(year => 
+                            seriesObj[year] !== undefined ? parseRedValue(seriesObj[year]) : null
+                        ).filter(val => val !== null);
+                        
+                        if (validValues.length === 0) return 0;
+                        return validValues.reduce((sum, val) => sum + val, 0) / validValues.length;
+                    });
+                    break;
+            }
+
+            // Reset colorIndex for bar chart to ensure consistent coloring if datasets change
+            colorIndex = 0; 
+            const barColors = selectedSeriesNames.map(() => getNextMaterialColor());
 
             const datasets = [{
-                label: `Data for ${selectedYear}`,
+                label: calculationTitle,
                 data: barChartDataValues,
-                backgroundColor: selectedSeriesNames.map(() => getRandomColor()), // Different color for each bar
-                borderColor: selectedSeriesNames.map(() => '#333'),
+                backgroundColor: barColors, // Use Material palette for each bar
+                borderColor: barColors.map(color => Chart.helpers.color(color).darken(0.2).rgbString()), // Slightly darker border
                 borderWidth: 1
             }];
             
@@ -3551,7 +3629,7 @@
                     },
                     plugins: {
                         legend: { display: true, position: 'top' }, // Show legend for the year
-                        title: { display: true, text: `Energy Data for ${selectedYear}` }
+                        title: { display: true, text: `Enerji Verileri - ${calculationTitle}` }
                     }
                 }
             });
@@ -3571,13 +3649,11 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.classList.add("active");
             
-            // Special handling: bar chart might need re-render if its year selector is independent
-            // and tab becomes active. For now, applyFiltersAndRender handles line chart.
-            // Bar chart is re-rendered if its year changes or applyFilters is clicked.
-             if (tabName === 'barChartTab') renderBarChart(); // Ensure bar chart is up-to-date when tab is viewed
-             if (tabName === 'lineChartTab' || tabName === 'tableTab') { // Ensure line chart and table are up-to-date
-                 applyFiltersAndRender(); // This will re-render line chart and table
-             }
+            // Refresh charts when switching tabs
+            if (tabName === 'barChartTab') renderBarChart(); 
+            if (tabName === 'lineChartTab' || tabName === 'tableTab') {
+                applyFiltersAndRender();
+            }
         }
 
         // --- Data Download ---
