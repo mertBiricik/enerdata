@@ -3413,12 +3413,42 @@
             applyFiltersButtonEl.addEventListener('click', applyFiltersAndRender);
 
             // Add event listeners for bar chart calculation mode radio buttons
-            document.querySelectorAll('input[name="barChartMode"]').forEach(radio => {
-                radio.addEventListener('change', renderBarChart);
+            document.getElementById('mode-last').addEventListener('change', function() {
+                console.log("Mode changed to: last");
+                renderBarChart();
+            });
+            document.getElementById('mode-sum').addEventListener('change', function() {
+                console.log("Mode changed to: sum");
+                renderBarChart();
+            });
+            document.getElementById('mode-average').addEventListener('change', function() {
+                console.log("Mode changed to: average");
+                renderBarChart();
             });
 
+            // Re-add event listeners for CSV download buttons
             document.getElementById('downloadFullDataset').addEventListener('click', downloadFullDataset);
             document.getElementById('downloadFilteredData').addEventListener('click', downloadFilteredTableData);
+
+            // Chart export buttons
+            document.getElementById('exportLinePng').addEventListener('click', function() {
+                exportChartAsImage(lineChartInstance, 'png', 'line_chart.png');
+            });
+            document.getElementById('exportLineJpg').addEventListener('click', function() {
+                exportChartAsImage(lineChartInstance, 'jpg', 'line_chart.jpg');
+            });
+            document.getElementById('exportLineTikz').addEventListener('click', function() {
+                exportChartAsTikz(lineChartInstance, 'line_chart.tex');
+            });
+            document.getElementById('exportBarPng').addEventListener('click', function() {
+                exportChartAsImage(barChartInstance, 'png', 'bar_chart.png');
+            });
+            document.getElementById('exportBarJpg').addEventListener('click', function() {
+                exportChartAsImage(barChartInstance, 'jpg', 'bar_chart.jpg');
+            });
+            document.getElementById('exportBarTikz').addEventListener('click', function() {
+                exportChartAsTikz(barChartInstance, 'bar_chart.tex');
+            });
 
             // --- FIX: Year input manual change handlers ---
             function setSliderAndApply(start, end) {
@@ -3615,6 +3645,7 @@
             
             // Get the selected calculation mode
             const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
+            console.log("Rendering bar chart with mode:", calculationMode); // Debug log
             
             // Get years in range for calculations
             const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
@@ -3843,25 +3874,6 @@
             link.click();
             document.body.removeChild(link);
         }
-
-        document.getElementById('exportLinePng').onclick = function() {
-            exportChartAsImage(lineChartInstance, 'png', 'line_chart.png');
-        };
-        document.getElementById('exportLineJpg').onclick = function() {
-            exportChartAsImage(lineChartInstance, 'jpg', 'line_chart.jpg');
-        };
-        document.getElementById('exportLineTikz').onclick = function() {
-            exportChartAsTikz(lineChartInstance, 'line_chart.tex');
-        };
-        document.getElementById('exportBarPng').onclick = function() {
-            exportChartAsImage(barChartInstance, 'png', 'bar_chart.png');
-        };
-        document.getElementById('exportBarJpg').onclick = function() {
-            exportChartAsImage(barChartInstance, 'jpg', 'bar_chart.jpg');
-        };
-        document.getElementById('exportBarTikz').onclick = function() {
-            exportChartAsTikz(barChartInstance, 'bar_chart.tex');
-        };
     </script>
 </body>
 </html> 
