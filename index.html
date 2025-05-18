@@ -16,9 +16,11 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 80vw;
-            max-width: 1200px;
+            width: 95vw; /* Adjusted for potentially wider layout */
+            max-width: none; /* Remove max-width to allow full use of viewport */
             margin: 20px auto;
+            display: flex; /* Changed from default block to flex */
+            gap: 20px; /* Space between filters and content */
         }
         h1, h2 {
             color: #333;
@@ -29,11 +31,15 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
-            margin-bottom: 30px;
+            /* margin-bottom: 30px; */ /* Removed as it's now a sidebar */
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 5px;
             border: 1px solid #eee;
+            width: 300px; /* Fixed width for the filter sidebar */
+            flex-shrink: 0; /* Prevent shrinking */
+            height: calc(100vh - 80px); /* Adjust height based on viewport, considering body margin & container padding */
+            overflow-y: auto; /* Allow scrolling within filters */
         }
         .filter-group {
             display: flex;
@@ -54,6 +60,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            flex-grow: 1; /* Allow it to take available space in filters */
         }
         .series-checkboxes label {
             display: inline-block;
@@ -174,13 +181,30 @@
         .csv-buttons button:hover {
             background-color: #004d00;
         }
+
+        /* New styles for search bar */
+        #seriesSearchInput {
+            width: calc(100% - 16px); /* Full width minus padding */
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Wrapper for main content (tabs and charts) */
+        .main-content-area {
+            flex-grow: 1; /* Takes remaining space */
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Enerji Tüketimi Verisi</h1>
-
         <div class="filters-container">
+            <h1>Filtreler</h1>
+            <input type="text" id="seriesSearchInput" placeholder="Veri serisi ara...">
             <div class="year-filter-row">
                 <div class="year-range-container">
                     <label style="min-width: 120px; font-weight: bold;">Yıl Aralığı:</label>
@@ -209,53 +233,56 @@
             </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab-link active" onclick="openTab(event, 'tableTab')">Veri Tablosu</button>
-            <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Çizgi Grafik</button>
-            <button class="tab-link" onclick="openTab(event, 'barChartTab')">Sütun Grafik</button>
-        </div>
-
-        <div id="tableTab" class="tab-content active">
-            <h2>Veri Tablosu</h2>
-            <div id="dataTableContainer" style="overflow-x: auto;">
-                 <!-- Table will be populated by JS -->
+        <div class="main-content-area">
+            <h1>Enerji Tüketimi Verisi</h1>
+            <div class="tabs">
+                <button class="tab-link active" onclick="openTab(event, 'tableTab')">Veri Tablosu</button>
+                <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Çizgi Grafik</button>
+                <button class="tab-link" onclick="openTab(event, 'barChartTab')">Sütun Grafik</button>
             </div>
-        </div>
 
-        <div id="lineChartTab" class="tab-content">
-            <h2>Çizgi Grafik</h2>
-            <div class="chart-container">
-                <canvas id="myLineChart"></canvas>
-            </div>
-            <div class="download-buttons" id="lineChartExportBtns">
-                <button id="exportLinePng">PNG</button>
-                <button id="exportLineJpg">JPG</button>
-                <button id="exportLineTikz">TikZ</button>
-            </div>
-        </div>
-
-        <div id="barChartTab" class="tab-content">
-            <h2>Sütun Grafik</h2>
-             <div class="filter-group" style="margin-bottom:15px; justify-content: center;">
-                <label style="margin-right: 10px;">Hesaplama Yöntemi:</label>
-                <div class="segmented-control">
-                    <input type="radio" name="barChartMode" id="mode-last" value="last" checked>
-                    <label for="mode-last">Son Yıl Değerleri</label>
-                    
-                    <input type="radio" name="barChartMode" id="mode-sum" value="sum">
-                    <label for="mode-sum">Toplam</label>
-                    
-                    <input type="radio" name="barChartMode" id="mode-average" value="average">
-                    <label for="mode-average">Ortalama</label>
+            <div id="tableTab" class="tab-content active">
+                <h2>Veri Tablosu</h2>
+                <div id="dataTableContainer" style="overflow-x: auto;">
+                     <!-- Table will be populated by JS -->
                 </div>
             </div>
-            <div class="chart-container">
-                <canvas id="myBarChart"></canvas>
+
+            <div id="lineChartTab" class="tab-content">
+                <h2>Çizgi Grafik</h2>
+                <div class="chart-container">
+                    <canvas id="myLineChart"></canvas>
+                </div>
+                <div class="download-buttons" id="lineChartExportBtns">
+                    <button id="exportLinePng">PNG</button>
+                    <button id="exportLineJpg">JPG</button>
+                    <button id="exportLineTikz">TikZ</button>
+                </div>
             </div>
-            <div class="download-buttons" id="barChartExportBtns">
-                <button id="exportBarPng">PNG</button>
-                <button id="exportBarJpg">JPG</button>
-                <button id="exportBarTikz">TikZ</button>
+
+            <div id="barChartTab" class="tab-content">
+                <h2>Sütun Grafik</h2>
+                 <div class="filter-group" style="margin-bottom:15px; justify-content: center;">
+                    <label style="margin-right: 10px;">Hesaplama Yöntemi:</label>
+                    <div class="segmented-control">
+                        <input type="radio" name="barChartMode" id="mode-last" value="last" checked>
+                        <label for="mode-last">Son Yıl Değerleri</label>
+                        
+                        <input type="radio" name="barChartMode" id="mode-sum" value="sum">
+                        <label for="mode-sum">Toplam</label>
+                        
+                        <input type="radio" name="barChartMode" id="mode-average" value="average">
+                        <label for="mode-average">Ortalama</label>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="myBarChart"></canvas>
+                </div>
+                <div class="download-buttons" id="barChartExportBtns">
+                    <button id="exportBarPng">PNG</button>
+                    <button id="exportBarJpg">JPG</button>
+                    <button id="exportBarTikz">TikZ</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3297,6 +3324,7 @@
         const seriesCheckboxesEl = document.getElementById('seriesCheckboxes');
         const applyFiltersButtonEl = document.getElementById('applyFiltersButton');
         const dataTableContainerEl = document.getElementById('dataTableContainer');
+        const seriesSearchInputEl = document.getElementById('seriesSearchInput'); // Added for search
 
         // --- Material Design Color Palette (500 series) ---
         const materialColors = [
@@ -3475,6 +3503,23 @@
             yearInputStart.addEventListener('blur', handleYearInputChange);
             yearInputEnd.addEventListener('change', handleYearInputChange);
             yearInputEnd.addEventListener('blur', handleYearInputChange);
+
+            // --- Series Search Functionality ---
+            seriesSearchInputEl.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const checkboxes = seriesCheckboxesEl.querySelectorAll('.checkbox-inline');
+                checkboxes.forEach(wrapper => {
+                    const label = wrapper.querySelector('label');
+                    if (label) {
+                        const seriesName = label.textContent.toLowerCase();
+                        if (seriesName.includes(searchTerm)) {
+                            wrapper.style.display = 'flex'; // or 'inline-flex' or initial value
+                        } else {
+                            wrapper.style.display = 'none';
+                        }
+                    }
+                });
+            });
         });
 
         // --- Filter Population ---
@@ -3491,7 +3536,7 @@
                 label.htmlFor = checkbox.id;
                 label.textContent = item.Kategori;
 
-                const wrapper = document.createElement('span');
+                const wrapper = document.createElement('span'); // Ensure this wrapper is what we target in search
                 wrapper.className = 'checkbox-inline';
                 wrapper.appendChild(checkbox);
                 wrapper.appendChild(label);
