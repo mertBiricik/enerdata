@@ -254,6 +254,7 @@
             <div class="tabs">
                 <button class="tab-link active" onclick="openTab(event, 'tableTab')">Veri Tablosu</button>
                 <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Çizgi Grafik</button>
+                <button class="tab-link" onclick="openTab(event, 'pieChartTab')">Pasta Grafik</button>
                 <button class="tab-link" onclick="openTab(event, 'barChartTab')">Sütun Grafik</button>
             </div>
 
@@ -273,6 +274,18 @@
                     <button id="exportLinePng">PNG</button>
                     <button id="exportLineJpg">JPG</button>
                     <button id="exportLineTikz">TikZ</button>
+                </div>
+            </div>
+
+            <div id="pieChartTab" class="tab-content">
+                <h2>Pasta Grafik</h2>
+                <div class="chart-container">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+                <div class="download-buttons" id="pieChartExportBtns">
+                    <button id="exportPiePng">PNG</button>
+                    <button id="exportPieJpg">JPG</button>
+                    <button id="exportPieTikz">TikZ</button>
                 </div>
             </div>
 
@@ -3328,6 +3341,7 @@
 
         let lineChartInstance;
         let barChartInstance;
+        let myPieChartInstance; // Added for Pie Chart
         let currentFilteredDataForTable = []; // To store data used for the table
 
         // --- GLOBAL YEAR VARIABLES ---
@@ -3456,20 +3470,21 @@
             populateSeriesFilter();
             applyFiltersAndRender(); // Initial render
 
-            applyFiltersButtonEl.addEventListener('click', applyFiltersAndRender);
-
             // Add event listeners for bar chart calculation mode radio buttons
             document.getElementById('mode-last').addEventListener('change', function() {
                 console.log("Mode changed to: last");
                 renderBarChart();
+                renderPieChart(); // Also update pie chart
             });
             document.getElementById('mode-sum').addEventListener('change', function() {
                 console.log("Mode changed to: sum");
                 renderBarChart();
+                renderPieChart(); // Also update pie chart
             });
             document.getElementById('mode-average').addEventListener('change', function() {
                 console.log("Mode changed to: average");
                 renderBarChart();
+                renderPieChart(); // Also update pie chart
             });
 
             // Re-add event listeners for CSV download buttons
@@ -3494,6 +3509,17 @@
             });
             document.getElementById('exportBarTikz').addEventListener('click', function() {
                 exportChartAsTikz(barChartInstance, 'bar_chart.tex');
+            });
+
+            // Pie Chart Export Buttons
+            document.getElementById('exportPiePng').addEventListener('click', function() {
+                exportChartAsImage(myPieChartInstance, 'png', 'pie_chart.png');
+            });
+            document.getElementById('exportPieJpg').addEventListener('click', function() {
+                exportChartAsImage(myPieChartInstance, 'jpg', 'pie_chart.jpg');
+            });
+            document.getElementById('exportPieTikz').addEventListener('click', function() {
+                exportChartAsTikz(myPieChartInstance, 'pie_chart.tex');
             });
 
             // --- FIX: Year input manual change handlers ---
@@ -3601,6 +3627,7 @@
             renderLineChart(yearsForCharts, chartDataSets);
             renderBarChart(); // Bar chart will use currently selected series and calculation mode
             renderDataTable(startYear, endYear, selectedSeriesNames);
+            renderPieChart(); // Added call to render pie chart
         }
         
         function renderDataTable(startYear, endYear, selectedSeriesNames) {
@@ -3670,6 +3697,112 @@
             dataTableContainerEl.appendChild(table);
         }
 
+        function renderPieChart() {
+            const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
+                                          .map(cb => cb.value);
+
+            if (selectedSeriesNames.length === 0) {
+                if (myPieChartInstance) myPieChartInstance.destroy();
+                return;
+            }
+
+            const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
+            const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
+            if (yearsInRange.length === 0 && (calculationMode === 'sum' || calculationMode === 'average' || calculationMode === 'last')) {
+                 if (myPieChartInstance) myPieChartInstance.destroy(); // Clear chart if no years in range for these modes
+                return;
+            }
+
+            let pieChartDataValues = [];
+            let calculationTitle = '';
+
+            switch (calculationMode) {
+                case 'last':
+                    const lastYear = Math.max(...yearsInRange);
+                    calculationTitle = `Son Yıl Değerleri (${lastYear})`;
+                    pieChartDataValues = selectedSeriesNames.map(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        return seriesObj && seriesObj[lastYear] !== undefined ? Math.abs(parseRedValue(seriesObj[lastYear])) : 0;
+                    }).filter(val => val > 0); // Pie charts usually don't show zero/negative values well
+                    break;
+                case 'sum':
+                    calculationTitle = `Toplam (${startYear}-${endYear})`;
+                    pieChartDataValues = selectedSeriesNames.map(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        if (!seriesObj) return 0;
+                        return Math.abs(yearsInRange.reduce((sum, year) => {
+                            const val = seriesObj[year] !== undefined ? parseRedValue(seriesObj[year]) : 0;
+                            return sum + val;
+                        }, 0));
+                    }).filter(val => val > 0);
+                    break;
+                case 'average':
+                    calculationTitle = `Ortalama (${startYear}-${endYear})`;
+                    pieChartDataValues = selectedSeriesNames.map(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        if (!seriesObj) return 0;
+                        const validValues = yearsInRange.map(year => 
+                            seriesObj[year] !== undefined ? parseRedValue(seriesObj[year]) : null
+                        ).filter(val => val !== null);
+                        if (validValues.length === 0) return 0;
+                        return Math.abs(validValues.reduce((sum, val) => sum + val, 0) / validValues.length);
+                    }).filter(val => val > 0);
+                    break;
+            }
+            
+            // Filter selectedSeriesNames to match pieChartDataValues (only those with positive values)
+            const pieChartLabels = selectedSeriesNames.filter((_, index) => pieChartDataValues[index] !== undefined && pieChartDataValues[index] > 0 );
+            const positivePieDataValues = pieChartDataValues.filter(val => val > 0);
+
+            if (positivePieDataValues.length === 0) {
+                if (myPieChartInstance) myPieChartInstance.destroy();
+                return;
+            }
+
+            colorIndex = 0; // Reset color index
+            const pieColors = pieChartLabels.map(() => getNextMaterialColor());
+
+            const datasets = [{
+                data: positivePieDataValues,
+                backgroundColor: pieColors,
+                borderColor: '#fff', // White border for better separation of slices
+                borderWidth: 1
+            }];
+
+            const ctx = document.getElementById('myPieChart').getContext('2d');
+            if (myPieChartInstance) {
+                myPieChartInstance.destroy();
+            }
+            myPieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: pieChartLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: `Veri Dağılımı - ${calculationTitle}` },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed.toLocaleString(); // Format number
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         // --- Chart Rendering ---
         function renderLineChart(labels, datasets) {
@@ -3815,7 +3948,10 @@
             // Refresh charts when switching tabs
             if (tabName === 'barChartTab') renderBarChart(); 
             if (tabName === 'lineChartTab' || tabName === 'tableTab') {
-                applyFiltersAndRender();
+                applyFiltersAndRender(); // This will also call renderPieChart if it's part of this
+            }
+            if (tabName === 'pieChartTab') {
+                 renderPieChart(); // Explicitly render pie chart when its tab is opened
             }
         }
 
