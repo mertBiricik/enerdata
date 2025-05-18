@@ -50,16 +50,15 @@
         .filter-group label { font-weight: bold; font-size: 0.9em; margin-bottom: 3px; }
         .filter-group input[type="number"], .filter-group select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; }
         .series-checkboxes {
-            max-height: 150px;
+            max-height: 450px;
             overflow-y: auto;
             border: 1px solid #eee;
             padding: 10px;
             background-color: #fff;
             border-radius: 4px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            flex-grow: 1; /* Allow it to take available space in filters */
+            flex-direction: column;
+            flex-grow: 1;
         }
         .series-checkboxes label {
             display: inline-block;
@@ -70,7 +69,6 @@
         .series-checkboxes .checkbox-inline {
             display: flex;
             align-items: center;
-            margin-right: 12px;
             margin-bottom: 4px;
         }
         .tabs { display: flex; margin-bottom: 1px; }
@@ -215,6 +213,7 @@
             flex-grow: 1; /* Takes remaining space */
             display: flex;
             flex-direction: column;
+            min-width: 0; /* ADDED: Important for flex items to prevent overflow from children */
         }
     </style>
 </head>
@@ -240,16 +239,14 @@
             </div>
             <div class="filter-group" style="flex-wrap: wrap; align-items: flex-start;">
                 <label style="min-width: 120px;">Veri Serileri:</label>
-                <div style="display: flex; gap: 8px; margin-bottom: 5px; flex-direction: row; align-items: flex-start;">
+                <div style="display: flex; gap: 8px; margin-bottom: 5px; flex-direction: row; align-items: flex-start; flex-wrap: wrap;">
                     <button type="button" id="selectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Hepsini Seç</button>
                     <button type="button" id="deselectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Hiçbirini Seçme</button>
+                    {/* <button id="applyFiltersButton" style="padding: 4px 10px; font-size: 0.9em; background-color: #006400; color: white; border: none; border-radius: 4px; cursor: pointer;">Filtrele</button> */}
                 </div>
                 <div id="seriesCheckboxes" class="series-checkboxes" style="margin-top: 0;">
                     <!-- Checkboxes will be populated by JS -->
                 </div>
-            </div>
-            <div class="filter-group">
-                <button id="applyFiltersButton" style="padding: 10px 15px; background-color: #006400; color: white; border: none; border-radius: 5px; cursor: pointer;">Filtrele</button>
             </div>
         </div>
 
@@ -3551,6 +3548,9 @@
                 checkbox.id = 'series-' + item.Kategori.replace(/\W/g, '_'); // Sanitize ID
                 checkbox.value = item.Kategori;
                 checkbox.checked = true; // Enable all filters by default
+
+                // Add event listener for dynamic filtering
+                checkbox.addEventListener('change', applyFiltersAndRender);
 
                 const label = document.createElement('label');
                 label.htmlFor = checkbox.id;
