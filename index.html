@@ -31,14 +31,13 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
-            /* margin-bottom: 30px; */ /* Removed as it's now a sidebar */
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 5px;
             border: 1px solid #eee;
             width: 300px; /* Fixed width for the filter sidebar */
             flex-shrink: 0; /* Prevent shrinking */
-            height: calc(100vh - 80px); /* Adjust height based on viewport, considering body margin & container padding */
+            height: calc(100vh - 40px); /* Increased height, reduced margin compensation */
             overflow-y: auto; /* Allow scrolling within filters */
         }
         .filter-group {
@@ -153,20 +152,39 @@
         }
         .year-filter-row {
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 16px;
+            flex-wrap: wrap; /* Changed to wrap for responsiveness if needed */
+            flex-direction: column; /* Stack slider and inputs vertically */
+            align-items: stretch; /* Stretch items to fill width */
+            gap: 10px; /* Space between slider and inputs */
         }
         .year-range-container {
             flex: 1;
-            min-width: 300px;
+            /* min-width: 300px; */ /* Removed min-width as it might conflict */
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 10px; /* Adjusted gap */
+            width: 100%; /* Ensure it takes full width */
+        }
+        .year-inputs-container { /* New container for year inputs */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            width: 100%;
+            margin-top: 5px; /* Add some space above the inputs */
+        }
+        #yearRangeSlider {
+            flex: 1;
+            /* min-width: 200px; */ /* Potentially remove or adjust if parent handles width */
+            width: 100%; /* Make slider take full width of its container */
+            box-sizing: border-box;
         }
         .csv-buttons {
             display: flex;
             gap: 10px;
+            justify-content: center; /* Center the CSV buttons */
+            width: 100%; /* Make the container take full width */
+            margin-top: 15px; /* Add space above CSV buttons */
         }
         .csv-buttons button {
             padding: 8px 15px;
@@ -207,16 +225,18 @@
             <input type="text" id="seriesSearchInput" placeholder="Veri serisi ara...">
             <div class="year-filter-row">
                 <div class="year-range-container">
-                    <label style="min-width: 120px; font-weight: bold;">Yıl Aralığı:</label>
-                    <div id="yearRangeSlider" style="flex: 1; min-width: 200px;"></div>
+                    <label style="min-width: auto; font-weight: bold;">Yıl Aralığı:</label>
+                    <div id="yearRangeSlider"></div>
+                </div>
+                <div class="year-inputs-container">
                     <input type="number" id="yearInputStart" style="width: 70px; text-align: center;" min="" max="" />
                     <span>-</span>
                     <input type="number" id="yearInputEnd" style="width: 70px; text-align: center;" min="" max="" />
                 </div>
-                <div class="csv-buttons">
-                    <button id="downloadFullDataset">Tam Veri (CSV)</button>
-                    <button id="downloadFilteredData">Filtrelenmiş Veri (CSV)</button>
-                </div>
+            </div>
+            <div class="csv-buttons">
+                <button id="downloadFullDataset">Tam Veri (CSV)</button>
+                <button id="downloadFilteredData">Filtrelenmiş Veri (CSV)</button>
             </div>
             <div class="filter-group" style="flex-wrap: wrap; align-items: flex-start;">
                 <label style="min-width: 120px;">Veri Serileri:</label>
