@@ -3607,12 +3607,12 @@
 
             // --- Series Search Functionality ---
             seriesSearchInputEl.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
+                const searchTerm = this.value.toLocaleLowerCase('tr-TR').trim();
                 const checkboxes = seriesCheckboxesEl.querySelectorAll('.checkbox-inline');
                 checkboxes.forEach(wrapper => {
                     const label = wrapper.querySelector('label');
                     if (label) {
-                        const seriesName = label.textContent.toLowerCase();
+                        const seriesName = label.textContent.toLocaleLowerCase('tr-TR');
                         if (seriesName.includes(searchTerm)) {
                             wrapper.style.display = 'flex'; // or 'inline-flex' or initial value
                         } else {
