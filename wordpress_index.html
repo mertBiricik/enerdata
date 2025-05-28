@@ -9,7 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
-    <script src="svg-export.min.js"></script>
+    </script>
+<!-- /wp:html -->
+<!-- wp:html -->
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
         .container {
@@ -146,6 +148,11 @@
             height: 0;
         }
         .segmented-control input[type="radio"]:checked + label {
+            /* This rule will be replaced */
+            /* background-color: #006400; */
+            /* color: white; */
+        }
+        .segmented-control label.label-active { /* New rule for active state */
             background-color: #006400;
             color: white;
         }
@@ -217,7 +224,10 @@
             min-width: 0; /* ADDED: Important for flex items to prevent overflow from children */
         }
     </style>
+<!-- /wp:html -->
 </head>
+
+<!-- wp:html -->
 <body>
     <div class="container">
         <div class="filters-container">
@@ -255,6 +265,7 @@
             <div class="tabs">
                 <button class="tab-link active" onclick="openTab(event, 'tableTab')">Veri Tablosu</button>
                 <button class="tab-link" onclick="openTab(event, 'lineChartTab')">Çizgi Grafik</button>
+                <button class="tab-link" onclick="openTab(event, 'pieChartTab')">Pasta Grafik</button>
                 <button class="tab-link" onclick="openTab(event, 'barChartTab')">Sütun Grafik</button>
             </div>
 
@@ -274,6 +285,31 @@
                     <button id="exportLinePng">PNG</button>
                     <button id="exportLineJpg">JPG</button>
                     <button id="exportLineTikz">TikZ</button>
+                </div>
+            </div>
+
+            <div id="pieChartTab" class="tab-content">
+                <h2>Pasta Grafik</h2>
+                <div class="filter-group" style="margin-bottom:15px; justify-content: center;">
+                    <label style="margin-right: 10px;">Hesaplama Yöntemi:</label>
+                    <div class="segmented-control">
+                        <input type="radio" name="barChartMode" id="pie-mode-last" value="last" checked>
+                        <label for="pie-mode-last">Son Yıl Değerleri</label>
+                        
+                        <input type="radio" name="barChartMode" id="pie-mode-sum" value="sum">
+                        <label for="pie-mode-sum">Toplam</label>
+                        
+                        <input type="radio" name="barChartMode" id="pie-mode-average" value="average">
+                        <label for="pie-mode-average">Ortalama</label>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+                <div class="download-buttons" id="pieChartExportBtns">
+                    <button id="exportPiePng">PNG</button>
+                    <button id="exportPieJpg">JPG</button>
+                    <button id="exportPieTikz">TikZ</button>
                 </div>
             </div>
 
@@ -3329,6 +3365,7 @@
 
         let lineChartInstance;
         let barChartInstance;
+        let myPieChartInstance; // Added for Pie Chart
         let currentFilteredDataForTable = []; // To store data used for the table
 
         // --- GLOBAL YEAR VARIABLES ---
@@ -3457,21 +3494,55 @@
             populateSeriesFilter();
             applyFiltersAndRender(); // Initial render
 
-            applyFiltersButtonEl.addEventListener('click', applyFiltersAndRender);
-
             // Add event listeners for bar chart calculation mode radio buttons
-            document.getElementById('mode-last').addEventListener('change', function() {
-                console.log("Mode changed to: last");
+            // And for PIE CHART calculation mode radio buttons
+            const barChartModeRadios = {
+                last: document.getElementById('mode-last'),
+                sum: document.getElementById('mode-sum'),
+                average: document.getElementById('mode-average')
+            };
+            const pieChartModeRadios = {
+                last: document.getElementById('pie-mode-last'),
+                sum: document.getElementById('pie-mode-sum'),
+                average: document.getElementById('pie-mode-average')
+            };
+            const allModeRadios = [barChartModeRadios, pieChartModeRadios];
+
+            function updateCalculationModeControls(selectedValue) {
+                allModeRadios.forEach(group => {
+                    for (const mode in group) {
+                        const radio = group[mode];
+                        const label = radio.nextElementSibling; // Assuming label is the immediate next sibling
+                        if (radio.value === selectedValue) {
+                            radio.checked = true;
+                            label.classList.add('label-active');
+                        } else {
+                            radio.checked = false;
+                            label.classList.remove('label-active');
+                        }
+                    }
+                });
+                console.log(`Calculation mode updated to: ${selectedValue}`);
                 renderBarChart();
-            });
-            document.getElementById('mode-sum').addEventListener('change', function() {
-                console.log("Mode changed to: sum");
-                renderBarChart();
-            });
-            document.getElementById('mode-average').addEventListener('change', function() {
-                console.log("Mode changed to: average");
-                renderBarChart();
-            });
+                renderPieChart();
+            }
+
+            // Initialize the active state for the default checked radio
+            const initiallyCheckedRadio = document.querySelector('input[name="barChartMode"]:checked');
+            if (initiallyCheckedRadio) {
+                updateCalculationModeControls(initiallyCheckedRadio.value);
+            }
+
+            // Attach event listeners
+            for (const group of allModeRadios) {
+                for (const mode in group) {
+                    group[mode].addEventListener('change', function() {
+                        if (this.checked) {
+                            updateCalculationModeControls(this.value);
+                        }
+                    });
+                }
+            }
 
             // Re-add event listeners for CSV download buttons
             document.getElementById('downloadFullDataset').addEventListener('click', downloadFullDataset);
@@ -3495,6 +3566,17 @@
             });
             document.getElementById('exportBarTikz').addEventListener('click', function() {
                 exportChartAsTikz(barChartInstance, 'bar_chart.tex');
+            });
+
+            // Pie Chart Export Buttons
+            document.getElementById('exportPiePng').addEventListener('click', function() {
+                exportChartAsImage(myPieChartInstance, 'png', 'pie_chart.png');
+            });
+            document.getElementById('exportPieJpg').addEventListener('click', function() {
+                exportChartAsImage(myPieChartInstance, 'jpg', 'pie_chart.jpg');
+            });
+            document.getElementById('exportPieTikz').addEventListener('click', function() {
+                exportChartAsTikz(myPieChartInstance, 'pie_chart.tex');
             });
 
             // --- FIX: Year input manual change handlers ---
@@ -3602,6 +3684,7 @@
             renderLineChart(yearsForCharts, chartDataSets);
             renderBarChart(); // Bar chart will use currently selected series and calculation mode
             renderDataTable(startYear, endYear, selectedSeriesNames);
+            renderPieChart(); // Added call to render pie chart
         }
         
         function renderDataTable(startYear, endYear, selectedSeriesNames) {
@@ -3671,6 +3754,129 @@
             dataTableContainerEl.appendChild(table);
         }
 
+        function renderPieChart() {
+            const selectedSeriesNames = Array.from(seriesCheckboxesEl.querySelectorAll('input[type="checkbox"]:checked'))
+                                          .map(cb => cb.value);
+
+            if (selectedSeriesNames.length === 0) {
+                if (myPieChartInstance) myPieChartInstance.destroy();
+                return;
+            }
+
+            const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
+            const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
+            if (yearsInRange.length === 0 && (calculationMode === 'sum' || calculationMode === 'average' || calculationMode === 'last')) {
+                 if (myPieChartInstance) myPieChartInstance.destroy(); // Clear chart if no years in range for these modes
+                return;
+            }
+
+            let pieChartDataValues = [];
+            let calculationTitle = '';
+            let pieChartLabelsActual = []; // To store labels corresponding to actual data
+
+            switch (calculationMode) {
+                case 'last':
+                    const lastYear = yearsInRange.length > 0 ? Math.max(...yearsInRange) : null;
+                    calculationTitle = lastYear ? `Son Yıl Değerleri (${lastYear})` : 'Son Yıl Değerleri (Veri Yok)';
+                    if (lastYear !== null) {
+                        selectedSeriesNames.forEach(seriesName => {
+                            const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                            const val = seriesObj && seriesObj[lastYear] !== undefined ? Math.abs(parseRedValue(seriesObj[lastYear])) : 0;
+                            if (val > 0) {
+                                pieChartDataValues.push(val);
+                                pieChartLabelsActual.push(seriesName);
+                            }
+                        });
+                    }
+                    break;
+                case 'sum':
+                    calculationTitle = `Toplam (${startYear}-${endYear})`;
+                    selectedSeriesNames.forEach(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        if (!seriesObj) return;
+                        const sumVal = Math.abs(yearsInRange.reduce((sum, year) => {
+                            const val = seriesObj[year] !== undefined ? parseRedValue(seriesObj[year]) : 0;
+                            return sum + val;
+                        }, 0));
+                        if (sumVal > 0) {
+                            pieChartDataValues.push(sumVal);
+                            pieChartLabelsActual.push(seriesName);
+                        }
+                    });
+                    break;
+                case 'average':
+                    calculationTitle = `Ortalama (${startYear}-${endYear})`;
+                     selectedSeriesNames.forEach(seriesName => {
+                        const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
+                        if (!seriesObj) return;
+                        const validValues = yearsInRange.map(year =>
+                            seriesObj[year] !== undefined ? parseRedValue(seriesObj[year]) : null
+                        ).filter(val => val !== null);
+
+                        if (validValues.length === 0) return;
+                        const avgVal = Math.abs(validValues.reduce((sum, val) => sum + val, 0) / validValues.length);
+                        if (avgVal > 0) {
+                           pieChartDataValues.push(avgVal);
+                           pieChartLabelsActual.push(seriesName);
+                        }
+                    });
+                    break;
+            }
+            
+            if (pieChartDataValues.length === 0) {
+                if (myPieChartInstance) myPieChartInstance.destroy();
+                // Optionally display a message in the canvas area
+                const ctx = document.getElementById('myPieChart').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillText('Bu hesaplama için gösterilecek veri yok.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+
+            colorIndex = 0; // Reset color index
+            const pieColors = pieChartLabelsActual.map(() => getNextMaterialColor());
+
+            const datasets = [{
+                data: pieChartDataValues,
+                backgroundColor: pieColors,
+                borderColor: '#fff', // White border for better separation of slices
+                borderWidth: 1
+            }];
+
+            const ctx = document.getElementById('myPieChart').getContext('2d');
+            if (myPieChartInstance) {
+                myPieChartInstance.destroy();
+            }
+            myPieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: pieChartLabelsActual, // Use labels with actual data
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: `Veri Dağılımı - ${calculationTitle}` },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed.toLocaleString(); // Format number
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         // --- Chart Rendering ---
         function renderLineChart(labels, datasets) {
@@ -3716,7 +3922,15 @@
             
             // Get years in range for calculations
             const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
-            if (yearsInRange.length === 0) return;
+            if (yearsInRange.length === 0 && (calculationMode === 'last' || calculationMode === 'sum' || calculationMode === 'average')) { // Check if year range is valid for modes
+                 if (barChartInstance) barChartInstance.destroy();
+                 // Optionally display a message in the canvas area
+                 const ctx = document.getElementById('myBarChart').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillText('Bu hesaplama için seçili yıl aralığında veri yok.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
             
             const barChartLabels = selectedSeriesNames;
             let barChartDataValues = [];
@@ -3725,11 +3939,11 @@
             switch (calculationMode) {
                 case 'last':
                     // Use the last (latest) year in the selected range
-                    const lastYear = Math.max(...yearsInRange);
-                    calculationTitle = `Son Yıl Değerleri (${lastYear})`;
+                    const lastYear = yearsInRange.length > 0 ? Math.max(...yearsInRange) : null;
+                    calculationTitle = lastYear ? `Son Yıl Değerleri (${lastYear})` : 'Son Yıl Değerleri (Veri Yok)';
                     barChartDataValues = selectedSeriesNames.map(seriesName => {
                         const seriesObj = embeddedRawData.find(s => s.Kategori === seriesName);
-                        return seriesObj && seriesObj[lastYear] !== undefined ? parseRedValue(seriesObj[lastYear]) : 0;
+                        return seriesObj && lastYear !== null && seriesObj[lastYear] !== undefined ? parseRedValue(seriesObj[lastYear]) : 0;
                     });
                     break;
                 
@@ -3760,6 +3974,17 @@
                         return validValues.reduce((sum, val) => sum + val, 0) / validValues.length;
                     });
                     break;
+            }
+
+            // Check if all barChartDataValues are effectively zero or non-existent, which might happen if no series has data for the mode.
+            const allDataEffectivelyZero = barChartDataValues.every(val => val === 0 || val === null || val === undefined);
+            if (allDataEffectivelyZero && barChartDataValues.length > 0) {
+                 if (barChartInstance) barChartInstance.destroy();
+                 const ctx = document.getElementById('myBarChart').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillText('Seçili seriler için bu modda gösterilecek veri yok.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
             }
 
             // Reset colorIndex for bar chart to ensure consistent coloring if datasets change
@@ -3816,7 +4041,10 @@
             // Refresh charts when switching tabs
             if (tabName === 'barChartTab') renderBarChart(); 
             if (tabName === 'lineChartTab' || tabName === 'tableTab') {
-                applyFiltersAndRender();
+                applyFiltersAndRender(); // This will also call renderPieChart if it's part of this
+            }
+            if (tabName === 'pieChartTab') {
+                 renderPieChart(); // Explicitly render pie chart when its tab is opened
             }
         }
 
@@ -3876,7 +4104,11 @@
 
         function parseRedValue(val) {
             if (typeof val === 'string' && /^\(.*\)$/.test(val)) {
-                return Number(val.replace(/[()]/g, ''));
+                // It's a "red value" like (123), parse it as a positive number for calculations
+                // but it implies negativity or a special status in the table display.
+                // For charting sums/averages/pies, we usually want the magnitude.
+                // If it should be treated as negative, this should be -Number(...)
+                return Number(val.replace(/[()]/g, '')); 
             }
             return typeof val === 'number' ? val : (Number(val) || 0);
         }

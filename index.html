@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enerji Tüketimi Verisi</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.19/canvas2svg.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
-    <script src="svg-export.min.js"></script>
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
         .container {
@@ -16,7 +14,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 100%; /* Changed from 95vw to 100% for better embedding */
+            width: 90%; /* Changed from 95vw to 100% for better embedding */
             max-width: none; /* Can remain or be set to 100% */
             margin: 20px auto;
             display: flex; /* Changed from default block to flex */
@@ -76,7 +74,15 @@
         .tab-link.active { background-color: #006400; color: white; border-color: #006400; }
         .tab-content { display: none; padding: 20px; border: 1px solid #006400; border-radius: 0 5px 5px 5px; background-color: #fff; }
         .tab-content.active { display: block; }
-        .chart-container { width: 100%; max-width: 800px; margin: 20px auto; }
+        .chart-container {
+            width: 100%;
+            max-width: 1200px;
+            max-height: 100%;
+            margin: 20px auto; /* This centers the container block */
+            display: flex;
+            justify-content: center; /* Horizontally center the canvas */
+            align-items: center;   /* Vertically center the canvas */
+        }
         .download-buttons { margin-top: 30px; text-align: center; display: flex; gap: 15px; justify-content: center;}
         .download-buttons button { padding: 10px 15px; background-color: #006400; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
         .download-buttons button:hover { background-color: #004d00; }
@@ -226,10 +232,9 @@
     <div class="container">
         <div class="filters-container">
             <h1>Filtreler</h1>
-            <input type="text" id="seriesSearchInput" placeholder="Veri serisi ara...">
             <div class="year-filter-row">
                 <div class="year-range-container">
-                    <label style="min-width: auto; font-weight: bold;">Yıl Aralığı:</label>
+                    <label style="min-width: auto; font-weight: bold; margin-right: 8px;">Yıl Aralığı:</label>
                     <div id="yearRangeSlider"></div>
                 </div>
                 <div class="year-inputs-container">
@@ -239,8 +244,8 @@
                 </div>
             </div>
             <div class="csv-buttons">
-                <button id="downloadFullDataset">Tam Veri (CSV)</button>
-                <button id="downloadFilteredData">Filtrelenmiş Veri (CSV)</button>
+                <button id="downloadFullDataset">Tam Veri</button>
+                <button id="downloadFilteredData">Filtrelenmiş Veri</button>
             </div>
             <div class="filter-group" style="flex-wrap: wrap; align-items: flex-start;">
                 <label style="min-width: 120px;">Veri Serileri:</label>
@@ -248,6 +253,7 @@
                     <button type="button" id="selectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Hepsini Seç</button>
                     <button type="button" id="deselectAllBtn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: 1px solid #bbb; border-radius: 4px; cursor: pointer;">Hiçbirini Seçme</button>
                 </div>
+                <input type="text" id="seriesSearchInput" placeholder="Veri serisi ara...">
                 <div id="seriesCheckboxes" class="series-checkboxes" style="margin-top: 0;">
                     <!-- Checkboxes will be populated by JS -->
                 </div>
@@ -3759,9 +3765,11 @@
 
             const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
             const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
-            if (yearsInRange.length === 0 && (calculationMode === 'sum' || calculationMode === 'average' || calculationMode === 'last')) {
-                 if (myPieChartInstance) myPieChartInstance.destroy(); // Clear chart if no years in range for these modes
-                return;
+            if (yearsInRange.length === 0) {
+                if (calculationMode === 'sum' || calculationMode === 'average' || calculationMode === 'last') {
+                    if (myPieChartInstance) myPieChartInstance.destroy(); // Clear chart if no years in range for these modes
+                    return;
+                }
             }
 
             let pieChartDataValues = [];
@@ -3916,14 +3924,16 @@
             
             // Get years in range for calculations
             const yearsInRange = allYearsInData.filter(year => year >= startYear && year <= endYear);
-            if (yearsInRange.length === 0 && (calculationMode === 'last' || calculationMode === 'sum' || calculationMode === 'average')) { // Check if year range is valid for modes
-                 if (barChartInstance) barChartInstance.destroy();
-                 // Optionally display a message in the canvas area
-                 const ctx = document.getElementById('myBarChart').getContext('2d');
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctx.textAlign = 'center';
-                ctx.fillText('Bu hesaplama için seçili yıl aralığında veri yok.', ctx.canvas.width / 2, ctx.canvas.height / 2);
-                return;
+            if (yearsInRange.length === 0) {
+                if (calculationMode === 'last' || calculationMode === 'sum' || calculationMode === 'average') {
+                    if (barChartInstance) barChartInstance.destroy();
+                    // Optionally display a message in the canvas area
+                    const ctx = document.getElementById('myBarChart').getContext('2d');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Bu hesaplama için seçili yıl aralığında veri yok.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                    return;
+                }
             }
             
             const barChartLabels = selectedSeriesNames;
@@ -3989,7 +3999,7 @@
                 label: calculationTitle,
                 data: barChartDataValues,
                 backgroundColor: barColors, // Use Material palette for each bar
-                borderColor: barColors.map(color => Chart.helpers.color(color).darken(0.2).rgbString()), // Slightly darker border
+                borderColor: barColors, // Simpler: use the same colors or a fixed darker color
                 borderWidth: 1
             }];
             
