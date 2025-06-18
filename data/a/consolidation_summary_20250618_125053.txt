@@ -1,0 +1,72 @@
+ENERGY DATA CONSOLIDATION SUMMARY
+========================================
+
+Source file: data/a/a birincil enerjinin kaynaklara göre üretimi ve tüketimi.xlsx
+Processing date: 2025-06-18 12:50:54
+Total records: 2080
+Years processed: 1972-2023
+
+DATA BY YEAR:
+--------------------
+1972: 40 categories, 157 values
+1973: 40 categories, 142 values
+1974: 40 categories, 161 values
+1975: 40 categories, 151 values
+1976: 40 categories, 167 values
+1977: 40 categories, 161 values
+1978: 40 categories, 169 values
+1979: 40 categories, 153 values
+1980: 40 categories, 170 values
+1981: 40 categories, 128 values
+1982: 40 categories, 172 values
+1983: 40 categories, 167 values
+1984: 40 categories, 142 values
+1985: 40 categories, 168 values
+1986: 40 categories, 183 values
+1987: 40 categories, 190 values
+1988: 40 categories, 206 values
+1989: 40 categories, 225 values
+1990: 40 categories, 224 values
+1991: 40 categories, 229 values
+1992: 40 categories, 226 values
+1993: 40 categories, 222 values
+1994: 40 categories, 226 values
+1995: 40 categories, 236 values
+1996: 40 categories, 228 values
+1997: 40 categories, 157 values
+1998: 40 categories, 220 values
+1999: 40 categories, 265 values
+2000: 40 categories, 243 values
+2001: 40 categories, 239 values
+2002: 40 categories, 230 values
+2003: 40 categories, 242 values
+2004: 40 categories, 244 values
+2005: 40 categories, 244 values
+2006: 40 categories, 249 values
+2007: 40 categories, 248 values
+2008: 40 categories, 253 values
+2009: 40 categories, 253 values
+2010: 40 categories, 265 values
+2011: 40 categories, 303 values
+2012: 40 categories, 310 values
+2013: 40 categories, 303 values
+2014: 40 categories, 325 values
+2015: 40 categories, 475 values
+2016: 40 categories, 505 values
+2017: 40 categories, 444 values
+2018: 40 categories, 308 values
+2019: 40 categories, 493 values
+2020: 40 categories, 460 values
+2021: 40 categories, 459 values
+2022: 40 categories, 525 values
+2023: 40 categories, 488 values
+
+Total data values preserved: 13353
+
+Unique categories: 39
+Energy sources: 36
+
+DATA INTEGRITY: ✅ All original values preserved
+Data structure: Normalized time-series format
+Missing values: Preserved as NULL
+Formulas: Converted to calculated values
