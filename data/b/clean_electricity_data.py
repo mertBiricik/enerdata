@@ -3,80 +3,192 @@ import numpy as np
 from openpyxl import load_workbook
 import json
 
+def clean_value(val):
+    """Clean and convert values, similar to excel_to_js.py"""
+    if val is None or (isinstance(val, str) and val.strip() == ''):
+        return None
+    
+    # If it's already a number, preserve its type and precision
+    if isinstance(val, (int, float)):
+        return val
+    
+    # If it's a string, clean and convert
+    if isinstance(val, str):
+        val = val.replace('"', '').replace(',', '').replace("'", '').replace('"', '').replace('"', '')
+        try:
+            # Try float first to preserve decimals
+            float_val = float(val)
+            # Only convert to int if it's a whole number
+            if float_val.is_integer():
+                return int(float_val)
+            else:
+                return float_val
+        except (ValueError, TypeError):
+            return val
+    
+    return val
+
 def clean_excel_data(file_path):
     """
     Clean up the messy Turkish electricity data Excel file
+    Handle red-colored values by wrapping them in parentheses
     """
     print(f"🧹 CLEANING EXCEL DATA: {file_path}")
     print("=" * 60)
     
-    # Read both sheets
-    excel_data = pd.read_excel(file_path, sheet_name=None, header=0)
+    # Load workbook with openpyxl to access formatting
+    # First load with data_only=True to get calculated values
+    wb_data = load_workbook(file_path, data_only=True)
+    # Then load with data_only=False to access formatting
+    wb_format = load_workbook(file_path, data_only=False)
     
     cleaned_data = {}
     
-    for sheet_name, df in excel_data.items():
+    for sheet_name in wb_data.sheetnames:
+        ws_data = wb_data[sheet_name]
+        ws_format = wb_format[sheet_name]
         print(f"\n📊 Cleaning sheet: '{sheet_name}'")
         print("-" * 40)
         
-        # Store original dimensions
-        orig_rows, orig_cols = df.shape
-        
-        # 1. Clean column names
-        print("   🏷️  Cleaning column names...")
-        new_columns = []
-        for i, col in enumerate(df.columns):
-            if pd.isna(col) or str(col).strip() == '':
-                new_columns.append(f'Column_{i+1}')
-            else:
-                # Clean up spaces and formatting
-                clean_name = str(col).strip()
-                clean_name = clean_name.replace('   ', ' ').replace('  ', ' ')
-                new_columns.append(clean_name)
-        
-        df.columns = new_columns
-        
-        # 2. Remove completely empty columns
-        print("   🗑️  Removing empty columns...")
-        df = df.dropna(axis=1, how='all')
-        
-        # 3. Clean the year column (first column)
-        print("   📅 Cleaning year column...")
-        year_col = df.columns[0]
-        df[year_col] = pd.to_numeric(df[year_col], errors='coerce')
-        
-        # 4. Remove rows with missing years
-        df = df.dropna(subset=[year_col])
-        
-        # 5. Ensure years are integers
-        df[year_col] = df[year_col].astype('Int64')
-        
-        # 6. Clean numeric columns (round excessive precision)
-        print("   🔢 Cleaning numeric data...")
-        for col in df.columns[1:]:
-            # Convert to numeric
-            df[col] = pd.to_numeric(df[col], errors='coerce')
+        # Get all rows with values and formatting
+        rows_data = list(ws_data.iter_rows(values_only=False))
+        rows_format = list(ws_format.iter_rows(values_only=False))
+        if not rows_data or not rows_format:
+            continue
             
-            # Round to 3 decimal places to remove excessive precision
-            if df[col].dtype in ['float64', 'float32']:
-                df[col] = df[col].round(3)
+        # Extract header row
+        header_row = rows_data[0]
+        headers = []
+        for i, cell in enumerate(header_row):
+            if cell.value is None or str(cell.value).strip() == '':
+                headers.append(f'Column_{i+1}')
+            else:
+                clean_name = str(cell.value).strip()
+                clean_name = clean_name.replace('   ', ' ').replace('  ', ' ')
+                headers.append(clean_name)
         
-        # 7. Sort by year
-        df = df.sort_values(by=year_col).reset_index(drop=True)
+        # Process data rows
+        data_rows = []
+        for i, (row_data, row_format) in enumerate(zip(rows_data[1:], rows_format[1:]), 1):
+            if not row_data or not row_data[0].value or str(row_data[0].value).strip() == '':
+                continue
+                
+            row_values = []
+            for j, (cell_data, cell_format) in enumerate(zip(row_data, row_format)):
+                if j >= len(headers):
+                    break
+                    
+                # Get calculated value from data workbook
+                val = cell_data.value
+                cleaned = clean_value(val)
+                
+                # Check for red font using format workbook
+                is_red = False
+                if cell_format and cell_format.font and cell_format.font.color:
+                    rgb = getattr(cell_format.font.color, 'rgb', None)
+                    if rgb:
+                        rgb_str = str(rgb)
+                        if rgb_str.upper().endswith('FF0000') or rgb_str.upper() == 'FFFF0000':
+                            is_red = True
+                
+                # Wrap red values in parentheses
+                if is_red and cleaned is not None:
+                    if isinstance(cleaned, (int, float)):
+                        row_values.append(f'({cleaned})')
+                    else:
+                        row_values.append(f'({cleaned})')
+                else:
+                    row_values.append(cleaned)
+            
+            if row_values:  # Only add non-empty rows
+                data_rows.append(row_values)
         
-        # 8. Remove duplicate years if any
-        df = df.drop_duplicates(subset=[year_col], keep='first')
-        
-        cleaned_data[sheet_name] = df
-        
-        # Report cleaning results
-        new_rows, new_cols = df.shape
-        print(f"   ✅ Results:")
-        print(f"      • Rows: {orig_rows} → {new_rows} ({new_rows-orig_rows:+d})")
-        print(f"      • Columns: {orig_cols} → {new_cols} ({new_cols-orig_cols:+d})")
-        print(f"      • Year range: {df[year_col].min()} - {df[year_col].max()}")
-        print(f"      • Data density: {((df.notna().sum().sum() / (df.shape[0] * df.shape[1])) * 100):.1f}%")
+        # Create DataFrame
+        if data_rows:
+            # Ensure all rows have the same length
+            max_cols = len(headers)
+            for i, row in enumerate(data_rows):
+                while len(row) < max_cols:
+                    row.append(None)
+                data_rows[i] = row[:max_cols]
+            
+            df = pd.DataFrame(data_rows, columns=headers)
+            
+            # Store original dimensions
+            orig_rows, orig_cols = df.shape
+            
+            # Clean the year column (first column) - handle parentheses values
+            print("   📅 Cleaning year column...")
+            year_col = df.columns[0]
+            
+            # Extract numeric values from parentheses if needed for year column
+            year_values = []
+            for val in df[year_col]:
+                if isinstance(val, str) and val.startswith('(') and val.endswith(')'):
+                    # Extract number from parentheses for year
+                    try:
+                        year_values.append(int(val.strip('()')))
+                    except:
+                        year_values.append(None)
+                else:
+                    try:
+                        year_values.append(int(val) if val is not None else None)
+                    except:
+                        year_values.append(None)
+            
+            df[year_col] = year_values
+            
+            # Remove rows with missing years
+            df = df.dropna(subset=[year_col])
+            
+            # Ensure years are integers
+            df[year_col] = df[year_col].astype('Int64')
+            
+            # For other columns, convert non-parentheses values to numeric
+            print("   🔢 Cleaning numeric data...")
+            for col in df.columns[1:]:
+                numeric_values = []
+                for val in df[col]:
+                    if isinstance(val, str) and val.startswith('(') and val.endswith(')'):
+                        # Keep parentheses values as strings
+                        numeric_values.append(val)
+                    else:
+                        # Try to convert to numeric
+                        try:
+                            if val is not None and str(val).strip() != '':
+                                numeric_val = float(val)
+                                # Round to 3 decimal places
+                                numeric_values.append(round(numeric_val, 3))
+                            else:
+                                numeric_values.append(None)
+                        except:
+                            numeric_values.append(val)
+                
+                df[col] = numeric_values
+            
+            # Sort by year
+            df = df.sort_values(by=year_col).reset_index(drop=True)
+            
+            # Remove duplicate years if any
+            df = df.drop_duplicates(subset=[year_col], keep='first')
+            
+            cleaned_data[sheet_name] = df
+            
+            # Report cleaning results
+            new_rows, new_cols = df.shape
+            print(f"   ✅ Results:")
+            print(f"      • Rows: {orig_rows} → {new_rows} ({new_rows-orig_rows:+d})")
+            print(f"      • Columns: {orig_cols} → {new_cols} ({new_cols-orig_cols:+d})")
+            print(f"      • Year range: {df[year_col].min()} - {df[year_col].max()}")
+            
+            # Count parentheses values
+            parentheses_count = 0
+            for col in df.columns[1:]:
+                parentheses_count += df[col].astype(str).str.contains(r'^\(.*\)$', na=False).sum()
+            print(f"      • Red values (in parentheses): {parentheses_count}")
     
+    wb_data.close()
+    wb_format.close()
     return cleaned_data
 
 def save_cleaned_data(cleaned_data, output_prefix="cleaned"):
@@ -137,9 +249,29 @@ def generate_summary_report(cleaned_data):
             if i == 0:
                 print(f"      {i+1:2d}. {col} (Year column)")
             else:
-                non_zero = (df[col] > 0).sum()
+                # Handle mixed data types (numeric and parentheses strings)
+                non_zero = 0
+                parentheses_count = 0
                 total_vals = df[col].notna().sum()
-                print(f"      {i+1:2d}. {col} ({non_zero}/{total_vals} non-zero values)")
+                
+                for val in df[col]:
+                    if pd.notna(val):
+                        if isinstance(val, str) and val.startswith('(') and val.endswith(')'):
+                            parentheses_count += 1
+                            # Extract numeric value from parentheses to check if > 0
+                            try:
+                                num_val = float(val.strip('()'))
+                                if num_val > 0:
+                                    non_zero += 1
+                            except:
+                                pass
+                        elif isinstance(val, (int, float)) and val > 0:
+                            non_zero += 1
+                
+                if parentheses_count > 0:
+                    print(f"      {i+1:2d}. {col} ({non_zero}/{total_vals} non-zero values, {parentheses_count} in parentheses)")
+                else:
+                    print(f"      {i+1:2d}. {col} ({non_zero}/{total_vals} non-zero values)")
         
         # Data quality metrics
         missing_data = df.isna().sum().sum()
@@ -166,7 +298,7 @@ def generate_summary_report(cleaned_data):
 
 def main():
     # Input file
-    input_file = "data/b/b elektrik generjisinin kaynaklara göre kurulu gücü ve üretimi.xlsx"
+    input_file = "b elektrik generjisinin kaynaklara göre kurulu gücü ve üretimi.xlsx"
     
     print("🚀 TURKISH ELECTRICITY DATA CLEANUP TOOL")
     print("=" * 80)
@@ -193,6 +325,7 @@ def main():
     print("   • Free of empty columns and problematic headers")
     print("   • Sorted chronologically")
     print("   • Available in multiple formats (Excel, CSV, JSON)")
+    print("   • Red values wrapped in parentheses")
 
 if __name__ == "__main__":
     main() 
