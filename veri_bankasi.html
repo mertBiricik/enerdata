@@ -8,46 +8,103 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        .energy-data-container * { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
+        }
+        
+        .energy-data-container { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
             margin: 0; 
-            background: white;
             color: #333; 
             line-height: 1.6;
         }
         
+        .energy-data-container button {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container input {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container select {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container h1, .energy-data-container h2, .energy-data-container h3, .energy-data-container h4, .energy-data-container h5, .energy-data-container h6 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container p, .energy-data-container span, .energy-data-container div {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container td, .energy-data-container th {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        /* WordPress theme override protection */
+        .energy-data-container .download-buttons button {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 1rem !important;
+        }
+        
+        .energy-data-container .filter-buttons button {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .energy-data-container .checkbox-item label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container .chart-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container .no-data-message {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 1.1rem !important;
+        }
+        
+        /* Override any WordPress theme defaults */
+        .energy-data-container {
+            background: transparent !important;
+        }
+        
 
         
-        .main-container {
+        .energy-data-container .main-container {
             max-width: 1400px;
-            margin: 1rem auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin: 0 auto;
             overflow: hidden;
         }
         
-        .data-bank-nav {
-            background: #f8f9fa;
+        .energy-data-container .data-bank-nav {
             border-bottom: 2px solid #e9ecef;
             padding: 1.5rem;
         }
         
-        .nav-structure h2 {
-            color: #006400;
+        .energy-data-container .nav-structure h2 {
+            color: #006400 !important;
             margin: 0 0 1rem 0;
-            font-size: 1.8rem;
+            font-size: 1.8rem !important;
             text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .nav-categories {
+        .energy-data-container .nav-categories {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
         
-        .nav-category {
+        .energy-data-container .nav-category {
             background: white;
             border-radius: 8px;
             padding: 1.5rem;
@@ -55,19 +112,20 @@
             border-left: 4px solid #006400;
         }
         
-        .nav-category h3 {
-            color: #006400;
+        .energy-data-container .nav-category h3 {
+            color: #006400 !important;
             margin: 0 0 1rem 0;
-            font-size: 1.3rem;
+            font-size: 1.3rem !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .nav-items {
+        .energy-data-container .nav-items {
             list-style: none;
             padding: 0;
             margin: 0;
         }
         
-        .nav-items li {
+        .energy-data-container .nav-items li {
             margin: 0.5rem 0;
             padding: 0.8rem;
             background: #f8f9fa;
@@ -75,37 +133,40 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .nav-items li:hover {
+        .energy-data-container .nav-items li:hover {
             background: #e9ecef;
             border-color: #006400;
             transform: translateX(5px);
         }
         
-        .nav-items li.active {
+        .energy-data-container .nav-items li.active {
             background: #006400;
             color: white;
         }
         
-        .nav-items li strong {
+        .energy-data-container .nav-items li strong {
             display: block;
-            font-size: 1rem;
+            font-size: 1rem !important;
             margin-bottom: 0.3rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .nav-items li span {
-            font-size: 0.9rem;
+        .energy-data-container .nav-items li span {
+            font-size: 0.9rem !important;
             opacity: 0.8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .visualization-area {
+        .energy-data-container .visualization-area {
             padding: 2rem;
             display: flex;
             gap: 2rem;
         }
         
-        .filters-panel {
+        .energy-data-container .filters-panel {
             width: 350px;
             flex-shrink: 0;
             background: #f8f9fa;
@@ -116,12 +177,12 @@
             top: 2rem;
         }
         
-        .content-panel {
+        .energy-data-container .content-panel {
             flex: 1;
             min-width: 0;
         }
         
-        .dataset-info {
+        .energy-data-container .dataset-info {
             background: #e3f2fd;
             border-left: 4px solid #2196f3;
             padding: 1rem;
@@ -129,45 +190,51 @@
             border-radius: 0 6px 6px 0;
         }
         
-        .dataset-info h3 {
+        .energy-data-container .dataset-info h3 {
             margin: 0 0 0.5rem 0;
-            color: #1976d2;
+            color: #1976d2 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .tabs {
+        .energy-data-container .dataset-info p {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-data-container .tabs {
             display: flex;
             margin-bottom: 1rem;
             border-bottom: 2px solid #e9ecef;
         }
         
-        .tab-button {
+        .energy-data-container .tab-button {
             padding: 1rem 1.5rem;
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1rem !important;
             color: #666;
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .tab-button:hover {
+        .energy-data-container .tab-button:hover {
             color: #006400;
             background: #f8f9fa;
         }
         
-        .tab-button.active {
+        .energy-data-container .tab-button.active {
             color: #006400;
             border-bottom-color: #006400;
             background: #f8f9fa;
         }
         
-        .tab-content {
+        .energy-data-container .tab-content {
             display: none;
             animation: fadeIn 0.3s ease-in;
         }
         
-        .tab-content.active {
+        .energy-data-container .tab-content.active {
             display: block;
         }
         
@@ -176,24 +243,26 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .filter-group {
+        .energy-data-container .filter-group {
             margin-bottom: 1.5rem;
         }
         
-        .filter-group label {
+        .energy-data-container .filter-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #006400;
+            color: #006400 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .filter-group input, .filter-group select {
+        .energy-data-container .filter-group input, .energy-data-container .filter-group select {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 1rem !important;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
         .year-range-container {
@@ -312,7 +381,7 @@
             background: #004d00;
         }
         
-        .data-table {
+        .energy-data-container .data-table {
             width: 100%;
             border-collapse: collapse;
             margin: 1rem 0;
@@ -321,20 +390,22 @@
             overflow: hidden;
         }
         
-        .data-table th,
-        .data-table td {
+        .energy-data-container .data-table th,
+        .energy-data-container .data-table td {
             padding: 0.8rem;
             text-align: left;
             border-bottom: 1px solid #e9ecef;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
-        .data-table th {
+        .energy-data-container .data-table th {
             background: #006400;
-            color: white;
+            color: white !important;
             font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
         
         .data-table tbody tr:nth-child(odd) {
@@ -394,770 +465,28 @@
         }
         
         @media (max-width: 768px) {
-            .visualization-area {
+            .energy-data-container .visualization-area {
                 flex-direction: column;
                 padding: 1rem;
             }
             
-            .filters-panel {
+            .energy-data-container .filters-panel {
                 width: 100%;
                 position: static;
             }
             
-            .nav-categories {
+            .energy-data-container .nav-categories {
                 grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-
-
+    <div class="energy-data-container">
     <div class="main-container">
         <div class="data-bank-nav">
             <div class="nav-structure">
                 <h2>🏛️ Veri Bankası</h2>
-                <div class="nav-categories">
-                    <div class="nav-category">
-                        <h3>1. Nicel Veriler</h3>
-                        <ul class="nav-items">
-                            <li data-dataset="A">
-                                <strong>A. Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi</strong>
-                                <span>Yerli üretim, ithalat, ihracat ve enerji kaynaklarına göre dağılım</span>
-                            </li>
-                            <li data-dataset="B">
-                                <strong>B. Elektrik Enerjisinin Kaynaklara Göre Kurulu Gücü ve Üretimi</strong>
-                                <span>Elektrik üretim kapasitesi ve üretim miktarları kaynak bazında</span>
-                            </li>
-                            <li data-dataset="C">
-                                <strong>C. Elektrik Brüt Üretimi-Sektörel Tüketim Dağılımı</strong>
-                                <span>Sektörel elektrik tüketimi ve üretim dağılımları</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="nav-category">
-                        <h3>2. Nitel Veriler</h3>
-                        <ul class="nav-items">
-                            <li style="opacity: 0.6; cursor: not-allowed;">
-                                <strong>Gelecek Güncellemelerde</strong>
-                                <span>Politika analizleri, teknoloji değerlendirmeleri ve stratejik raporlar</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="visualization-area">
-            <div class="filters-panel">
-                <h3>📊 Filtreler</h3>
-                
-                <div class="filter-group">
-                    <label>Yıl Aralığı</label>
-                    <div class="year-range-container">
-                        <div id="yearRangeSlider"></div>
-                        <div class="year-inputs">
-                            <input type="number" id="yearInputStart" />
-                            <span>-</span>
-                            <input type="number" id="yearInputEnd" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="filter-group">
-                    <label>Veri Serileri</label>
-                    <div class="filter-buttons">
-                        <button id="selectAllBtn">Hepsini Seç</button>
-                        <button id="deselectAllBtn">Temizle</button>
-                    </div>
-                    <input type="text" id="seriesSearchInput" class="search-input" placeholder="Seri ara..." />
-                    <div id="seriesCheckboxes" class="series-checkboxes">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <div class="filter-group">
-                    <div class="download-buttons">
-                        <button id="downloadFullData">📥 Tam Veri</button>
-                        <button id="downloadFilteredData">📊 Filtreli Veri</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="content-panel">
-                <div id="datasetInfo" class="dataset-info">
-                    <h3>Veri Seti Seçin</h3>
-                    <p>Soldan bir veri seti seçerek görselleştirmeye başlayın.</p>
-                </div>
-
-                <div id="datasetContent" style="display: none;">
-                    <div class="tabs">
-                        <button class="tab-button active" data-tab="table">📋 Tablo</button>
-                        <button class="tab-button" data-tab="line">📈 Çizgi Grafik</button>
-                        <button class="tab-button" data-tab="bar">📊 Sütun Grafik</button>
-                        <button class="tab-button" data-tab="pie">🥧 Pasta Grafik</button>
-                    </div>
-
-                    <div id="tableContent" class="tab-content active">
-                        <div id="dataTableContainer" style="overflow-x: auto;">
-                            <!-- Table populated by JS -->
-                        </div>
-                    </div>
-
-                    <div id="lineContent" class="tab-content">
-                        <div class="chart-container">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                        <div class="download-buttons">
-                            <button onclick="downloadChart('lineChart', 'png')">PNG İndir</button>
-                            <button onclick="downloadChart('lineChart', 'jpg')">JPG İndir</button>
-                        </div>
-                    </div>
-
-                    <div id="barContent" class="tab-content">
-                        <div class="calculation-mode">
-                            <label>
-                                <input type="radio" name="barMode" value="sum" checked />
-                                <span>Toplam</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="barMode" value="average" />
-                                <span>Ortalama</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="barMode" value="last" />
-                                <span>Son Yıl</span>
-                            </label>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="barChart"></canvas>
-                        </div>
-                        <div class="download-buttons">
-                            <button onclick="downloadChart('barChart', 'png')">PNG İndir</button>
-                            <button onclick="downloadChart('barChart', 'jpg')">JPG İndir</button>
-                        </div>
-                    </div>
-
-                    <div id="pieContent" class="tab-content">
-                        <div class="calculation-mode">
-                            <label>
-                                <input type="radio" name="pieMode" value="sum" checked />
-                                <span>Toplam</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="pieMode" value="average" />
-                                <span>Ortalama</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="pieMode" value="last" />
-                                <span>Son Yıl</span>
-                            </label>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                        <div class="download-buttons">
-                            <button onclick="downloadChart('pieChart', 'png')">PNG İndir</button>
-                            <button onclick="downloadChart('pieChart', 'jpg')">JPG İndir</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-              <!-- Embedded data -->
-     <script>
-         // Complete Dataset A (Primary Energy Production and Consumption by Sources)
-         const embeddedDataA = [
-  {
-    "Kategori": "Yerli Üretim (+)",
-    "1972": 15216.0,
-    "1973": 15426.64,
-    "1974": 16187.0,
-    "1975": 16472.954,
-    "1976": 16487.72,
-    "1977": 16893.372,
-    "1978": 17837.59,
-    "1979": 17380.884000000002,
-    "1980": 17473.374000000003,
-    "1981": 15803.346,
-    "1982": 17967.29,
-    "1983": 19313.258,
-    "1984": 73127.0,
-    "1985": 21935.39,
-    "1986": 23537.908,
-    "1987": 25077.378,
-    "1988": 24606.8198,
-    "1989": 25753.64975,
-    "1990": 25138.2513,
-    "1991": 25144.569100000004,
-    "1992": 26143.7838,
-    "1993": 26089.93755,
-    "1994": 26052.9584,
-    "1995": 26293.8192,
-    "1996": 27095.607483197,
-    "1997": 27887.8827114,
-    "1998": 28714.4747362362,
-    "1999": 27268.9284223,
-    "2000": 26455.879886925,
-    "2001": 24685.9111,
-    "2002": 24429.53555885,
-    "2003": 24529.651746575,
-    "2004": 24714.490119375,
-    "2005": 24234.820440000003,
-    "2006": 26273.82263545,
-    "2007": 27514.3783965,
-    "2008": 28758.192730595656,
-    "2009": 29606.237640450003,
-    "2010": 31557.579,
-    "2011": 30753.660476999998,
-    "2012": 30444.84551965,
-    "2013": 29106.155734112,
-    "2014": 26012.20794,
-    "2015": 30935.787,
-    "2016": 35373.694478,
-    "2017": 64738.4256326,
-    "2018": 39675.0,
-    "2019": 44821.1334782,
-    "2020": 44069.14043104013,
-    "2021": 46720.2736825,
-    "2022": 50829.93537123488,
-    "2023": 49223.39525
-  },
-  {
-    "Kategori": "İthalat (+)",
-    "1972": 8649.0,
-    "1973": 9969.01,
-    "1974": 11020.0,
-    "1975": 11119.116,
-    "1976": 13987.522,
-    "1977": 15449.552,
-    "1978": 15609.126,
-    "1979": 12958.96,
-    "1980": 14915.25,
-    "1981": 535.476,
-    "1982": 16776.638,
-    "1983": 17726.206000000002,
-    "1984": 21427.0,
-    "1985": 19409.882,
-    "1986": 21001.652,
-    "1987": 25462.542,
-    "1988": 28487.9354,
-    "1989": 27015.198825,
-    "1990": 30662.676210000005,
-    "1991": 29240.076905,
-    "1992": 31112.943495,
-    "1993": 35768.26116,
-    "1994": 34884.536065,
-    "1995": 39194.30549,
-    "1996": 43633.044994,
-    "1997": 46643.227647850006,
-    "1998": 47688.90270300001,
-    "1999": 48304.11949,
-    "2000": 56297.048176,
-    "2001": 51387.01148623,
-    "2002": 57156.68279,
-    "2003": 63469.50547,
-    "2004": 66553.01995157001,
-    "2005": 70813.204134635,
-    "2006": 77375.51979972998,
-    "2007": 84008.81786292815,
-    "2008": 82114.63754094641,
-    "2009": 78878.43871734806,
-    "2010": 84605.512,
-    "2011": 90343.520378,
-    "2012": 101472.2467554,
-    "2013": 96144.730733881,
-    "2014": 104203.57838,
-    "2015": 136424.68245,
-    "2016": 137685.274625,
-    "2017": 129659.79767400696,
-    "2018": 115791.0,
-    "2019": 136516.91983579998,
-    "2020": 132465.354816488,
-    "2021": 143296.673433952,
-    "2022": 145791.9273716825,
-    "2023": 150210.76712327
-  },
-  {
-    "Kategori": "İhracat (-)",
-    "1972": 923.0,
-    "1973": 856.8,
-    "1974": 728.0,
-    "1975": 475.65,
-    "1976": 281.26,
-    "1977": 58.36,
-    "1978": 130.2,
-    "1979": 97.22,
-    "1980": 300.77,
-    "1981": 1.22,
-    "1982": 1625.13,
-    "1983": 949.2,
-    "1984": 1746.0,
-    "1985": 1753.06,
-    "1986": 1780.27,
-    "1987": 2332.05,
-    "1988": 4130.797745,
-    "1989": 2294.208495,
-    "1990": 2104.342535,
-    "1991": 2807.73422,
-    "1992": 2028.6370699999995,
-    "1993": 2253.9282,
-    "1994": 2279.868665,
-    "1995": 1947.43542,
-    "1996": 1882.8541199999995,
-    "1997": 1630.47804,
-    "1998": 2397.7153,
-    "1999": 2790.59881,
-    "2000": 1583.6022100000002,
-    "2001": 2619.9130000000005,
-    "2002": 3162.36109,
-    "2003": 4088.756405000001,
-    "2004": 4021.665595,
-    "2005": 5170.964974999999,
-    "2006": 6571.659539999999,
-    "2007": 6922.4201073,
-    "2008": 7144.008961441,
-    "2009": 6764.463223238,
-    "2010": 7990.893000000001,
-    "2011": 6204.429456128,
-    "2012": 6884.2326828635,
-    "2013": 5215.4883191959,
-    "2014": 11696.121,
-    "2015": 9197.4546,
-    "2016": 8956.649759999998,
-    "2017": 177.49045470000016,
-    "2018": 6066.0,
-    "2019": 20494.77346597,
-    "2020": 16771.372175385,
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Türkiye Enerji Veri Bankası (1923-2023)</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            background: white;
-            color: #333; 
-            line-height: 1.6;
-        }
-        
-
-        
-        .main-container {
-            max-width: 1400px;
-            margin: 1rem auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .data-bank-nav {
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            padding: 1.5rem;
-        }
-        
-        .nav-structure h2 {
-            color: #006400;
-            margin: 0 0 1rem 0;
-            font-size: 1.8rem;
-            text-align: center;
-        }
-        
-        .nav-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .nav-category {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid #006400;
-        }
-        
-        .nav-category h3 {
-            color: #006400;
-            margin: 0 0 1rem 0;
-            font-size: 1.3rem;
-        }
-        
-        .nav-items {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .nav-items li {
-            margin: 0.5rem 0;
-            padding: 0.8rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-        
-        .nav-items li:hover {
-            background: #e9ecef;
-            border-color: #006400;
-            transform: translateX(5px);
-        }
-        
-        .nav-items li.active {
-            background: #006400;
-            color: white;
-        }
-        
-        .nav-items li strong {
-            display: block;
-            font-size: 1rem;
-            margin-bottom: 0.3rem;
-        }
-        
-        .nav-items li span {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .visualization-area {
-            padding: 2rem;
-            display: flex;
-            gap: 2rem;
-        }
-        
-        .filters-panel {
-            width: 350px;
-            flex-shrink: 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 1.5rem;
-            height: fit-content;
-            position: sticky;
-            top: 2rem;
-        }
-        
-        .content-panel {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .dataset-info {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 0 6px 6px 0;
-        }
-        
-        .dataset-info h3 {
-            margin: 0 0 0.5rem 0;
-            color: #1976d2;
-        }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #e9ecef;
-        }
-        
-        .tab-button {
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .tab-button:hover {
-            color: #006400;
-            background: #f8f9fa;
-        }
-        
-        .tab-button.active {
-            color: #006400;
-            border-bottom-color: #006400;
-            background: #f8f9fa;
-        }
-        
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .filter-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #006400;
-        }
-        
-        .filter-group input, .filter-group select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-        
-        .year-range-container {
-            margin: 1rem 0;
-        }
-        
-        .year-inputs {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            margin-top: 0.5rem;
-        }
-        
-        .year-inputs input {
-            width: 80px;
-            text-align: center;
-        }
-        
-        #yearRangeSlider {
-            margin: 1rem 0;
-        }
-        
-        #yearRangeSlider .noUi-connect {
-            background: #006400 !important;
-        }
-        
-        #yearRangeSlider .noUi-handle {
-            border-color: #006400 !important;
-            background: #fff !important;
-        }
-        
-        .series-checkboxes {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 1rem;
-            background: white;
-        }
-        
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            padding: 0.3rem;
-            border-radius: 4px;
-            transition: background 0.2s ease;
-        }
-        
-        .checkbox-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .checkbox-item input[type="checkbox"] {
-            margin-right: 0.5rem;
-            accent-color: #006400;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .filter-buttons button {
-            flex: 1;
-            padding: 0.6rem;
-            background: #e9ecef;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        
-        .filter-buttons button:hover {
-            background: #006400;
-            color: white;
-            border-color: #006400;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 500px;
-            margin: 1rem 0;
-        }
-        
-        .download-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-        
-        .download-buttons button {
-            padding: 0.8rem 1.5rem;
-            background: #006400;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s ease;
-        }
-        
-        .download-buttons button:hover {
-            background: #004d00;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .data-table th,
-        .data-table td {
-            padding: 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .data-table th {
-            background: #006400;
-            color: white;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .data-table tbody tr:nth-child(odd) {
-            background: #f8f9fa;
-        }
-        
-        .data-table tbody tr:hover {
-            background: #e3f2fd;
-        }
-        
-        .sticky-col {
-            position: sticky;
-            left: 0;
-            background: #f8f9fa;
-            z-index: 2;
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-        }
-        
-        .data-table th.sticky-col {
-            background: #006400;
-            z-index: 11;
-        }
-        
-        .calculation-mode {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            justify-content: center;
-        }
-        
-        .calculation-mode label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-        
-        .calculation-mode label:hover {
-            background: #f8f9fa;
-            border-color: #006400;
-        }
-        
-        .calculation-mode input[type="radio"]:checked + span {
-            color: #006400;
-            font-weight: 600;
-        }
-        
-        .no-data-message {
-            text-align: center;
-            padding: 3rem;
-            color: #666;
-            font-size: 1.1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .visualization-area {
-                flex-direction: column;
-                padding: 1rem;
-            }
-            
-            .filters-panel {
-                width: 100%;
-                position: static;
-            }
-            
-            .nav-categories {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
-</head>
-<body>
-
-
-    <div class="main-container">
-        <div class="data-bank-nav">
-            <div class="nav-structure">
-                <h2>🏛️ Veri Bankası Yapısı</h2>
                 <div class="nav-categories">
                     <div class="nav-category">
                         <h3>1. Nicel Veriler</h3>
@@ -10778,5 +10107,7 @@
             link.click();
         }
     </script>
+    </div>
+    </div>
 </body>
 </html>
