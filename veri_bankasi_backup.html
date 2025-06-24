@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkiye Enerji Veri Bankası (1923-2023)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333; 
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #006400 0%, #004d00 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .header p {
+            margin: 1rem 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .data-bank-nav {
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            padding: 1.5rem;
+        }
+        
+        .nav-structure h2 {
+            color: #006400;
+            margin: 0 0 1rem 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .nav-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .nav-category {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #006400;
+        }
+        
+        .nav-category h3 {
+            color: #006400;
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+        }
+        
+        .nav-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-items li {
+            margin: 0.5rem 0;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-items li:hover {
+            background: #e9ecef;
+            border-color: #006400;
+            transform: translateX(5px);
+        }
+        
+        .nav-items li.active {
+            background: #006400;
+            color: white;
+        }
+        
+        .nav-items li strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .nav-items li span {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .visualization-area {
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .filters-panel {
+            width: 350px;
+            flex-shrink: 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .content-panel {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .dataset-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .dataset-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1976d2;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: #006400;
+            background: #f8f9fa;
+        }
+        
+        .tab-button.active {
+            color: #006400;
+            border-bottom-color: #006400;
+            background: #f8f9fa;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #006400;
+        }
+        
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .year-range-container {
+            margin: 1rem 0;
+        }
+        
+        .year-inputs {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .year-inputs input {
+            width: 80px;
+            text-align: center;
+        }
+        
+        #yearRangeSlider {
+            margin: 1rem 0;
+        }
+        
+        #yearRangeSlider .noUi-connect {
+            background: #006400 !important;
+        }
+        
+        #yearRangeSlider .noUi-handle {
+            border-color: #006400 !important;
+            background: #fff !important;
+        }
+        
+        .series-checkboxes {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            background: white;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0.3rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: #006400;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-buttons button {
+            flex: 1;
+            padding: 0.6rem;
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-buttons button:hover {
+            background: #006400;
+            color: white;
+            border-color: #006400;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 1rem 0;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .download-buttons button {
+            padding: 0.8rem 1.5rem;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        .download-buttons button:hover {
+            background: #004d00;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background: #006400;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table tbody tr:nth-child(odd) {
+            background: #f8f9fa;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #e3f2fd;
+        }
+        
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        
+        .data-table th.sticky-col {
+            background: #006400;
+            z-index: 11;
+        }
+        
+        .calculation-mode {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+        
+        .calculation-mode label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .calculation-mode label:hover {
+            background: #f8f9fa;
+            border-color: #006400;
+        }
+        
+        .calculation-mode input[type="radio"]:checked + span {
+            color: #006400;
+            font-weight: 600;
+        }
+        
+        .no-data-message {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .visualization-area {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .filters-panel {
+                width: 100%;
+                position: static;
+            }
+            
+            .nav-categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TÜRKİYE ENERJİ VERİ BANKASI</h1>
+        <p>1923-2023 Dönemi Kapsamlı Enerji Verileri</p>
+    </div>
+
+    <div class="main-container">
+        <div class="data-bank-nav">
+            <div class="nav-structure">
+                <h2>🏛️ Veri Bankası Yapısı</h2>
+                <div class="nav-categories">
+                    <div class="nav-category">
+                        <h3>1. Nicel Veriler</h3>
+                        <ul class="nav-items">
+                            <li data-dataset="A">
+                                <strong>A. Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi</strong>
+                                <span>Yerli üretim, ithalat, ihracat ve enerji kaynaklarına göre dağılım</span>
+                            </li>
+                            <li data-dataset="B">
+                                <strong>B. Elektrik Enerjisinin Kaynaklara Göre Kurulu Gücü ve Üretimi</strong>
+                                <span>Elektrik üretim kapasitesi ve üretim miktarları kaynak bazında</span>
+                            </li>
+                            <li data-dataset="C">
+                                <strong>C. Elektrik Brüt Üretimi-Sektörel Tüketim Dağılımı</strong>
+                                <span>Sektörel elektrik tüketimi ve üretim dağılımları</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="nav-category">
+                        <h3>2. Nitel Veriler</h3>
+                        <ul class="nav-items">
+                            <li style="opacity: 0.6; cursor: not-allowed;">
+                                <strong>Gelecek Güncellemelerde</strong>
+                                <span>Politika analizleri, teknoloji değerlendirmeleri ve stratejik raporlar</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization-area">
+            <div class="filters-panel">
+                <h3>📊 Filtreler</h3>
+                
+                <div class="filter-group">
+                    <label>Yıl Aralığı</label>
+                    <div class="year-range-container">
+                        <div id="yearRangeSlider"></div>
+                        <div class="year-inputs">
+                            <input type="number" id="yearInputStart" />
+                            <span>-</span>
+                            <input type="number" id="yearInputEnd" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Veri Serileri</label>
+                    <div class="filter-buttons">
+                        <button id="selectAllBtn">Hepsini Seç</button>
+                        <button id="deselectAllBtn">Temizle</button>
+                    </div>
+                    <input type="text" id="seriesSearchInput" class="search-input" placeholder="Seri ara..." />
+                    <div id="seriesCheckboxes" class="series-checkboxes">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="download-buttons">
+                        <button id="downloadFullData">📥 Tam Veri</button>
+                        <button id="downloadFilteredData">📊 Filtreli Veri</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel">
+                <div id="datasetInfo" class="dataset-info">
+                    <h3>Veri Seti Seçin</h3>
+                    <p>Soldan bir veri seti seçerek görselleştirmeye başlayın.</p>
+                </div>
+
+                <div id="datasetContent" style="display: none;">
+                    <div class="tabs">
+                        <button class="tab-button active" data-tab="table">📋 Tablo</button>
+                        <button class="tab-button" data-tab="line">📈 Çizgi Grafik</button>
+                        <button class="tab-button" data-tab="bar">📊 Sütun Grafik</button>
+                        <button class="tab-button" data-tab="pie">🥧 Pasta Grafik</button>
+                    </div>
+
+                    <div id="tableContent" class="tab-content active">
+                        <div id="dataTableContainer" style="overflow-x: auto;">
+                            <!-- Table populated by JS -->
+                        </div>
+                    </div>
+
+                    <div id="lineContent" class="tab-content">
+                        <div class="chart-container">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                        <div class="download-buttons">
+                            <button onclick="downloadChart('lineChart', 'png')">PNG İndir</button>
+                            <button onclick="downloadChart('lineChart', 'jpg')">JPG İndir</button>
+                        </div>
+                    </div>
+
+                    <div id="barContent" class="tab-content">
+                        <div class="calculation-mode">
+                            <label>
+                                <input type="radio" name="barMode" value="sum" checked />
+                                <span>Toplam</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="barMode" value="average" />
+                                <span>Ortalama</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="barMode" value="last" />
+                                <span>Son Yıl</span>
+                            </label>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                        <div class="download-buttons">
+                            <button onclick="downloadChart('barChart', 'png')">PNG İndir</button>
+                            <button onclick="downloadChart('barChart', 'jpg')">JPG İndir</button>
+                        </div>
+                    </div>
+
+                    <div id="pieContent" class="tab-content">
+                        <div class="calculation-mode">
+                            <label>
+                                <input type="radio" name="pieMode" value="sum" checked />
+                                <span>Toplam</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="pieMode" value="average" />
+                                <span>Ortalama</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="pieMode" value="last" />
+                                <span>Son Yıl</span>
+                            </label>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                        <div class="download-buttons">
+                            <button onclick="downloadChart('pieChart', 'png')">PNG İndir</button>
+                            <button onclick="downloadChart('pieChart', 'jpg')">JPG İndir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+         <!-- Embedded data -->
+     <script>
+         // Sample data for Dataset A (Primary Energy)
+         const embeddedDataA = [
+             {"Kategori": "Yerli Üretim (+)", "1972": 15216, "1973": 15427, "1974": 16187, "1975": 16473, "2020": 44069, "2021": 46720, "2022": 50830, "2023": 49223},
+             {"Kategori": "İthalat (+)", "1972": 8649, "1973": 9969, "1974": 11020, "1975": 11119, "2020": 132465, "2021": 143297, "2022": 145792, "2023": 150211},
+             {"Kategori": "İhracat (-)", "1972": 923, "1973": 857, "1974": 728, "1975": 476, "2020": 16771, "2021": 17034, "2022": 20421, "2023": 19934}
+         ];
+         
+         // Sample data for Dataset B (Electricity)  
+         const embeddedDataB = [
+             {"Kategori": "Elektrik Üretimi - Taşkömürü", "1972": 1431, "1973": 1502, "1974": 1516, "1975": 1427, "2020": 65651, "2021": 58026, "2022": 67011, "2023": 76472},
+             {"Kategori": "Elektrik Üretimi - Linyit", "1972": 1489, "1973": 1742, "1974": 2355, "1975": 2686, "2020": 29291, "2021": 25967, "2022": 22476, "2023": 20156},
+             {"Kategori": "Kurulu Güç - Hidrolik", "1972": 2247, "1973": 2503, "1974": 2503, "1975": 2503, "2020": 31398, "2021": 31650, "2022": 31801, "2023": 31801}
+         ];
+         
+         // Sample data for Dataset C (Sectoral)
+         const embeddedRawData = [
+             {"category": "Net Üretim", "1923": 41, "1950": 678, "1975": 13210, "2000": 92786, "2020": 260677, "2023": 282747},
+             {"category": "İthalat (+)", "1923": 0, "1950": 0, "1975": 96, "2000": 3791, "2020": 11892, "2023": 4234},
+             {"category": "Sanayi", "1923": 12, "1950": 203, "1975": 3947, "2000": 27709, "2020": 77828, "2023": 84123}
+         ];
+     </script>
+
+    <script>
+        // Global variables
+        let currentDataset = null;
+        let currentData = [];
+        let yearSlider = null;
+        let charts = {};
+        
+                 // Data mapping with fallback
+         function getDatasets() {
+             return {
+                 'A': {
+                     name: 'Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi',
+                     data: (typeof embeddedDataA !== 'undefined') ? (embeddedDataA ? embeddedDataA : []) : [],
+                     description: 'Türkiye\'nin birincil enerji kaynaklarına göre üretim ve tüketim verileri'
+                 },
+                 'B': {
+                     name: 'Elektrik Enerjisinin Kaynaklara Göre Kurulu Gücü ve Üretimi',
+                     data: (typeof embeddedDataB !== 'undefined') ? (embeddedDataB ? embeddedDataB : []) : [],
+                     description: 'Elektrik enerjisi üretim kapasitesi ve üretim miktarları'
+                 },
+                 'C': {
+                     name: 'Elektrik Brüt Üretimi-Sektörel Tüketim Dağılımı',
+                     data: (typeof embeddedRawData !== 'undefined') ? (embeddedRawData ? embeddedRawData : []) : [],
+                     description: 'Sektörel elektrik tüketimi ve üretim dağılımları'
+                 }
+             };
+         }
+         
+         let datasets = getDatasets();
+
+                 // Initialize application
+         document.addEventListener('DOMContentLoaded', function() {
+             console.log('Data availability check:');
+             console.log('embeddedDataA:', typeof embeddedDataA !== 'undefined' ? embeddedDataA.length : 'undefined');
+             console.log('embeddedDataB:', typeof embeddedDataB !== 'undefined' ? embeddedDataB.length : 'undefined');  
+             console.log('embeddedRawData:', typeof embeddedRawData !== 'undefined' ? embeddedRawData.length : 'undefined');
+             
+             // If no data is loaded, provide a helpful message
+             setTimeout(() => {
+                 datasets = getDatasets();
+                 const totalDataPoints = Object.values(datasets).reduce((sum, ds) => sum + ds.data.length, 0);
+                 if (totalDataPoints === 0) {
+                     console.warn('No data files loaded successfully. Please check file paths.');
+                     document.getElementById('datasetInfo').innerHTML = `
+                         <h3>⚠️ Veri Dosyaları Yüklenemedi</h3>
+                         <p>Veri dosyaları yüklenemedi. Lütfen aşağıdaki dosyaların mevcut olduğunu kontrol edin:</p>
+                         <ul>
+                             <li>data/a/data_a_embedded.js</li>
+                             <li>data/b/data_b_embedded.js</li>
+                             <li>data/C/c_embedded_data.js</li>
+                         </ul>
+                     `;
+                 }
+             }, 100);
+             
+             initializeNavigation();
+             initializeEventListeners();
+         });
+
+        function initializeNavigation() {
+            const navItems = document.querySelectorAll('.nav-items li[data-dataset]');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const dataset = this.getAttribute('data-dataset');
+                    selectDataset(dataset);
+                    
+                    // Update active state
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+                 function selectDataset(datasetKey) {
+             currentDataset = datasetKey;
+             // Refresh datasets to get latest data
+             datasets = getDatasets();
+             const dataset = datasets[datasetKey];
+             
+             console.log('Selected dataset:', datasetKey, 'Data:', dataset); // Debug log
+             
+             if (!dataset) {
+                 console.log('No dataset found for:', datasetKey); // Debug log
+                 showNoDataMessage();
+                 return;
+             }
+             if (!dataset.data) {
+                 console.log('No data property found for dataset:', datasetKey); // Debug log
+                 showNoDataMessage();
+                 return;
+             }
+             if (dataset.data.length === 0) {
+                 console.log('Empty data array for dataset:', datasetKey); // Debug log
+                 showNoDataMessage();
+                 return;
+             }
+
+             currentData = dataset.data;
+             console.log('Current data set to:', currentData.length, 'items'); // Debug log
+             
+             // Update dataset info
+             updateDatasetInfo(dataset);
+             
+             // Show content area
+             document.getElementById('datasetContent').style.display = 'block';
+             
+             // Initialize filters
+             initializeFilters();
+             
+             // Initialize visualizations
+             updateAllVisualizations();
+         }
+
+        function updateDatasetInfo(dataset) {
+            const infoDiv = document.getElementById('datasetInfo');
+            infoDiv.innerHTML = `
+                <h3>${dataset.name}</h3>
+                <p>${dataset.description}</p>
+                <p><strong>Toplam Seri Sayısı:</strong> ${dataset.data.length}</p>
+            `;
+        }
+
+        function initializeFilters() {
+            if (!currentData) return;
+            if (currentData.length === 0) return;
+
+            // Get all years from the dataset
+            const allYears = new Set();
+            currentData.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== 'Kategori') {
+                        if (key !== 'category') {
+                            if (!isNaN(parseInt(key))) {
+                                allYears.add(parseInt(key));
+                            }
+                        }
+                    }
+                });
+            });
+
+            const yearsArray = Array.from(allYears).sort((a, b) => a - b);
+            const minYear = Math.min(...yearsArray);
+            const maxYear = Math.max(...yearsArray);
+
+            // Initialize year slider
+            initializeYearSlider(minYear, maxYear);
+            
+            // Initialize series checkboxes
+            initializeSeriesCheckboxes();
+        }
+
+        function initializeYearSlider(minYear, maxYear) {
+            const sliderElement = document.getElementById('yearRangeSlider');
+            const startInput = document.getElementById('yearInputStart');
+            const endInput = document.getElementById('yearInputEnd');
+
+            // Clear existing slider
+            if (yearSlider) {
+                yearSlider.destroy();
+            }
+
+            // Create new slider
+            yearSlider = noUiSlider.create(sliderElement, {
+                start: [minYear, maxYear],
+                connect: true,
+                range: {
+                    'min': minYear,
+                    'max': maxYear
+                },
+                step: 1,
+                format: {
+                    to: function(value) { return Math.round(value); },
+                    from: function(value) { return parseInt(value); }
+                }
+            });
+
+            // Update inputs
+            startInput.min = minYear;
+            startInput.max = maxYear;
+            startInput.value = minYear;
+            endInput.min = minYear;
+            endInput.max = maxYear;
+            endInput.value = maxYear;
+
+            // Connect slider to inputs
+            yearSlider.on('update', function(values) {
+                startInput.value = values[0];
+                endInput.value = values[1];
+                updateAllVisualizations();
+            });
+
+            // Connect inputs to slider
+            startInput.addEventListener('change', function() {
+                yearSlider.set([this.value, endInput.value]);
+            });
+
+            endInput.addEventListener('change', function() {
+                yearSlider.set([startInput.value, this.value]);
+            });
+        }
+
+        function initializeSeriesCheckboxes() {
+            const container = document.getElementById('seriesCheckboxes');
+            const searchInput = document.getElementById('seriesSearchInput');
+            
+            container.innerHTML = '';
+            
+            currentData.forEach((item, index) => {
+                const seriesName = item.Kategori || item.category || `Serie ${index + 1}`;
+                
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'checkbox-item';
+                checkboxDiv.innerHTML = `
+                    <input type="checkbox" id="series_${index}" value="${index}" checked />
+                    <label for="series_${index}">${seriesName}</label>
+                `;
+                
+                container.appendChild(checkboxDiv);
+            });
+
+            // Add search functionality
+            searchInput.addEventListener('input', function() {
+                filterSeriesCheckboxes(this.value.toLowerCase());
+            });
+
+            // Add change listeners
+            container.addEventListener('change', updateAllVisualizations);
+        }
+
+        function filterSeriesCheckboxes(searchTerm) {
+            const checkboxItems = document.querySelectorAll('.checkbox-item');
+            checkboxItems.forEach(item => {
+                const label = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+            });
+        }
+
+        function initializeEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // Select/Deselect all buttons
+            document.getElementById('selectAllBtn').addEventListener('click', function() {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                });
+                updateAllVisualizations();
+            });
+
+            document.getElementById('deselectAllBtn').addEventListener('click', function() {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
+                updateAllVisualizations();
+            });
+
+            // Chart mode changes
+            document.addEventListener('change', function(e) {
+                if (e.target.name === 'barMode' || e.target.name === 'pieMode') {
+                    updateAllVisualizations();
+                }
+            });
+
+            // Download buttons
+            document.getElementById('downloadFullData').addEventListener('click', () => downloadData('full'));
+            document.getElementById('downloadFilteredData').addEventListener('click', () => downloadData('filtered'));
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}Content`).classList.add('active');
+
+            // Update visualization if needed
+            updateAllVisualizations();
+        }
+
+                 function getFilteredData() {
+             if (!currentData) return [];
+
+             const selectedIndices = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked'))
+                 .map(cb => parseInt(cb.value));
+             
+             const startYear = parseInt(document.getElementById('yearInputStart').value);
+             const endYear = parseInt(document.getElementById('yearInputEnd').value);
+
+             return currentData.filter((_, index) => selectedIndices.includes(index))
+                 .map(item => {
+                     const filteredItem = { Kategori: item.Kategori || item.category };
+                     
+                     for (let year = startYear; year <= endYear; year++) {
+                         if (item[year.toString()] !== undefined) {
+                             if (item[year.toString()] !== null) {
+                                 filteredItem[year.toString()] = item[year.toString()];
+                             }
+                         }
+                     }
+                     
+                     return filteredItem;
+                 })
+                 .filter(item => {
+                     // Only return items that have at least one valid data point
+                     const hasData = Object.keys(item).some(key => {
+                         if (key === 'Kategori') return false;
+                         const value = item[key];
+                         if (value === null) return false;
+                         if (value === undefined) return false;
+                         if (value === '') return false;
+                         return true;
+                     });
+                     return hasData;
+                 });
+         }
+
+                 function updateAllVisualizations() {
+             const filteredData = getFilteredData();
+             
+             console.log('Current data:', currentData);
+             console.log('Filtered data:', filteredData);
+             console.log('Selected checkboxes:', document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked').length);
+             
+             if (filteredData.length === 0) {
+                 console.log('No filtered data - showing no data message');
+                 showNoDataMessage();
+                 return;
+             }
+
+             updateTable(filteredData);
+             updateLineChart(filteredData);
+             updateBarChart(filteredData);
+             updatePieChart(filteredData);
+         }
+
+        function updateTable(data) {
+            const container = document.getElementById('dataTableContainer');
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="no-data-message">Seçilen kriterlere uygun veri bulunamadı.</div>';
+                return;
+            }
+
+            // Get all years from data
+            const allYears = new Set();
+            data.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== 'Kategori') {
+                        if (key !== 'category') {
+                            allYears.add(key);
+                        }
+                    }
+                });
+            });
+
+            const years = Array.from(allYears).sort((a, b) => parseInt(a) - parseInt(b));
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col">Kategori</th>
+                            ${years.map(year => `<th>${year}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach(item => {
+                html += `
+                    <tr>
+                        <td class="sticky-col">${item.Kategori || item.category}</td>
+                        ${years.map(year => {
+                            const value = item[year];
+                            let displayValue;
+                            if (value !== null) {
+                                if (value !== undefined) {
+                                    displayValue = (typeof value === 'number' ? value.toLocaleString('tr-TR') : value);
+                                } else {
+                                    displayValue = '-';
+                                }
+                            } else {
+                                displayValue = '-';
+                            }
+                            return `<td>${displayValue}</td>`;
+                        }).join('')}
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function updateLineChart(data) {
+            const ctx = document.getElementById('lineChart');
+            if (!ctx) return;
+
+            // Destroy existing chart
+            if (charts.line) {
+                charts.line.destroy();
+            }
+
+            if (data.length === 0) return;
+
+            // Get years
+            const allYears = new Set();
+            data.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== 'Kategori') {
+                        if (key !== 'category') {
+                            if (!isNaN(parseInt(key))) {
+                                allYears.add(parseInt(key));
+                            }
+                        }
+                    }
+                });
+            });
+
+            const years = Array.from(allYears).sort((a, b) => a - b);
+
+            // Prepare datasets
+            const datasets = data.map((item, index) => {
+                const values = years.map(year => {
+                    const value = item[year.toString()];
+                    if (value === null) return null;
+                    if (value === undefined) return null;
+                    if (isNaN(parseFloat(value))) return null;
+                    return parseFloat(value);
+                });
+
+                return {
+                    label: item.Kategori || item.category,
+                    data: values,
+                    borderColor: generateColor(index),
+                    backgroundColor: generateColor(index, 0.1),
+                    fill: false,
+                    tension: 0.1
+                };
+            });
+
+            charts.line = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Zaman Serisi Analizi'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Yıl'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Değer'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateBarChart(data) {
+            const ctx = document.getElementById('barChart');
+            if (!ctx) return;
+
+            // Destroy existing chart
+            if (charts.bar) {
+                charts.bar.destroy();
+            }
+
+            if (data.length === 0) return;
+
+            const mode = document.querySelector('input[name="barMode"]:checked')?.value || 'sum';
+            
+            const chartData = data.map(item => {
+                const values = Object.keys(item)
+                    .filter(key => {
+                        if (key === 'Kategori') return false;
+                        if (key === 'category') return false;
+                        if (isNaN(parseInt(key))) return false;
+                        return true;
+                    })
+                    .map(year => {
+                        const value = item[year];
+                        if (value === null) return 0;
+                        if (value === undefined) return 0;
+                        if (isNaN(parseFloat(value))) return 0;
+                        return parseFloat(value);
+                    })
+                    .filter(val => val !== 0);
+
+                let calculatedValue = 0;
+                if (values.length > 0) {
+                    switch (mode) {
+                        case 'sum':
+                            calculatedValue = values.reduce((a, b) => a + b, 0);
+                            break;
+                        case 'average':
+                            calculatedValue = values.reduce((a, b) => a + b, 0) / values.length;
+                            break;
+                        case 'last':
+                            calculatedValue = values[values.length - 1] || 0;
+                            break;
+                    }
+                }
+
+                return {
+                    label: item.Kategori || item.category,
+                    value: calculatedValue
+                };
+            });
+
+            charts.bar = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        label: mode === 'sum' ? 'Toplam' : mode === 'average' ? 'Ortalama' : 'Son Yıl',
+                        data: chartData.map(item => item.value),
+                        backgroundColor: chartData.map((_, index) => generateColor(index, 0.8))
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Karşılaştırmalı Analiz (${mode === 'sum' ? 'Toplam' : mode === 'average' ? 'Ortalama' : 'Son Yıl'})`
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Değer'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePieChart(data) {
+            const ctx = document.getElementById('pieChart');
+            if (!ctx) return;
+
+            // Destroy existing chart
+            if (charts.pie) {
+                charts.pie.destroy();
+            }
+
+            if (data.length === 0) return;
+
+            const mode = document.querySelector('input[name="pieMode"]:checked')?.value || 'sum';
+            
+            const chartData = data.map(item => {
+                const values = Object.keys(item)
+                    .filter(key => {
+                        if (key === 'Kategori') return false;
+                        if (key === 'category') return false;
+                        if (isNaN(parseInt(key))) return false;
+                        return true;
+                    })
+                    .map(year => {
+                        const value = item[year];
+                        if (value === null) return 0;
+                        if (value === undefined) return 0;
+                        if (isNaN(parseFloat(value))) return 0;
+                        if (parseFloat(value) <= 0) return 0;
+                        return parseFloat(value);
+                    })
+                    .filter(val => val > 0);
+
+                let calculatedValue = 0;
+                if (values.length > 0) {
+                    switch (mode) {
+                        case 'sum':
+                            calculatedValue = values.reduce((a, b) => a + b, 0);
+                            break;
+                        case 'average':
+                            calculatedValue = values.reduce((a, b) => a + b, 0) / values.length;
+                            break;
+                        case 'last':
+                            calculatedValue = values[values.length - 1] || 0;
+                            break;
+                    }
+                }
+
+                return {
+                    label: item.Kategori || item.category,
+                    value: calculatedValue
+                };
+            }).filter(item => item.value > 0);
+
+            charts.pie = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        data: chartData.map(item => item.value),
+                        backgroundColor: chartData.map((_, index) => generateColor(index, 0.8))
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Dağılım Analizi (${mode === 'sum' ? 'Toplam' : mode === 'average' ? 'Ortalama' : 'Son Yıl'})`
+                        },
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateColor(index, alpha = 1) {
+            const colors = [
+                '46, 125, 50', '33, 150, 243', '255, 193, 7', '244, 67, 54',
+                '156, 39, 176', '255, 87, 34', '0, 188, 212', '139, 195, 74',
+                '233, 30, 99', '121, 85, 72', '96, 125, 139', '255, 235, 59'
+            ];
+            
+            const colorIndex = index % colors.length;
+            return `rgba(${colors[colorIndex]}, ${alpha})`;
+        }
+
+                 function showNoDataMessage() {
+             // Clear the tab content areas instead of replacing the whole dataset content
+             document.getElementById('dataTableContainer').innerHTML = `
+                 <div class="no-data-message">
+                     <h3>Veri Bulunamadı</h3>
+                     <p>Seçilen kriterlere uygun veri bulunmamaktadır. Lütfen filtrelerinizi kontrol edin.</p>
+                 </div>
+             `;
+         }
+
+        function downloadChart(chartId, format) {
+            const chart = charts[chartId.replace('Chart', '')];
+            if (!chart) return;
+
+            const canvas = chart.canvas;
+            const link = document.createElement('a');
+            
+            if (format === 'jpg') {
+                // Create white background for JPG
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                
+                tempCtx.fillStyle = 'white';
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.drawImage(canvas, 0, 0);
+                
+                link.href = tempCanvas.toDataURL('image/jpeg', 0.9);
+                link.download = `grafik_${Date.now()}.jpg`;
+            } else {
+                link.href = canvas.toDataURL('image/png');
+                link.download = `grafik_${Date.now()}.png`;
+            }
+            
+            link.click();
+        }
+
+        function downloadData(type) {
+            let dataToDownload;
+            let filename;
+
+            if (type === 'full') {
+                dataToDownload = currentData;
+                filename = `tam_veri_${currentDataset}_${Date.now()}.csv`;
+            } else {
+                dataToDownload = getFilteredData();
+                filename = `filtreli_veri_${currentDataset}_${Date.now()}.csv`;
+            }
+
+            if (!dataToDownload) {
+                alert('İndirilecek veri bulunamadı.');
+                return;
+            }
+            if (dataToDownload.length === 0) {
+                alert('İndirilecek veri bulunamadı.');
+                return;
+            }
+
+            // Convert to CSV
+            const allYears = new Set();
+            dataToDownload.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== 'Kategori') {
+                        if (key !== 'category') {
+                            allYears.add(key);
+                        }
+                    }
+                });
+            });
+
+            const years = Array.from(allYears).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            let csv = 'Kategori,' + years.join(',') + '\n';
+            
+            dataToDownload.forEach(item => {
+                const row = [item.Kategori || item.category || ''];
+                years.forEach(year => {
+                    const value = item[year];
+                    if (value !== null) {
+                        if (value !== undefined) {
+                            row.push(value);
+                        } else {
+                            row.push('');
+                        }
+                    } else {
+                        row.push('');
+                    }
+                });
+                csv += row.join(',') + '\n';
+            });
+
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+    </script>
+</body>
+</html>
