@@ -56,7 +56,8 @@ class HTMLDataManager:
         }
         
         .energy-dashboard-container .main-container {
-            max-width: 1400px !important;
+            max-width: 1600px !important;
+            width: 95% !important;
             margin: 0 auto !important;
             background: white !important;
             border-radius: 12px !important;

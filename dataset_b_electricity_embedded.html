@@ -21,7 +21,8 @@
         }
         
         .energy-dashboard-container .main-container {
-            max-width: 1400px !important;
+            max-width: 1600px !important;
+            width: 95% !important;
             margin: 0 auto !important;
             background: white !important;
             border-radius: 12px !important;
@@ -119,7 +120,8 @@
         }
         
         .main-container {
-            max-width: 1400px;
+            max-width: 1600px;
+            width: 95%;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -737,8 +739,6 @@
                             <label for="mode-sum">Toplam</label>
                             <input type="radio" id="mode-average" name="barChartMode" value="average">
                             <label for="mode-average">Ortalama</label>
-                            <input type="radio" id="mode-last" name="barChartMode" value="last">
-                            <label for="mode-last">Son Değer</label>
                         </div>
                     </div>
                     <div class="chart-container">
@@ -757,8 +757,6 @@
                             <label for="pie-mode-sum">Toplam</label>
                             <input type="radio" id="pie-mode-average" name="pieChartMode" value="average">
                             <label for="pie-mode-average">Ortalama</label>
-                            <input type="radio" id="pie-mode-last" name="pieChartMode" value="last">
-                            <label for="pie-mode-last">Son Değer</label>
                         </div>
                     </div>
                     <div class="chart-container">
@@ -4811,8 +4809,6 @@ const embeddedDataB = [
                         value = yearValues.reduce((sum, v) => sum + v, 0);
                     } else if (calculationMode === 'average') {
                         value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
-                    } else if (calculationMode === 'last') {
-                        value = yearValues[yearValues.length - 1];
                     }
                 }
                 
@@ -4833,7 +4829,7 @@ const embeddedDataB = [
                 data: {
                     labels: chartData.map(item => item.label),
                     datasets: [{
-                        label: `Değer (${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'})`,
+                        label: `Değer (${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'})`,
                         data: chartData.map(item => item.value),
                         backgroundColor: chartData.map(item => item.color),
                         borderColor: chartData.map(item => item.color),
@@ -4858,7 +4854,7 @@ const embeddedDataB = [
                         },
                         title: { 
                             display: true, 
-                            text: `Elektrik - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                            text: `Elektrik - ${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'} (${startYear}-${endYear})`
                         }
                     }
                 }
@@ -4891,8 +4887,6 @@ const embeddedDataB = [
                         value = yearValues.reduce((sum, v) => sum + v, 0);
                     } else if (calculationMode === 'average') {
                         value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
-                    } else if (calculationMode === 'last') {
-                        value = yearValues[yearValues.length - 1];
                     }
                 }
                 
@@ -4937,7 +4931,7 @@ const embeddedDataB = [
                         },
                         title: { 
                             display: true, 
-                            text: `Elektrik Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`,
+                            text: `Elektrik Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'} (${startYear}-${endYear})`,
                             font: {
                                 size: 16,
                                 weight: 'bold'
