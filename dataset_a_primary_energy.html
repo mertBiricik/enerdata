@@ -122,6 +122,7 @@
             border: 1px solid #e9ecef;
             border-radius: 8px;
             background: white;
+            margin-bottom: 1.5rem;
         }
         
         .checkbox-item {
@@ -237,13 +238,19 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: white;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-radius: 8px;
-            overflow: hidden;
+            min-width: 800px;
             background: white;
         }
         
@@ -283,13 +290,38 @@
         
         .download-buttons {
             display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
         }
         
         .download-buttons button {
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,100,0,0.2);
+        }
+        
+        .download-buttons button:hover {
+            background: #004d00;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,100,0,0.3);
+        }
+
+        .chart-download {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .chart-download button {
+            padding: 0.8rem 1.5rem;
             background: #006400;
             color: white;
             border: none;
@@ -300,8 +332,8 @@
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0,100,0,0.2);
         }
-        
-        .download-buttons button:hover {
+
+        .chart-download button:hover {
             background: #004d00;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,100,0,0.3);
@@ -406,6 +438,11 @@
                         <button id="deselectAllBtn">Hiçbirini Seçme</button>
                     </div>
                     <div id="seriesCheckboxes" class="series-checkboxes"></div>
+                    
+                    <div class="download-buttons">
+                        <button id="downloadFullData">Tam Veri İndir (CSV)</button>
+                        <button id="downloadFilteredData">Filtrelenmiş Veri İndir (CSV)</button>
+                    </div>
                 </div>
             </div>
             
@@ -418,12 +455,17 @@
                 </div>
                 
                 <div id="tableContent" class="tab-content active">
-                    <div id="tableContainer"></div>
+                    <div class="table-container">
+                        <div id="tableContainer"></div>
+                    </div>
                 </div>
                 
                 <div id="lineContent" class="tab-content">
                     <div class="chart-container">
                         <canvas id="lineChart"></canvas>
+                    </div>
+                    <div class="chart-download">
+                        <button id="downloadLineChart">Çizgi Grafik İndir (PNG)</button>
                     </div>
                 </div>
                 
@@ -442,6 +484,9 @@
                     <div class="chart-container">
                         <canvas id="barChart"></canvas>
                     </div>
+                    <div class="chart-download">
+                        <button id="downloadBarChart">Sütun Grafik İndir (PNG)</button>
+                    </div>
                 </div>
 
                 <div id="pieContent" class="tab-content">
@@ -459,11 +504,9 @@
                     <div class="chart-container">
                         <canvas id="pieChart"></canvas>
                     </div>
-                </div>
-                
-                <div class="download-buttons">
-                    <button id="downloadFullData">Tam Veri İndir (CSV)</button>
-                    <button id="downloadFilteredData">Filtrelenmiş Veri İndir (CSV)</button>
+                    <div class="chart-download">
+                        <button id="downloadPieChart">Pasta Grafik İndir (PNG)</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -658,6 +701,11 @@
             // Download buttons
             document.getElementById('downloadFullData').addEventListener('click', () => downloadData('full'));
             document.getElementById('downloadFilteredData').addEventListener('click', () => downloadData('filtered'));
+            
+            // Chart download buttons
+            document.getElementById('downloadLineChart').addEventListener('click', () => downloadChart('lineChart', 'birincil_enerji_cizgi_grafik.png'));
+            document.getElementById('downloadBarChart').addEventListener('click', () => downloadChart('barChart', 'birincil_enerji_sutun_grafik.png'));
+            document.getElementById('downloadPieChart').addEventListener('click', () => downloadChart('pieChart', 'birincil_enerji_pasta_grafik.png'));
         }
 
         function handleYearInputChange() {
@@ -707,10 +755,8 @@
                 checkbox.value = item.Kategori;
                 checkbox.addEventListener('change', applyFiltersAndRender);
                 
-                // Check first few items by default
-                if (index < 3) {
-                    checkbox.checked = true;
-                }
+                // Check all items by default
+                checkbox.checked = true;
                 
                 const label = document.createElement('label');
                 label.htmlFor = `series-${index}`;
@@ -819,10 +865,13 @@
                     label: item.Kategori,
                     data: data,
                     borderColor: color,
-                    backgroundColor: color + '20',
-                    borderWidth: 2,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
                     fill: false,
-                    tension: 0.1
+                    tension: 0.1,
+                    pointBackgroundColor: color,
+                    pointBorderColor: color,
+                    pointRadius: 4
                 };
             });
 
@@ -852,15 +901,24 @@
                     },
                     plugins: {
                         legend: { 
-                            position: 'top',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 6
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         title: { 
                             display: true, 
-                            text: 'Birincil Enerji Üretimi ve Tüketimi Trendi'
+                            text: 'Birincil Enerji Üretimi ve Tüketimi Trendi',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -912,9 +970,9 @@
                     datasets: [{
                         label: `Değer (${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'})`,
                         data: chartData.map(item => item.value),
-                        backgroundColor: chartData.map(item => item.color + '80'),
+                        backgroundColor: chartData.map(item => item.color),
                         borderColor: chartData.map(item => item.color),
-                        borderWidth: 2
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -996,15 +1054,24 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { 
-                            position: 'right',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 15
+                                boxWidth: 15,
+                                boxHeight: 15,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         title: { 
                             display: true, 
-                            text: `Birincil Enerji Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                            text: `Birincil Enerji Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -1080,6 +1147,36 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        function downloadChart(chartId, filename) {
+            const canvas = document.getElementById(chartId);
+            if (!canvas) {
+                alert('Grafik bulunamadı.');
+                return;
+            }
+
+            // Create a temporary canvas with white background
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+
+            // Fill with white background
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Draw the chart on top
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            // Download
+            tempCanvas.toBlob(function(blob) {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
         }
     </script>
 </body>
