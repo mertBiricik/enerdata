@@ -74,14 +74,21 @@
         /* Override any WordPress theme defaults */
         .energy-data-container {
             background: transparent !important;
+            width: 90% !important;
+            max-width: 90% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
         }
         
 
         
         .energy-data-container .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            overflow: hidden;
+            max-width: 95vw !important;
+            width: 95vw !important;
+            margin: 0 auto !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
         }
         
         .energy-data-container .data-bank-nav {
@@ -168,6 +175,7 @@
         
         .energy-data-container .filters-panel {
             width: 350px;
+            height: 700px;
             flex-shrink: 0;
             background: #f8f9fa;
             border-radius: 8px;
@@ -299,16 +307,16 @@
             overflow-y: auto;
             border: 1px solid #e9ecef;
             border-radius: 6px;
-            padding: 1rem;
+            padding: 0;
             background: white;
         }
         
         .checkbox-item {
             display: flex;
             align-items: center;
-            margin-bottom: 0.5rem;
-            padding: 0.3rem;
-            border-radius: 4px;
+            margin-bottom: 0;
+            padding: 0.5rem 0.8rem;
+            border-radius: 0;
             transition: background 0.2s ease;
         }
         
