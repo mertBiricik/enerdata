@@ -49,7 +49,7 @@ class HTMLDataManager:
         .energy-dashboard-container {
             margin: 0 !important;
             padding: 20px !important;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+            background: white !important;
             color: #333 !important;
             line-height: 1.6 !important;
             font-size: 14px !important;
@@ -110,6 +110,30 @@ class HTMLDataManager:
         .energy-dashboard-container canvas {
             max-width: 100% !important;
             height: auto !important;
+        }
+        
+        .energy-dashboard-container .tab-button {
+            background: none !important;
+            color: #666 !important;
+            border: none !important;
+            border-bottom: 3px solid transparent !important;
+            padding: 1rem 1.5rem !important;
+            font-size: 1rem !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .energy-dashboard-container .tab-button:hover {
+            color: #006400 !important;
+            background: #f8f9fa !important;
+            transform: none !important;
+        }
+        
+        .energy-dashboard-container .tab-button.active {
+            color: #006400 !important;
+            border-bottom-color: #006400 !important;
+            background: #f8f9fa !important;
+            transform: none !important;
         }
         """
 

@@ -1,0 +1,4542 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elektrik Brüt Üretimi - Sektörel Tüketim Dağılımı</title>
+    <style>
+        /* WordPress-safe styling overrides */
+        .energy-dashboard-container * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            box-sizing: border-box !important;
+        }
+        
+        .energy-dashboard-container {
+            margin: 0 !important;
+            padding: 20px !important;
+            background: white !important;
+            color: #333 !important;
+            line-height: 1.6 !important;
+            font-size: 14px !important;
+        }
+        
+        .energy-dashboard-container .main-container {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            background: white !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+            overflow: hidden !important;
+        }
+        
+        .energy-dashboard-container .header {
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%) !important;
+            color: white !important;
+            padding: 2rem !important;
+            text-align: center !important;
+        }
+        
+        .energy-dashboard-container .header h1 {
+            margin: 0 !important;
+            font-size: 2.2rem !important;
+            font-weight: 600 !important;
+            color: white !important;
+        }
+        
+        .energy-dashboard-container .header p {
+            margin: 0.5rem 0 0 0 !important;
+            opacity: 0.9 !important;
+            font-size: 1.1rem !important;
+            color: white !important;
+        }
+        
+        .energy-dashboard-container button {
+            background: #006400 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .energy-dashboard-container button:hover {
+            background: #004d00 !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        .energy-dashboard-container input, 
+        .energy-dashboard-container select {
+            border: 1px solid #ddd !important;
+            border-radius: 6px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .energy-dashboard-container canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        .energy-dashboard-container .tab-button {
+            background: none !important;
+            color: #666 !important;
+            border: none !important;
+            border-bottom: 3px solid transparent !important;
+            padding: 1rem 1.5rem !important;
+            font-size: 1rem !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .energy-dashboard-container .tab-button:hover {
+            color: #006400 !important;
+            background: #f8f9fa !important;
+            transform: none !important;
+        }
+        
+        .energy-dashboard-container .tab-button.active {
+            color: #006400 !important;
+            border-bottom-color: #006400 !important;
+            background: #f8f9fa !important;
+            transform: none !important;
+        }
+        </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 20px;
+            background: white;
+            color: #333; 
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content-layout {
+            display: flex;
+            gap: 0;
+        }
+        
+        .filters-panel {
+            width: 350px;
+            background: #f8f9fa;
+            padding: 2rem;
+            border-right: 1px solid #e9ecef;
+        }
+        
+        .content-panel {
+            flex: 1;
+            padding: 2rem;
+            min-width: 0;
+        }
+        
+        .filter-group {
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: #006400;
+            font-size: 1rem;
+        }
+        
+        .year-range-container {
+            margin: 1.5rem 0;
+        }
+        
+        .year-inputs {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .year-inputs input {
+            width: 80px;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .year-inputs span {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        #yearRangeSlider {
+            margin: 1.5rem 0;
+        }
+        
+        #yearRangeSlider .noUi-connect {
+            background: #006400;
+        }
+        
+        #yearRangeSlider .noUi-handle {
+            border-color: #006400;
+            background: #fff;
+        }
+        
+        .sector-type-selector {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sector-type-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #006400;
+            background: #f0f0f0;
+        }
+        
+        .sector-type-options label {
+            padding: 0.7rem 1rem;
+            margin: 0;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            color: #006400;
+            transition: all 0.2s ease;
+            border-right: 1px solid #006400;
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .sector-type-options label:last-child {
+            border-right: none;
+        }
+        
+        .sector-type-options input[type="radio"] {
+            display: none;
+        }
+        
+        .sector-type-options input[type="radio"]:checked + label {
+            background: #006400;
+            color: white;
+        }
+        
+        .series-checkboxes {
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #f1f3f4;
+            transition: background 0.2s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .checkbox-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 0.8rem;
+            accent-color: #006400;
+            transform: scale(1.1);
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-buttons button {
+            flex: 1;
+            padding: 0.7rem;
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-buttons button:hover {
+            background: #006400;
+            color: white;
+            border-color: #006400;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: #006400;
+            background: #f8f9fa;
+        }
+        
+        .tab-button.active {
+            color: #006400;
+            border-bottom-color: #006400;
+            background: #f8f9fa;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: white;
+            scrollbar-width: thin;
+            scrollbar-color: #006400 #f1f1f1;
+        }
+        
+        .table-container::-webkit-scrollbar {
+            height: 12px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+            background: #006400;
+            border-radius: 6px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #004d00;
+        }
+        
+        .top-scrollbar-container {
+            width: 100%;
+            height: 12px;
+            margin-bottom: 5px;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #f1f1f1;
+        }
+        
+        .top-scrollbar {
+            width: 100%;
+            height: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #006400 #f1f1f1;
+        }
+        
+        .top-scrollbar::-webkit-scrollbar {
+            height: 12px;
+        }
+        
+        .top-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+        
+        .top-scrollbar::-webkit-scrollbar-thumb {
+            background: #006400;
+            border-radius: 6px;
+        }
+        
+        .top-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #004d00;
+        }
+        
+        .top-scrollbar-thumb {
+            height: 1px;
+            background: transparent;
+        }
+
+        .data-table {
+            border-collapse: collapse;
+            min-width: 2500px;
+            background: white;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #006400;
+        }
+        
+        .data-table tbody tr:nth-child(odd) {
+            background: #fbfcfd;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f0f8f0;
+        }
+        
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            width: 250px;
+            max-width: 250px;
+            min-width: 250px;
+        }
+        
+        .red-value {
+            color: #dc3545;
+            font-style: italic;
+        }
+        
+        .download-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+        
+        .download-buttons button {
+            padding: 0.8rem 1.2rem;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,100,0,0.2);
+        }
+        
+        .download-buttons button:hover {
+            background: #004d00;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,100,0,0.3);
+        }
+
+        .chart-download {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .chart-download button {
+            padding: 0.8rem 1.5rem;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,100,0,0.2);
+        }
+
+        .chart-download button:hover {
+            background: #004d00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,100,0,0.3);
+        }
+        
+        .calculation-mode {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .calculation-mode label:first-child {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #006400;
+            margin-bottom: 0.8rem;
+            text-align: center;
+        }
+        
+        .mode-options {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .mode-options label {
+            padding: 0.5rem 1rem;
+            margin: 0;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            color: #006400;
+            background: white;
+            border: 2px solid #006400;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,100,0,0.1);
+            min-width: 80px;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+        
+        .mode-options label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,100,0,0.2);
+            background: #f0f8f0;
+        }
+        
+        .mode-options input[type="radio"] {
+            display: none;
+        }
+        
+        .mode-options input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,100,0,0.3);
+        }
+        
+
+        
+        .no-data-message {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .century-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+        
+        .factory-icon {
+            display: inline-block;
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content-layout {
+                flex-direction: column;
+            }
+            
+            .filters-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .year-inputs {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+            
+            .sector-type-options {
+                flex-direction: column;
+            }
+            
+            .sector-type-options label {
+                border-right: none;
+                border-bottom: 1px solid #006400;
+            }
+            
+            .sector-type-options label:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="energy-dashboard-container"><div class="main-container">
+        <div class="header">
+            <h1>Elektrik Brüt Üretimi - Sektörel Tüketim Dağılımı</h1>
+        </div>
+        
+        <div class="content-layout">
+            <div class="filters-panel">
+                <div class="filter-group">
+                    <label>Sektör Kategorisi</label>
+                    <div class="sector-type-selector">
+                        <div class="sector-type-options">
+                            <input type="radio" id="sectorAll" name="sectorType" value="all" checked>
+                            <label for="sectorAll">Tümü</label>
+                            <input type="radio" id="sectorIndustry" name="sectorType" value="industry">
+                            <label for="sectorIndustry">Sanayi</label>
+                            <input type="radio" id="sectorEnergy" name="sectorType" value="energy">
+                            <label for="sectorEnergy">Enerji</label>
+                            <input type="radio" id="sectorOther" name="sectorType" value="other">
+                            <label for="sectorOther">Diğer</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Yıl Aralığı</label>
+                    <div class="year-range-container">
+                        <div id="yearRangeSlider"></div>
+                        <div class="year-inputs">
+                            <input type="number" id="yearInputStart" min="1923" max="2023" value="1923">
+                            <span>-</span>
+                            <input type="number" id="yearInputEnd" min="1923" max="2023" value="2023">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Sektörler ve Kategoriler</label>
+                    <input type="text" id="seriesSearch" class="search-input" placeholder="Sektör ara...">
+                    <div class="filter-buttons">
+                        <button id="selectAllBtn">Hepsini Seç</button>
+                        <button id="deselectAllBtn">Hiçbirini Seçme</button>
+                    </div>
+                    <div id="seriesCheckboxes" class="series-checkboxes"></div>
+                    
+                    <div class="download-buttons">
+                        <button id="downloadFullData">Tam Veriyi İndir</button>
+                        <button id="downloadFilteredData">Filtrelenmiş Veriyi İndir</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-panel">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="table">Tablo</button>
+                    <button class="tab-button" data-tab="line">Çizgi Grafik</button>
+                    <button class="tab-button" data-tab="bar">Sütun Grafik</button>
+                    <button class="tab-button" data-tab="pie">Pasta Grafik</button>
+                </div>
+                
+                <div id="tableContent" class="tab-content active">
+                    <div class="top-scrollbar-container">
+                        <div class="top-scrollbar">
+                            <div class="top-scrollbar-thumb"></div>
+                        </div>
+                    </div>
+                    <div class="table-container" id="mainTableContainer">
+                        <div id="tableContainer"></div>
+                    </div>
+                </div>
+                
+                <div id="lineContent" class="tab-content">
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                    <div class="chart-download">
+                        <button id="downloadLineChart">Çizgi Grafiği İndir</button>
+                    </div>
+                </div>
+                
+                <div id="barContent" class="tab-content">
+                    <div class="calculation-mode">
+                        <label>Hesaplama Türü</label>
+                        <div class="mode-options">
+                            <input type="radio" id="mode-sum" name="barChartMode" value="sum" checked>
+                            <label for="mode-sum">Toplam</label>
+                            <input type="radio" id="mode-average" name="barChartMode" value="average">
+                            <label for="mode-average">Ortalama</label>
+                            <input type="radio" id="mode-last" name="barChartMode" value="last">
+                            <label for="mode-last">Son Değer</label>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    <div class="chart-download">
+                        <button id="downloadBarChart">Sütun Grafiği İndir</button>
+                    </div>
+                </div>
+                
+                <div id="pieContent" class="tab-content">
+                    <div class="calculation-mode">
+                        <label>Hesaplama Türü</label>
+                        <div class="mode-options">
+                            <input type="radio" id="pie-mode-sum" name="pieChartMode" value="sum" checked>
+                            <label for="pie-mode-sum">Toplam</label>
+                            <input type="radio" id="pie-mode-average" name="pieChartMode" value="average">
+                            <label for="pie-mode-average">Ortalama</label>
+                            <input type="radio" id="pie-mode-last" name="pieChartMode" value="last">
+                            <label for="pie-mode-last">Son Değer</label>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="chart-download">
+                        <button id="downloadPieChart">Pasta Grafiği İndir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded data -->
+    <script>
+const embeddedRawData = [
+  {
+    "category": "Net Üretim",
+    "1923": 41,
+    "1924": 41,
+    "1925": 41,
+    "1926": 60,
+    "1927": 63,
+    "1928": 81,
+    "1929": 88,
+    "1930": 96,
+    "1931": 106,
+    "1932": 117,
+    "1933": 136,
+    "1934": 157,
+    "1935": 199,
+    "1936": 206,
+    "1937": 257,
+    "1938": 279,
+    "1939": 316,
+    "1940": 359,
+    "1941": 377,
+    "1942": 372,
+    "1943": 395,
+    "1944": 429,
+    "1945": 458,
+    "1946": 487,
+    "1947": 541,
+    "1948": 585,
+    "1949": 633,
+    "1950": 678,
+    "1951": 763,
+    "1952": 878,
+    "1953": 1012,
+    "1954": 1191,
+    "1955": 1347,
+    "1956": 1544,
+    "1957": 1756,
+    "1958": 1961,
+    "1959": 2170,
+    "1960": 2395,
+    "1961": 2585,
+    "1962": 3059,
+    "1963": 3406,
+    "1964": 3780,
+    "1965": 4236,
+    "1966": 4728,
+    "1967": 5269,
+    "1968": 5870,
+    "1969": 6687,
+    "1970": 7307,
+    "1971": 8289,
+    "1972": 9427,
+    "1973": 10365,
+    "1974": 11184,
+    "1975": 13210,
+    "1976": 15547,
+    "1977": 17255,
+    "1978": 18078,
+    "1979": 18361,
+    "1980": 18736,
+    "1981": 20127,
+    "1982": 21422,
+    "1983": 21809,
+    "1984": 24509,
+    "1985": 26966,
+    "1986": 30789,
+    "1987": 35278,
+    "1988": 38437,
+    "1989": 41611,
+    "1990": 46401,
+    "1991": 47574,
+    "1992": 52589,
+    "1993": 57955,
+    "1994": 60270,
+    "1995": 66419,
+    "1996": 72554,
+    "1997": 77687,
+    "1998": 82585,
+    "1999": 87299,
+    "2000": 92786,
+    "2001": 91298,
+    "2002": 98144,
+    "2003": 110177,
+    "2004": 120985,
+    "2005": 130578,
+    "2006": 143878,
+    "2007": 155660,
+    "2008": 160311,
+    "2009": 156484,
+    "2010": 171752,
+    "2011": 184060,
+    "2012": 190906,
+    "2013": 190680,
+    "2014": 201108,
+    "2015": 211876,
+    "2016": 224540,
+    "2017": 247744,
+    "2018": 257119,
+    "2019": 255519,
+    "2020": 260677,
+    "2021": 286123,
+    "2022": 281210,
+    "2023": 282747
+  },
+  {
+    "category": "İthalat (+)",
+    "1923": "(0)",
+    "1924": "(0)",
+    "1925": "(0)",
+    "1926": "(0)",
+    "1927": "(0)",
+    "1928": "(0)",
+    "1929": "(0)",
+    "1930": "(0)",
+    "1931": "(0)",
+    "1932": "(0)",
+    "1933": "(0)",
+    "1934": "(0)",
+    "1935": "(0)",
+    "1936": "(0)",
+    "1937": "(0)",
+    "1938": "(0)",
+    "1939": "(0)",
+    "1940": "(0)",
+    "1941": "(0)",
+    "1942": "(0)",
+    "1943": "(0)",
+    "1944": "(0)",
+    "1945": "(0)",
+    "1946": "(0)",
+    "1947": "(0)",
+    "1948": "(0)",
+    "1949": "(0)",
+    "1950": "(0)",
+    "1951": "(0)",
+    "1952": "(0)",
+    "1953": "(0)",
+    "1954": "(0)",
+    "1955": "(0)",
+    "1956": "(0)",
+    "1957": "(0)",
+    "1958": "(0)",
+    "1959": "(0)",
+    "1960": "(0)",
+    "1961": "(0)",
+    "1962": "(0)",
+    "1963": "(0)",
+    "1964": "(0)",
+    "1965": "(0)",
+    "1966": "(0)",
+    "1967": "(0)",
+    "1968": "(0)",
+    "1969": "(0)",
+    "1970": "(0)",
+    "1971": "(0)",
+    "1972": "(0)",
+    "1973": "(0)",
+    "1974": "(0)",
+    "1975": 96,
+    "1976": 332,
+    "1977": 492,
+    "1978": 621,
+    "1979": 1044,
+    "1980": 1341,
+    "1981": 1616,
+    "1982": 1773,
+    "1983": 2221,
+    "1984": 2653,
+    "1985": 2142,
+    "1986": 777,
+    "1987": 572,
+    "1988": 381,
+    "1989": 559,
+    "1990": 176,
+    "1991": 759,
+    "1992": 189,
+    "1993": 213,
+    "1994": 31,
+    "1995": 0,
+    "1996": 270,
+    "1997": 2492,
+    "1998": 3299,
+    "1999": 2330,
+    "2000": 3791,
+    "2001": 4579,
+    "2002": 3588,
+    "2003": 1158,
+    "2004": 464,
+    "2005": 636,
+    "2006": 573,
+    "2007": 864,
+    "2008": 789,
+    "2009": 812,
+    "2010": 1144,
+    "2011": 4556,
+    "2012": 5827,
+    "2013": 7429,
+    "2014": 7953,
+    "2015": 7136,
+    "2016": 6330,
+    "2017": 2728,
+    "2018": 2476,
+    "2019": 2212,
+    "2020": 1889,
+    "2021": 2334,
+    "2022": 6439,
+    "2023": 6094
+  },
+  {
+    "category": "İhracat (-)",
+    "1923": "(0)",
+    "1924": "(0)",
+    "1925": "(0)",
+    "1926": "(0)",
+    "1927": "(0)",
+    "1928": "(0)",
+    "1929": "(0)",
+    "1930": "(0)",
+    "1931": "(0)",
+    "1932": "(0)",
+    "1933": "(0)",
+    "1934": "(0)",
+    "1935": "(0)",
+    "1936": "(0)",
+    "1937": "(0)",
+    "1938": "(0)",
+    "1939": "(0)",
+    "1940": "(0)",
+    "1941": "(0)",
+    "1942": "(0)",
+    "1943": "(0)",
+    "1944": "(0)",
+    "1945": "(0)",
+    "1946": "(0)",
+    "1947": "(0)",
+    "1948": "(0)",
+    "1949": "(0)",
+    "1950": "(0)",
+    "1951": "(0)",
+    "1952": "(0)",
+    "1953": "(0)",
+    "1954": "(0)",
+    "1955": "(0)",
+    "1956": "(0)",
+    "1957": "(0)",
+    "1958": "(0)",
+    "1959": "(0)",
+    "1960": "(0)",
+    "1961": "(0)",
+    "1962": "(0)",
+    "1963": "(0)",
+    "1964": "(0)",
+    "1965": "(0)",
+    "1966": "(0)",
+    "1967": "(0)",
+    "1968": "(0)",
+    "1969": "(0)",
+    "1970": "(0)",
+    "1971": "(0)",
+    "1972": "(0)",
+    "1973": "(0)",
+    "1974": "(0)",
+    "1975": "(0)",
+    "1976": "(0)",
+    "1977": "(0)",
+    "1978": "(0)",
+    "1979": "(0)",
+    "1980": "(0)",
+    "1981": "(0)",
+    "1982": "(0)",
+    "1983": "(0)",
+    "1984": "(0)",
+    "1985": "(0)",
+    "1986": "(0)",
+    "1987": "(0)",
+    "1988": "(0)",
+    "1989": "(0)",
+    "1990": -907,
+    "1991": -506,
+    "1992": -314,
+    "1993": -589,
+    "1994": -570,
+    "1995": -696,
+    "1996": -343,
+    "1997": -271,
+    "1998": -298,
+    "1999": -285,
+    "2000": -437,
+    "2001": -433,
+    "2002": -435,
+    "2003": -588,
+    "2004": -1144,
+    "2005": -1798,
+    "2006": -2236,
+    "2007": -2422,
+    "2008": -1122,
+    "2009": -1546,
+    "2010": -1918,
+    "2011": -3645,
+    "2012": -2954,
+    "2013": -1227,
+    "2014": -2696,
+    "2015": -3195,
+    "2016": -1452,
+    "2017": -3304,
+    "2018": -3111,
+    "2019": -2789,
+    "2020": -2483,
+    "2021": -4186,
+    "2022": -3713,
+    "2023": -2076
+  },
+  {
+    "category": "Elektrik Arzı",
+    "1923": 41,
+    "1924": 41,
+    "1925": 41,
+    "1926": 60,
+    "1927": 63,
+    "1928": 81,
+    "1929": 88,
+    "1930": 96,
+    "1931": 106,
+    "1932": 117,
+    "1933": 136,
+    "1934": 157,
+    "1935": 199,
+    "1936": 206,
+    "1937": 257,
+    "1938": 279,
+    "1939": 316,
+    "1940": 359,
+    "1941": 377,
+    "1942": 372,
+    "1943": 395,
+    "1944": 429,
+    "1945": 458,
+    "1946": 487,
+    "1947": 541,
+    "1948": 585,
+    "1949": 633,
+    "1950": 678,
+    "1951": 763,
+    "1952": 878,
+    "1953": 1012,
+    "1954": 1191,
+    "1955": 1347,
+    "1956": 1544,
+    "1957": 1756,
+    "1958": 1961,
+    "1959": 2170,
+    "1960": 2395,
+    "1961": 2585,
+    "1962": 3059,
+    "1963": 3406,
+    "1964": 3780,
+    "1965": 4236,
+    "1966": 4728,
+    "1967": 5269,
+    "1968": 5870,
+    "1969": 6687,
+    "1970": 7307,
+    "1971": 8289,
+    "1972": 9427,
+    "1973": 10365,
+    "1974": 11184,
+    "1975": 13306,
+    "1976": 15879,
+    "1977": 17747,
+    "1978": 18699,
+    "1979": 19405,
+    "1980": 20077,
+    "1981": 21743,
+    "1982": 23195,
+    "1983": 24030,
+    "1984": 27162,
+    "1985": 29108,
+    "1986": 31566,
+    "1987": 35850,
+    "1988": 38818,
+    "1989": 42170,
+    "1990": 45670,
+    "1991": 47827,
+    "1992": 52464,
+    "1993": 57579,
+    "1994": 59731,
+    "1995": 65723,
+    "1996": 72481,
+    "1997": 79908,
+    "1998": 85586,
+    "1999": 89344,
+    "2000": 96140,
+    "2001": 95444,
+    "2002": 101297,
+    "2003": 110747,
+    "2004": 120305,
+    "2005": 129416,
+    "2006": 142215,
+    "2007": 154102,
+    "2008": 159978,
+    "2009": 155750,
+    "2010": 170978,
+    "2011": 184971,
+    "2012": 193779,
+    "2013": 196882,
+    "2014": 206365,
+    "2015": 215817,
+    "2016": 229418,
+    "2017": 247168,
+    "2018": 256484,
+    "2019": 254942,
+    "2020": 260083,
+    "2021": 284271,
+    "2022": 283936,
+    "2023": 286765
+  },
+  {
+    "category": "Çevrim ve Enerji Sektörü",
+    "1923": 41,
+    "1924": 41,
+    "1925": 41,
+    "1926": 60,
+    "1927": 63,
+    "1928": 81,
+    "1929": 88,
+    "1930": 96,
+    "1931": 106,
+    "1932": 117,
+    "1933": 136,
+    "1934": 157,
+    "1935": 199,
+    "1936": 206,
+    "1937": 257,
+    "1938": 279,
+    "1939": 316,
+    "1940": 359,
+    "1941": 377,
+    "1942": 372,
+    "1943": 395,
+    "1944": 429,
+    "1945": 458,
+    "1946": 487,
+    "1947": 541,
+    "1948": 585,
+    "1949": 633,
+    "1950": 678,
+    "1951": 763,
+    "1952": 878,
+    "1953": 1012,
+    "1954": 1191,
+    "1955": 1347,
+    "1956": 1544,
+    "1957": 1756,
+    "1958": 1961,
+    "1959": 2170,
+    "1960": 2395,
+    "1961": 2585,
+    "1962": 3059,
+    "1963": 3406,
+    "1964": 3780,
+    "1965": 4236,
+    "1966": 4728,
+    "1967": 5269,
+    "1968": 5870,
+    "1969": 6687,
+    "1970": 7307,
+    "1971": 8289,
+    "1972": 9427,
+    "1973": 10365,
+    "1974": 11184,
+    "1975": 13210,
+    "1976": 15547,
+    "1977": 17255,
+    "1978": 18078,
+    "1979": 18361,
+    "1980": 18736,
+    "1981": 20127,
+    "1982": 21422,
+    "1983": 21809,
+    "1984": 24509,
+    "1985": 26966,
+    "1986": 30789,
+    "1987": 35278,
+    "1988": 38437,
+    "1989": 41611,
+    "1990": 46401,
+    "1991": 47574,
+    "1992": 52589,
+    "1993": 57955,
+    "1994": 60270,
+    "1995": 66419,
+    "1996": 72554,
+    "1997": 77687,
+    "1998": 82585,
+    "1999": 87299,
+    "2000": 92786,
+    "2001": 91298,
+    "2002": 98144,
+    "2003": 110177,
+    "2004": 120985,
+    "2005": 130578,
+    "2006": 143878,
+    "2007": 155660,
+    "2008": 160311,
+    "2009": 156484,
+    "2010": 171752,
+    "2011": 184060,
+    "2012": 190906,
+    "2013": 190680,
+    "2014": 201108,
+    "2015": 211876,
+    "2016": 224540,
+    "2017": 247744,
+    "2018": 257119,
+    "2019": 255519,
+    "2020": 260677,
+    "2021": 286123,
+    "2022": 281210,
+    "2023": 282747
+  },
+  {
+    "category": "Elektrik Santralları Brüt Üretimi",
+    "1923": 44,
+    "1924": 44,
+    "1925": 45,
+    "1926": 65,
+    "1927": 70,
+    "1928": 89,
+    "1929": 97,
+    "1930": 106,
+    "1931": 117,
+    "1932": 131,
+    "1933": 151,
+    "1934": 175,
+    "1935": 222,
+    "1936": 231,
+    "1937": 289,
+    "1938": 312,
+    "1939": 353,
+    "1940": 396,
+    "1941": 415,
+    "1942": 408,
+    "1943": 457,
+    "1944": 496,
+    "1945": 527,
+    "1946": 562,
+    "1947": 625,
+    "1948": 676,
+    "1949": 736,
+    "1950": 789,
+    "1951": 887,
+    "1952": 1019,
+    "1953": 1200,
+    "1954": 1402,
+    "1955": 1579,
+    "1956": 1818,
+    "1957": 2056,
+    "1958": 2303,
+    "1959": 2587,
+    "1960": 2814,
+    "1961": 3010,
+    "1962": 3559,
+    "1963": 3983,
+    "1964": 4450,
+    "1965": 4952,
+    "1966": 5550,
+    "1967": 6216,
+    "1968": 6935,
+    "1969": 7838,
+    "1970": 8623,
+    "1971": 9781,
+    "1972": 11242,
+    "1973": 12425,
+    "1974": 13477,
+    "1975": 15623,
+    "1976": 18283,
+    "1977": 20565,
+    "1978": 21726,
+    "1979": 22522,
+    "1980": 23275,
+    "1981": 24673,
+    "1982": 26552,
+    "1983": 27347,
+    "1984": 30614,
+    "1985": 34219,
+    "1986": 39695,
+    "1987": 44353,
+    "1988": 48049,
+    "1989": 52043,
+    "1990": 57543,
+    "1991": 60246,
+    "1992": 67342,
+    "1993": 73808,
+    "1994": 78322,
+    "1995": 86247,
+    "1996": 94861,
+    "1997": 103295,
+    "1998": 111022,
+    "1999": 116439,
+    "2000": 124921,
+    "2001": 122724,
+    "2002": 129399,
+    "2003": 140580,
+    "2004": 150698,
+    "2005": 161956,
+    "2006": 176299,
+    "2007": 191558,
+    "2008": 198417,
+    "2009": 194812,
+    "2010": 211208,
+    "2011": 229396,
+    "2012": 239496,
+    "2013": 240153,
+    "2014": 251963,
+    "2015": 261784,
+    "2016": 274407,
+    "2017": 297277,
+    "2018": 304802,
+    "2019": 303898,
+    "2020": 306703,
+    "2021": 334723,
+    "2022": 328379,
+    "2023": 331149
+  },
+  {
+    "category": "Petrol Rafinerileri Tüketimi",
+    "1923": "(0)",
+    "1924": "(0)",
+    "1925": "(0)",
+    "1926": "(0)",
+    "1927": "(0)",
+    "1928": "(0)",
+    "1929": "(0)",
+    "1930": "(0)",
+    "1931": "(0)",
+    "1932": "(0)",
+    "1933": "(0)",
+    "1934": "(0)",
+    "1935": "(0)",
+    "1936": "(0)",
+    "1937": "(0)",
+    "1938": "(0)",
+    "1939": "(0)",
+    "1940": "(0)",
+    "1941": "(0)",
+    "1942": "(0)",
+    "1943": "(0)",
+    "1944": "(0)",
+    "1945": "(0)",
+    "1946": "(0)",
+    "1947": "(0)",
+    "1948": "(0)",
+    "1949": "(0)",
+    "1950": "(0)",
+    "1951": "(0)",
+    "1952": "(0)",
+    "1953": "(0)",
+    "1954": "(0)",
+    "1955": "(0)",
+    "1956": "(0)",
+    "1957": "(0)",
+    "1958": "(0)",
+    "1959": "(0)",
+    "1960": "(0)",
+    "1961": "(0)",
+    "1962": "(0)",
+    "1963": "(0)",
+    "1964": "(0)",
+    "1965": "(0)",
+    "1966": "(0)",
+    "1967": "(0)",
+    "1968": "(0)",
+    "1969": "(0)",
+    "1970": "(0)",
+    "1971": "(0)",
+    "1972": -100,
+    "1973": -165,
+    "1974": -175,
+    "1975": -186,
+    "1976": -200,
+    "1977": -222,
+    "1978": -235,
+    "1979": -258,
+    "1980": -321,
+    "1981": -287,
+    "1982": -392,
+    "1983": -435,
+    "1984": -474,
+    "1985": -600,
+    "1986": -644,
+    "1987": -847,
+    "1988": -903,
+    "1989": -950,
+    "1990": -1150,
+    "1991": -1456,
+    "1992": -1521,
+    "1993": -1658,
+    "1994": -1670,
+    "1995": -1670,
+    "1996": -1675,
+    "1997": -1976,
+    "1998": -2119,
+    "1999": -1857,
+    "2000": -2156,
+    "2001": -1625,
+    "2002": -1650,
+    "2003": -1018,
+    "2004": -837,
+    "2005": -847,
+    "2006": -855,
+    "2007": -1033,
+    "2008": -1969,
+    "2009": -1143,
+    "2010": -1072,
+    "2011": -1128,
+    "2012": -1143,
+    "2013": -1162,
+    "2014": -1009,
+    "2015": -1495,
+    "2016": -1784,
+    "2017": -1854,
+    "2018": -1748,
+    "2019": -2331,
+    "2020": -2618,
+    "2021": -2420,
+    "2022": -2640,
+    "2023": -2607
+  },
+  {
+    "category": "İç Tüketim ve Kayıp",
+    "1923": -3,
+    "1924": -3,
+    "1925": -3,
+    "1926": -5,
+    "1927": -6,
+    "1928": -8,
+    "1929": -8,
+    "1930": -9,
+    "1931": -11,
+    "1932": -14,
+    "1933": -15,
+    "1934": -17,
+    "1935": -23,
+    "1936": -24,
+    "1937": -32,
+    "1938": -32,
+    "1939": -36,
+    "1940": -37,
+    "1941": -37,
+    "1942": -35,
+    "1943": -61,
+    "1944": -66,
+    "1945": -68,
+    "1946": -75,
+    "1947": -84,
+    "1948": -90,
+    "1949": -102,
+    "1950": -110,
+    "1951": -123,
+    "1952": -141,
+    "1953": -188,
+    "1954": -210,
+    "1955": -232,
+    "1956": -274,
+    "1957": -299,
+    "1958": -341,
+    "1959": -416,
+    "1960": -419,
+    "1961": -425,
+    "1962": -500,
+    "1963": -576,
+    "1964": -670,
+    "1965": -715,
+    "1966": -821,
+    "1967": -947,
+    "1968": -1065,
+    "1969": -1151,
+    "1970": -1315,
+    "1971": -1491,
+    "1972": -1715,
+    "1973": -1895,
+    "1974": -2118,
+    "1975": -2227,
+    "1976": -2536,
+    "1977": -3088,
+    "1978": -3413,
+    "1979": -3903,
+    "1980": -4218,
+    "1981": -4259,
+    "1982": -4738,
+    "1983": -5103,
+    "1984": -5631,
+    "1985": -6653,
+    "1986": -8262,
+    "1987": -8228,
+    "1988": -8709,
+    "1989": -9482,
+    "1990": -9992,
+    "1991": -11216,
+    "1992": -13232,
+    "1993": -14195,
+    "1994": -16382,
+    "1995": -18157,
+    "1996": -20632,
+    "1997": -23632,
+    "1998": -26318,
+    "1999": -27283,
+    "2000": -29979,
+    "2001": -29801,
+    "2002": -29604,
+    "2003": -29384,
+    "2004": -28875,
+    "2005": -30531,
+    "2006": -31566,
+    "2007": -34864,
+    "2008": -36137,
+    "2009": -37185,
+    "2010": -38383,
+    "2011": -44207,
+    "2012": -47447,
+    "2013": -48311,
+    "2014": -49845,
+    "2015": -48412,
+    "2016": -48082,
+    "2017": -47679,
+    "2018": -45935,
+    "2019": -46047,
+    "2020": -43406,
+    "2021": -46179,
+    "2022": -44528,
+    "2023": -45796
+  },
+  {
+    "category": "Nihai Tüketim",
+    "1923": 41,
+    "1924": 41,
+    "1925": 41,
+    "1926": 60,
+    "1927": 63,
+    "1928": 81,
+    "1929": 88,
+    "1930": 96,
+    "1931": 106,
+    "1932": 117,
+    "1933": 136,
+    "1934": 157,
+    "1935": 199,
+    "1936": 206,
+    "1937": 257,
+    "1938": 279,
+    "1939": 316,
+    "1940": 359,
+    "1941": 377,
+    "1942": 372,
+    "1943": 395,
+    "1944": 429,
+    "1945": 458,
+    "1946": 487,
+    "1947": 541,
+    "1948": 585,
+    "1949": 633,
+    "1950": 678,
+    "1951": 763,
+    "1952": 878,
+    "1953": 1012,
+    "1954": 1191,
+    "1955": 1347,
+    "1956": 1544,
+    "1957": 1756,
+    "1958": 1961,
+    "1959": 2170,
+    "1960": 2395,
+    "1961": 2585,
+    "1962": 3059,
+    "1963": 3406,
+    "1964": 3780,
+    "1965": 4236,
+    "1966": 4728,
+    "1967": 5269,
+    "1968": 5870,
+    "1969": 6687,
+    "1970": 7307,
+    "1971": 8289,
+    "1972": 9427,
+    "1973": 10365,
+    "1974": 11184,
+    "1975": 13306,
+    "1976": 15879,
+    "1977": 17747,
+    "1978": 18699,
+    "1979": 19405,
+    "1980": 20077,
+    "1981": 21743,
+    "1982": 23195,
+    "1983": 24030,
+    "1984": 27162,
+    "1985": 29108,
+    "1986": 31566,
+    "1987": 35850,
+    "1988": 38818,
+    "1989": 42170,
+    "1990": 45670,
+    "1991": 47827,
+    "1992": 52464,
+    "1993": 57579,
+    "1994": 59731,
+    "1995": 65723,
+    "1996": 72481,
+    "1997": 79908,
+    "1998": 85585,
+    "1999": 89344,
+    "2000": 96139,
+    "2001": 95445,
+    "2002": 101297,
+    "2003": 110748,
+    "2004": 120304,
+    "2005": 129416,
+    "2006": 142215,
+    "2007": 154102,
+    "2008": 159978,
+    "2009": 155751,
+    "2010": 170978,
+    "2011": 184971,
+    "2012": 193779,
+    "2013": 196882,
+    "2014": 206366,
+    "2015": 215817,
+    "2016": 229419,
+    "2017": 247168,
+    "2018": 256484,
+    "2019": 254942,
+    "2020": 260083,
+    "2021": 284271,
+    "2022": 283936,
+    "2023": 286765
+  },
+  {
+    "category": "Sanayi Tüketimi",
+    "1923": "(33)",
+    "1924": "(33)",
+    "1925": "(33)",
+    "1926": "(48)",
+    "1927": "(50)",
+    "1928": "(64)",
+    "1929": "(70)",
+    "1930": "(76)",
+    "1931": "(84)",
+    "1932": "(93)",
+    "1933": "(107)",
+    "1934": "(124)",
+    "1935": "(157)",
+    "1936": "(162)",
+    "1937": "(201)",
+    "1938": "(218)",
+    "1939": "(246)",
+    "1940": 276,
+    "1941": "(293)",
+    "1942": "(291)",
+    "1943": "(311)",
+    "1944": "(340)",
+    "1945": 365,
+    "1946": "(382)",
+    "1947": "(418)",
+    "1948": "(447)",
+    "1949": "(479)",
+    "1950": 508,
+    "1951": 571,
+    "1952": 656,
+    "1953": 751,
+    "1954": 883,
+    "1955": 992,
+    "1956": 1142,
+    "1957": 1295,
+    "1958": 1446,
+    "1959": 1592,
+    "1960": 1751,
+    "1961": 1859,
+    "1962": 2246,
+    "1963": 2497,
+    "1964": 2799,
+    "1965": 3079,
+    "1966": 3469,
+    "1967": 3834,
+    "1968": 4272,
+    "1969": 4865,
+    "1970": 4690,
+    "1971": 5345,
+    "1972": 6092,
+    "1973": 6920,
+    "1974": 7404,
+    "1975": 8559,
+    "1976": 10305,
+    "1977": 11761,
+    "1978": 12171,
+    "1979": 12280,
+    "1980": 12687,
+    "1981": 13919,
+    "1982": 14806,
+    "1983": 15141,
+    "1984": 17553,
+    "1985": 19008,
+    "1986": 20242,
+    "1987": 23026,
+    "1988": 24355,
+    "1989": 26653,
+    "1990": 28062,
+    "1991": 27056,
+    "1992": 30015,
+    "1993": 32589,
+    "1994": 32468,
+    "1995": 36336,
+    "1996": 38962,
+    "1997": 41515,
+    "1998": 44019,
+    "1999": 44623,
+    "2000": 46686,
+    "2001": 45364,
+    "2002": 48642,
+    "2003": 54081,
+    "2004": 58042,
+    "2005": 58721,
+    "2006": 67172,
+    "2007": 73702,
+    "2008": 72881,
+    "2009": 69326,
+    "2010": 78258,
+    "2011": 86851,
+    "2012": 91158,
+    "2013": 92089,
+    "2014": 96768,
+    "2015": 102039,
+    "2016": 106513,
+    "2017": 114628,
+    "2018": 115963,
+    "2019": 113344,
+    "2020": 117408,
+    "2021": 134968,
+    "2022": 130698,
+    "2023": 127665
+  },
+  {
+    "category": "Gıda",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": null,
+    "1973": null,
+    "1974": null,
+    "1975": null,
+    "1976": null,
+    "1977": null,
+    "1978": null,
+    "1979": null,
+    "1980": null,
+    "1981": null,
+    "1982": null,
+    "1983": null,
+    "1984": null,
+    "1985": null,
+    "1986": null,
+    "1987": null,
+    "1988": null,
+    "1989": null,
+    "1990": null,
+    "1991": null,
+    "1992": null,
+    "1993": null,
+    "1994": null,
+    "1995": null,
+    "1996": null,
+    "1997": null,
+    "1998": null,
+    "1999": null,
+    "2000": null,
+    "2001": null,
+    "2002": null,
+    "2003": null,
+    "2004": null,
+    "2005": null,
+    "2006": null,
+    "2007": null,
+    "2008": null,
+    "2009": null,
+    "2010": null,
+    "2011": 5726,
+    "2012": 5805,
+    "2013": 5935,
+    "2014": 6055,
+    "2015": 5736,
+    "2016": 5997,
+    "2017": 6116,
+    "2018": 6477,
+    "2019": 6334,
+    "2020": 7403,
+    "2021": 8387,
+    "2022": 8560,
+    "2023": 8794
+  },
+  {
+    "category": "Şeker",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 173,
+    "1973": 164,
+    "1974": 176,
+    "1975": 192,
+    "1976": 219,
+    "1977": 279,
+    "1978": 307,
+    "1979": 283,
+    "1980": 283,
+    "1981": 273,
+    "1982": 357,
+    "1983": 369,
+    "1984": 326,
+    "1985": 387,
+    "1986": 436,
+    "1987": 482,
+    "1988": 394,
+    "1989": 377,
+    "1990": 380,
+    "1991": 400,
+    "1992": 400,
+    "1993": 550,
+    "1994": 300,
+    "1995": 357,
+    "1996": 340,
+    "1997": "(347)",
+    "1998": "(354)",
+    "1999": "(362)",
+    "2000": "(369)",
+    "2001": "(377)",
+    "2002": "(384)",
+    "2003": "(392)",
+    "2004": "(399)",
+    "2005": "(406)",
+    "2006": "(414)",
+    "2007": "(421)",
+    "2008": 429,
+    "2009": 502,
+    "2010": 573,
+    "2011": 545,
+    "2012": 531,
+    "2013": 622,
+    "2014": 547,
+    "2015": 551,
+    "2016": 626,
+    "2017": 627,
+    "2018": 593,
+    "2019": 657,
+    "2020": 685,
+    "2021": 728,
+    "2022": 712,
+    "2023": 832
+  },
+  {
+    "category": "Tekstil",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": null,
+    "1973": null,
+    "1974": null,
+    "1975": null,
+    "1976": null,
+    "1977": null,
+    "1978": null,
+    "1979": null,
+    "1980": null,
+    "1981": null,
+    "1982": null,
+    "1983": null,
+    "1984": null,
+    "1985": null,
+    "1986": null,
+    "1987": null,
+    "1988": null,
+    "1989": null,
+    "1990": null,
+    "1991": null,
+    "1992": null,
+    "1993": null,
+    "1994": null,
+    "1995": null,
+    "1996": null,
+    "1997": null,
+    "1998": null,
+    "1999": null,
+    "2000": null,
+    "2001": null,
+    "2002": null,
+    "2003": null,
+    "2004": null,
+    "2005": null,
+    "2006": null,
+    "2007": null,
+    "2008": null,
+    "2009": null,
+    "2010": null,
+    "2011": 13642,
+    "2012": 14514,
+    "2013": 14626,
+    "2014": 15621,
+    "2015": 15520,
+    "2016": 15919,
+    "2017": 17022,
+    "2018": 18076,
+    "2019": 17506,
+    "2020": 17298,
+    "2021": 20286,
+    "2022": 19818,
+    "2023": 17290
+  },
+  {
+    "category": "Kağıt",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": null,
+    "1973": null,
+    "1974": null,
+    "1975": null,
+    "1976": null,
+    "1977": null,
+    "1978": null,
+    "1979": null,
+    "1980": null,
+    "1981": null,
+    "1982": null,
+    "1983": null,
+    "1984": null,
+    "1985": null,
+    "1986": null,
+    "1987": null,
+    "1988": null,
+    "1989": null,
+    "1990": null,
+    "1991": null,
+    "1992": null,
+    "1993": null,
+    "1994": null,
+    "1995": null,
+    "1996": null,
+    "1997": null,
+    "1998": null,
+    "1999": null,
+    "2000": null,
+    "2001": null,
+    "2002": null,
+    "2003": null,
+    "2004": null,
+    "2005": null,
+    "2006": null,
+    "2007": null,
+    "2008": null,
+    "2009": null,
+    "2010": null,
+    "2011": 2534,
+    "2012": 2658,
+    "2013": 2667,
+    "2014": 3211,
+    "2015": 3269,
+    "2016": 3397,
+    "2017": 3506,
+    "2018": 3439,
+    "2019": 3599,
+    "2020": 3729,
+    "2021": 4257,
+    "2022": 4489,
+    "2023": 4389
+  },
+  {
+    "category": "Seramik",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": null,
+    "1973": null,
+    "1974": null,
+    "1975": null,
+    "1976": null,
+    "1977": null,
+    "1978": null,
+    "1979": null,
+    "1980": null,
+    "1981": null,
+    "1982": null,
+    "1983": null,
+    "1984": null,
+    "1985": null,
+    "1986": null,
+    "1987": null,
+    "1988": null,
+    "1989": null,
+    "1990": null,
+    "1991": null,
+    "1992": null,
+    "1993": null,
+    "1994": null,
+    "1995": null,
+    "1996": null,
+    "1997": null,
+    "1998": null,
+    "1999": null,
+    "2000": null,
+    "2001": null,
+    "2002": null,
+    "2003": null,
+    "2004": null,
+    "2005": null,
+    "2006": null,
+    "2007": null,
+    "2008": null,
+    "2009": null,
+    "2010": null,
+    "2011": 1882,
+    "2012": 1997,
+    "2013": 1955,
+    "2014": 2042,
+    "2015": 2287,
+    "2016": 2116,
+    "2017": 2285,
+    "2018": 2272,
+    "2019": 2088,
+    "2020": 2225,
+    "2021": 2741,
+    "2022": 3053,
+    "2023": 2732
+  },
+  {
+    "category": "Cam ve Cam Ürünleri",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": null,
+    "1973": null,
+    "1974": null,
+    "1975": null,
+    "1976": null,
+    "1977": null,
+    "1978": null,
+    "1979": null,
+    "1980": null,
+    "1981": null,
+    "1982": null,
+    "1983": null,
+    "1984": null,
+    "1985": null,
+    "1986": null,
+    "1987": null,
+    "1988": null,
+    "1989": null,
+    "1990": null,
+    "1991": null,
+    "1992": null,
+    "1993": null,
+    "1994": null,
+    "1995": null,
+    "1996": null,
+    "1997": null,
+    "1998": null,
+    "1999": null,
+    "2000": null,
+    "2001": null,
+    "2002": null,
+    "2003": null,
+    "2004": null,
+    "2005": null,
+    "2006": null,
+    "2007": null,
+    "2008": null,
+    "2009": null,
+    "2010": null,
+    "2011": 982,
+    "2012": 943,
+    "2013": 1330,
+    "2014": 1573,
+    "2015": 1694,
+    "2016": 1961,
+    "2017": 2168,
+    "2018": 2033,
+    "2019": 1883,
+    "2020": 1851,
+    "2021": 2038,
+    "2022": 2496,
+    "2023": 2424
+  },
+  {
+    "category": "Kimya-Petrokimya",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 470,
+    "1973": 573,
+    "1974": 690,
+    "1975": 587,
+    "1976": 932,
+    "1977": 1227,
+    "1978": 1348,
+    "1979": 1378,
+    "1980": 1439,
+    "1981": 1577,
+    "1982": 1826,
+    "1983": 1698,
+    "1984": 1987,
+    "1985": 2198,
+    "1986": 2477,
+    "1987": 3138,
+    "1988": 3670,
+    "1989": 4095,
+    "1990": 4042,
+    "1991": 3225,
+    "1992": 3500,
+    "1993": 4795,
+    "1994": 4138,
+    "1995": 4377,
+    "1996": 5244,
+    "1997": 6188,
+    "1998": 6622,
+    "1999": 6147,
+    "2000": 6381,
+    "2001": "(5915)",
+    "2002": 5449,
+    "2003": 5737,
+    "2004": 3730,
+    "2005": 4913,
+    "2006": 4108,
+    "2007": 4594,
+    "2008": 5845,
+    "2009": 5546,
+    "2010": 7417,
+    "2011": 8151,
+    "2012": 8562,
+    "2013": 9200,
+    "2014": 9464,
+    "2015": 4074,
+    "2016": 11001,
+    "2017": 5195,
+    "2018": 12701,
+    "2019": 5644,
+    "2020": 13676,
+    "2021": 16177,
+    "2022": 16413,
+    "2023": 16662
+  },
+  {
+    "category": "Gübre",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 399,
+    "1973": 335,
+    "1974": 381,
+    "1975": 434,
+    "1976": 459,
+    "1977": 464,
+    "1978": 471,
+    "1979": 475,
+    "1980": 420,
+    "1981": 477,
+    "1982": 428,
+    "1983": 459,
+    "1984": 482,
+    "1985": 581,
+    "1986": 675,
+    "1987": 826,
+    "1988": 973,
+    "1989": 1123,
+    "1990": 1153,
+    "1991": 1000,
+    "1992": 411,
+    "1993": 442,
+    "1994": 380,
+    "1995": 380,
+    "1996": 401,
+    "1997": 830,
+    "1998": 747,
+    "1999": 359,
+    "2000": 500,
+    "2001": 487,
+    "2002": 511,
+    "2003": 498,
+    "2004": 506,
+    "2005": 508,
+    "2006": 511,
+    "2007": 195,
+    "2008": 111,
+    "2009": 133,
+    "2010": 136,
+    "2011": 257,
+    "2012": 222,
+    "2013": 228,
+    "2014": 248,
+    "2015": 300,
+    "2016": 357,
+    "2017": 397,
+    "2018": 444,
+    "2019": 546,
+    "2020": 631,
+    "2021": 661,
+    "2022": 771,
+    "2023": 659
+  },
+  {
+    "category": "Çimento",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 1037,
+    "1973": 1209,
+    "1974": 1257,
+    "1975": 1475,
+    "1976": 1778,
+    "1977": 1972,
+    "1978": 2134,
+    "1979": 1972,
+    "1980": 2002,
+    "1981": 2286,
+    "1982": 2358,
+    "1983": 2168,
+    "1984": 2596,
+    "1985": 2837,
+    "1986": 3118,
+    "1987": 3380,
+    "1988": 3586,
+    "1989": 3795,
+    "1990": 3992,
+    "1991": 4256,
+    "1992": 4733,
+    "1993": 4900,
+    "1994": 4267,
+    "1995": 2883,
+    "1996": 2718,
+    "1997": 4549,
+    "1998": 2817,
+    "1999": 2483,
+    "2000": 3997,
+    "2001": 3223,
+    "2002": 3285,
+    "2003": 3438,
+    "2004": 3878,
+    "2005": 4323,
+    "2006": 4594,
+    "2007": 5475,
+    "2008": 6349,
+    "2009": 6537,
+    "2010": 7267,
+    "2011": 7151,
+    "2012": 7321,
+    "2013": 7383,
+    "2014": 7313,
+    "2015": 7989,
+    "2016": 8874,
+    "2017": 8500,
+    "2018": 8624,
+    "2019": 7574,
+    "2020": 9055,
+    "2021": 9822,
+    "2022": 10438,
+    "2023": 10900
+  },
+  {
+    "category": "Demirçelik",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 957,
+    "1973": 836,
+    "1974": 900,
+    "1975": 1023,
+    "1976": 1229,
+    "1977": 1312,
+    "1978": 1478,
+    "1979": 1647,
+    "1980": 1824,
+    "1981": 1810,
+    "1982": 2021,
+    "1983": 2229,
+    "1984": 2574,
+    "1985": 2831,
+    "1986": 2325,
+    "1987": 3849,
+    "1988": 3825,
+    "1989": 3834,
+    "1990": 4839,
+    "1991": 4997,
+    "1992": 5982,
+    "1993": 6734,
+    "1994": 6524,
+    "1995": 6954,
+    "1996": 7964,
+    "1997": 8662,
+    "1998": 8703,
+    "1999": 7735,
+    "2000": 8395,
+    "2001": "(8234)",
+    "2002": 8074,
+    "2003": 9582,
+    "2004": 10940,
+    "2005": 11661,
+    "2006": 13398,
+    "2007": 15477,
+    "2008": 16014,
+    "2009": 16000,
+    "2010": 16575,
+    "2011": 20050,
+    "2012": 20481,
+    "2013": 20232,
+    "2014": 20683,
+    "2015": 20691,
+    "2016": 22644,
+    "2017": 25509,
+    "2018": 25502,
+    "2019": 24250,
+    "2020": 25214,
+    "2021": 28808,
+    "2022": 26885,
+    "2023": 27155
+  },
+  {
+    "category": "Demirdışı Metaller",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 230,
+    "1973": 233,
+    "1974": 379,
+    "1975": 659,
+    "1976": 1050,
+    "1977": 1664,
+    "1978": 1392,
+    "1979": 1359,
+    "1980": 1519,
+    "1981": 1744,
+    "1982": 1711,
+    "1983": 1574,
+    "1984": 1936,
+    "1985": 1935,
+    "1986": 3007,
+    "1987": 2310,
+    "1988": 2376,
+    "1989": 2584,
+    "1990": 2553,
+    "1991": 2424,
+    "1992": 2631,
+    "1993": 2673,
+    "1994": 2100,
+    "1995": 2162,
+    "1996": 1957,
+    "1997": "(2054)",
+    "1998": "(2152)",
+    "1999": "(2250)",
+    "2000": "(2348)",
+    "2001": "(2446)",
+    "2002": 2544,
+    "2003": 3081,
+    "2004": 2697,
+    "2005": 2485,
+    "2006": 2785,
+    "2007": 3036,
+    "2008": 2471,
+    "2009": 1924,
+    "2010": 2307,
+    "2011": 2478,
+    "2012": 2406,
+    "2013": 2277,
+    "2014": 2417,
+    "2015": 2974,
+    "2016": 3140,
+    "2017": 3753,
+    "2018": 3590,
+    "2019": 3807,
+    "2020": 4465,
+    "2021": 5305,
+    "2022": 5027,
+    "2023": 4745
+  },
+  {
+    "category": "Motorlu Kara Taşıt Sanayi",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": null,
+    "1973": null,
+    "1974": null,
+    "1975": null,
+    "1976": null,
+    "1977": null,
+    "1978": null,
+    "1979": null,
+    "1980": null,
+    "1981": null,
+    "1982": null,
+    "1983": null,
+    "1984": null,
+    "1985": null,
+    "1986": null,
+    "1987": null,
+    "1988": null,
+    "1989": null,
+    "1990": null,
+    "1991": null,
+    "1992": null,
+    "1993": null,
+    "1994": null,
+    "1995": null,
+    "1996": null,
+    "1997": null,
+    "1998": null,
+    "1999": null,
+    "2000": null,
+    "2001": null,
+    "2002": null,
+    "2003": null,
+    "2004": null,
+    "2005": null,
+    "2006": null,
+    "2007": null,
+    "2008": null,
+    "2009": null,
+    "2010": null,
+    "2011": 1437,
+    "2012": 1441,
+    "2013": 1410,
+    "2014": 1798,
+    "2015": 2320,
+    "2016": 1838,
+    "2017": 2185,
+    "2018": 2195,
+    "2019": 2308,
+    "2020": 2208,
+    "2021": 2506,
+    "2022": 2953,
+    "2023": 3433
+  },
+  {
+    "category": "Diğer Sanayi",
+    "1923": null,
+    "1924": null,
+    "1925": null,
+    "1926": null,
+    "1927": null,
+    "1928": null,
+    "1929": null,
+    "1930": null,
+    "1931": null,
+    "1932": null,
+    "1933": null,
+    "1934": null,
+    "1935": null,
+    "1936": null,
+    "1937": null,
+    "1938": null,
+    "1939": null,
+    "1940": null,
+    "1941": null,
+    "1942": null,
+    "1943": null,
+    "1944": null,
+    "1945": null,
+    "1946": null,
+    "1947": null,
+    "1948": null,
+    "1949": null,
+    "1950": null,
+    "1951": null,
+    "1952": null,
+    "1953": null,
+    "1954": null,
+    "1955": null,
+    "1956": null,
+    "1957": null,
+    "1958": null,
+    "1959": null,
+    "1960": null,
+    "1961": null,
+    "1962": null,
+    "1963": null,
+    "1964": null,
+    "1965": null,
+    "1966": null,
+    "1967": null,
+    "1968": null,
+    "1969": null,
+    "1970": null,
+    "1971": null,
+    "1972": 2826,
+    "1973": 3570,
+    "1974": 3621,
+    "1975": 4189,
+    "1976": 4638,
+    "1977": 4843,
+    "1978": 5041,
+    "1979": 5166,
+    "1980": 5200,
+    "1981": 5752,
+    "1982": 6105,
+    "1983": 6644,
+    "1984": 7652,
+    "1985": 8239,
+    "1986": 8204,
+    "1987": 9041,
+    "1988": 9531,
+    "1989": 10845,
+    "1990": 11103,
+    "1991": 10754,
+    "1992": 12358,
+    "1993": 12494,
+    "1994": 14759,
+    "1995": 19223,
+    "1996": 20337,
+    "1997": 21284,
+    "1998": 25129,
+    "1999": 27898,
+    "2000": 27411,
+    "2001": 41654,
+    "2002": 28777,
+    "2003": 31743,
+    "2004": 36290,
+    "2005": 34830,
+    "2006": 41775,
+    "2007": 44924,
+    "2008": 41659,
+    "2009": 38682,
+    "2010": 43981,
+    "2011": 22010,
+    "2012": 24270,
+    "2013": 24218,
+    "2014": 25789,
+    "2015": 34631,
+    "2016": 28638,
+    "2017": 37362,
+    "2018": 30013,
+    "2019": 37143,
+    "2020": 28962,
+    "2021": 33247,
+    "2022": 29076,
+    "2023": 27645
+  },
+  {
+    "category": "Ulaştırma",
+    "1923": "(2)",
+    "1924": "(2)",
+    "1925": "(2)",
+    "1926": "(3)",
+    "1927": "(3)",
+    "1928": "(4)",
+    "1929": "(4)",
+    "1930": "(5)",
+    "1931": "(5)",
+    "1932": "(5)",
+    "1933": "(6)",
+    "1934": "(7)",
+    "1935": "(8)",
+    "1936": "(8)",
+    "1937": "(10)",
+    "1938": "(11)",
+    "1939": "(12)",
+    "1940": 17,
+    "1941": "(17)",
+    "1942": "(16)",
+    "1943": "(15)",
+    "1944": "(16)",
+    "1945": 16,
+    "1946": "(16)",
+    "1947": "(16)",
+    "1948": "(17)",
+    "1949": "(17)",
+    "1950": 17,
+    "1951": 17,
+    "1952": 17,
+    "1953": 16,
+    "1954": 17,
+    "1955": 19,
+    "1956": 33,
+    "1957": 36,
+    "1958": 38,
+    "1959": 41,
+    "1960": 38,
+    "1961": 41,
+    "1962": 43,
+    "1963": 52,
+    "1964": 54,
+    "1965": 53,
+    "1966": 55,
+    "1967": 57,
+    "1968": 60,
+    "1969": 75,
+    "1970": 80,
+    "1971": 83,
+    "1972": 108,
+    "1973": 117,
+    "1974": 123,
+    "1975": 153,
+    "1976": 174,
+    "1977": 151,
+    "1978": 159,
+    "1979": 153,
+    "1980": 149,
+    "1981": 155,
+    "1982": 186,
+    "1983": 201,
+    "1984": 184,
+    "1985": 213,
+    "1986": 242,
+    "1987": 300,
+    "1988": 354,
+    "1989": 360,
+    "1990": 345,
+    "1991": 395,
+    "1992": 438,
+    "1993": 478,
+    "1994": 490,
+    "1995": 490,
+    "1996": 539,
+    "1997": 604,
+    "1998": 651,
+    "1999": 664,
+    "2000": 720,
+    "2001": 820,
+    "2002": 830,
+    "2003": 890,
+    "2004": 731,
+    "2005": 749,
+    "2006": 790,
+    "2007": 936,
+    "2008": 545,
+    "2009": 555,
+    "2010": 590,
+    "2011": 657,
+    "2012": 798,
+    "2013": 826,
+    "2014": 916,
+    "2015": 1063,
+    "2016": 1156,
+    "2017": 1292,
+    "2018": 1190,
+    "2019": 1577,
+    "2020": 1435,
+    "2021": 1571,
+    "2022": 1789,
+    "2023": 1733
+  },
+  {
+    "category": "Demiryolları",
+    "1923": "(2)",
+    "1924": "(2)",
+    "1925": "(2)",
+    "1926": "(3)",
+    "1927": "(3)",
+    "1928": "(4)",
+    "1929": "(4)",
+    "1930": "(5)",
+    "1931": "(5)",
+    "1932": "(5)",
+    "1933": "(6)",
+    "1934": "(7)",
+    "1935": "(8)",
+    "1936": "(8)",
+    "1937": "(10)",
+    "1938": "(11)",
+    "1939": "(12)",
+    "1940": "(17)",
+    "1941": "(17)",
+    "1942": "(16)",
+    "1943": "(15)",
+    "1944": "(16)",
+    "1945": "(16)",
+    "1946": "(16)",
+    "1947": "(16)",
+    "1948": "(17)",
+    "1949": "(17)",
+    "1950": "(17)",
+    "1951": "(17)",
+    "1952": "(17)",
+    "1953": "(16)",
+    "1954": "(17)",
+    "1955": "(19)",
+    "1956": "(33)",
+    "1957": "(36)",
+    "1958": "(38)",
+    "1959": "(41)",
+    "1960": "(38)",
+    "1961": "(41)",
+    "1962": "(43)",
+    "1963": "(52)",
+    "1964": "(54)",
+    "1965": "(53)",
+    "1966": "(55)",
+    "1967": "(57)",
+    "1968": "(60)",
+    "1969": "(75)",
+    "1970": "(80)",
+    "1971": "(83)",
+    "1972": "(108)",
+    "1973": "(117)",
+    "1974": "(123)",
+    "1975": "(153)",
+    "1976": "(174)",
+    "1977": "(151)",
+    "1978": "(159)",
+    "1979": "(153)",
+    "1980": "(149)",
+    "1981": "(155)",
+    "1982": "(186)",
+    "1983": "(201)",
+    "1984": "(184)",
+    "1985": "(213)",
+    "1986": "(242)",
+    "1987": "(300)",
+    "1988": 354,
+    "1989": 360,
+    "1990": 345,
+    "1991": 395,
+    "1992": 438,
+    "1993": 478,
+    "1994": 490,
+    "1995": 490,
+    "1996": 539,
+    "1997": 604,
+    "1998": 651,
+    "1999": 664,
+    "2000": 720,
+    "2001": 820,
+    "2002": 830,
+    "2003": 890,
+    "2004": 731,
+    "2005": 749,
+    "2006": 790,
+    "2007": 936,
+    "2008": 335,
+    "2009": 347,
+    "2010": 201,
+    "2011": 447,
+    "2012": 597,
+    "2013": 661,
+    "2014": 740,
+    "2015": 803,
+    "2016": 882,
+    "2017": 983,
+    "2018": 1023,
+    "2019": 1287,
+    "2020": 1151,
+    "2021": 1297,
+    "2022": 1523,
+    "2023": 1567
+  },
+  {
+    "category": "Boru Hatları",
+    "1923": "(0)",
+    "1924": "(0)",
+    "1925": "(0)",
+    "1926": "(0)",
+    "1927": "(0)",
+    "1928": "(0)",
+    "1929": "(0)",
+    "1930": "(0)",
+    "1931": "(0)",
+    "1932": "(0)",
+    "1933": "(0)",
+    "1934": "(0)",
+    "1935": "(0)",
+    "1936": "(0)",
+    "1937": "(0)",
+    "1938": "(0)",
+    "1939": "(0)",
+    "1940": "(0)",
+    "1941": "(0)",
+    "1942": "(0)",
+    "1943": "(0)",
+    "1944": "(0)",
+    "1945": "(0)",
+    "1946": "(0)",
+    "1947": "(0)",
+    "1948": "(0)",
+    "1949": "(0)",
+    "1950": "(0)",
+    "1951": "(0)",
+    "1952": "(0)",
+    "1953": "(0)",
+    "1954": "(0)",
+    "1955": "(0)",
+    "1956": "(0)",
+    "1957": "(0)",
+    "1958": "(0)",
+    "1959": "(0)",
+    "1960": "(0)",
+    "1961": "(0)",
+    "1962": "(0)",
+    "1963": "(0)",
+    "1964": "(0)",
+    "1965": "(0)",
+    "1966": "(0)",
+    "1967": "(0)",
+    "1968": "(0)",
+    "1969": "(0)",
+    "1970": "(0)",
+    "1971": "(0)",
+    "1972": "(0)",
+    "1973": "(0)",
+    "1974": "(0)",
+    "1975": "(0)",
+    "1976": "(0)",
+    "1977": "(0)",
+    "1978": "(0)",
+    "1979": "(0)",
+    "1980": "(0)",
+    "1981": "(0)",
+    "1982": "(0)",
+    "1983": "(0)",
+    "1984": "(0)",
+    "1985": "(0)",
+    "1986": "(0)",
+    "1987": "(0)",
+    "1988": "(0)",
+    "1989": "(0)",
+    "1990": "(0)",
+    "1991": "(0)",
+    "1992": "(0)",
+    "1993": "(0)",
+    "1994": "(0)",
+    "1995": "(0)",
+    "1996": "(0)",
+    "1997": "(0)",
+    "1998": "(0)",
+    "1999": "(0)",
+    "2000": "(0)",
+    "2001": "(0)",
+    "2002": "(0)",
+    "2003": "(0)",
+    "2004": "(0)",
+    "2005": "(0)",
+    "2006": "(0)",
+    "2007": "(0)",
+    "2008": 209,
+    "2009": 209,
+    "2010": "(389)",
+    "2011": 209,
+    "2012": 201,
+    "2013": 165,
+    "2014": 177,
+    "2015": 260,
+    "2016": 273,
+    "2017": 309,
+    "2018": 167,
+    "2019": 290,
+    "2020": 284,
+    "2021": 273,
+    "2022": 266,
+    "2023": 166
+  },
+  {
+    "category": "Diğer Sektörler",
+    "1923": "(5)",
+    "1924": "(5)",
+    "1925": "(5)",
+    "1926": "(8)",
+    "1927": "(8)",
+    "1928": "(11)",
+    "1929": "(13)",
+    "1930": "(14)",
+    "1931": "(16)",
+    "1932": "(18)",
+    "1933": "(21)",
+    "1934": "(25)",
+    "1935": "(33)",
+    "1936": "(35)",
+    "1937": "(45)",
+    "1938": "(49)",
+    "1939": "(57)",
+    "1940": "(64)",
+    "1941": "(66)",
+    "1942": "(64)",
+    "1943": "(67)",
+    "1944": "(72)",
+    "1945": "(76)",
+    "1946": "(88)",
+    "1947": "(105)",
+    "1948": "(120)",
+    "1949": "(136)",
+    "1950": "(151)",
+    "1951": "(174)",
+    "1952": "(204)",
+    "1953": "(244)",
+    "1954": "(290)",
+    "1955": "(334)",
+    "1956": "(368)",
+    "1957": "(424)",
+    "1958": "(476)",
+    "1959": "(536)",
+    "1960": "(605)",
+    "1961": "(684)",
+    "1962": "(769)",
+    "1963": "(856)",
+    "1964": "(926)",
+    "1965": "(1103)",
+    "1966": "(1204)",
+    "1967": "(1376)",
+    "1968": "(1536)",
+    "1969": "(1746)",
+    "1970": "(2538)",
+    "1971": "(2861)",
+    "1972": 3227,
+    "1973": 3328,
+    "1974": 3657,
+    "1975": 4594,
+    "1976": 5400,
+    "1977": 5835,
+    "1978": 6369,
+    "1979": 6972,
+    "1980": 7241,
+    "1981": 7669,
+    "1982": 8203,
+    "1983": 8688,
+    "1984": 9425,
+    "1985": 9887,
+    "1986": 11082,
+    "1987": 12524,
+    "1988": 14109,
+    "1989": 15157,
+    "1990": 17263,
+    "1991": 20376,
+    "1992": 22011,
+    "1993": 24512,
+    "1994": 26773,
+    "1995": 28897,
+    "1996": 32980,
+    "1997": 37789,
+    "1998": 40914,
+    "1999": 44057,
+    "2000": 48733,
+    "2001": 49261,
+    "2002": 51825,
+    "2003": 55777,
+    "2004": 61531,
+    "2005": 69946,
+    "2006": 74253,
+    "2007": 79371,
+    "2008": 86551,
+    "2009": 85868,
+    "2010": 92129,
+    "2011": 97462,
+    "2012": 101822,
+    "2013": 103967,
+    "2014": 108680,
+    "2015": 112716,
+    "2016": 121750,
+    "2017": 131248,
+    "2018": 139329,
+    "2019": 140020,
+    "2020": 141239,
+    "2021": 147731,
+    "2022": 151448,
+    "2023": 157366
+  },
+  {
+    "category": "Konut, Ticarethane ve Hizmetler",
+    "1923": "(5)",
+    "1924": "(5)",
+    "1925": "(5)",
+    "1926": "(8)",
+    "1927": "(8)",
+    "1928": "(11)",
+    "1929": "(13)",
+    "1930": "(14)",
+    "1931": "(16)",
+    "1932": "(18)",
+    "1933": "(21)",
+    "1934": "(25)",
+    "1935": "(33)",
+    "1936": "(35)",
+    "1937": "(45)",
+    "1938": "(49)",
+    "1939": "(57)",
+    "1940": 64,
+    "1941": "(66)",
+    "1942": "(64)",
+    "1943": "(67)",
+    "1944": "(72)",
+    "1945": 76,
+    "1946": "(88)",
+    "1947": "(105)",
+    "1948": "(120)",
+    "1949": "(136)",
+    "1950": 151,
+    "1951": 174,
+    "1952": 204,
+    "1953": 244,
+    "1954": 290,
+    "1955": 334,
+    "1956": 368,
+    "1957": 424,
+    "1958": 476,
+    "1959": 536,
+    "1960": 605,
+    "1961": 684,
+    "1962": 769,
+    "1963": 856,
+    "1964": 926,
+    "1965": 1103,
+    "1966": 1204,
+    "1967": 1376,
+    "1968": 1536,
+    "1969": 1746,
+    "1970": 2502,
+    "1971": 2820,
+    "1972": 3180,
+    "1973": 3274,
+    "1974": 3600,
+    "1975": 4519,
+    "1976": 5295,
+    "1977": 5706,
+    "1978": 6238,
+    "1979": 6823,
+    "1980": 7081,
+    "1981": 7500,
+    "1982": 8015,
+    "1983": 8464,
+    "1984": 9165,
+    "1985": 9576,
+    "1986": 10756,
+    "1987": 12126,
+    "1988": 13684,
+    "1989": 14693,
+    "1990": 16688,
+    "1991": 19664,
+    "1992": 21152,
+    "1993": 23523,
+    "1994": 25579,
+    "1995": 27384,
+    "1996": 31155,
+    "1997": 35777,
+    "1998": 38566,
+    "1999": 41433,
+    "2000": 45663,
+    "2001": 46057,
+    "2002": 48335,
+    "2003": 52119,
+    "2004": 57636,
+    "2005": 65833,
+    "2006": 69812,
+    "2007": 74390,
+    "2008": 80745,
+    "2009": 80989,
+    "2010": 86544,
+    "2011": 92315,
+    "2012": 95972,
+    "2013": 99052,
+    "2014": 103519,
+    "2015": 107835,
+    "2016": 114945,
+    "2017": 124450,
+    "2018": 130051,
+    "2019": 139449,
+    "2020": 129689,
+    "2021": 133959,
+    "2022": 138020,
+    "2023": 144065
+  },
+  {
+    "category": "Tarım ve Hayvancılık",
+    "1923": "(0)",
+    "1924": "(0)",
+    "1925": "(0)",
+    "1926": "(0)",
+    "1927": "(0)",
+    "1928": "(0)",
+    "1929": "(0)",
+    "1930": "(0)",
+    "1931": "(0)",
+    "1932": "(0)",
+    "1933": "(0)",
+    "1934": "(0)",
+    "1935": "(0)",
+    "1936": "(0)",
+    "1937": "(0)",
+    "1938": "(0)",
+    "1939": "(0)",
+    "1940": "(0)",
+    "1941": "(0)",
+    "1942": "(0)",
+    "1943": "(0)",
+    "1944": "(0)",
+    "1945": "(0)",
+    "1946": "(0)",
+    "1947": "(0)",
+    "1948": "(0)",
+    "1949": "(0)",
+    "1950": "(0)",
+    "1951": "(0)",
+    "1952": "(0)",
+    "1953": "(0)",
+    "1954": "(0)",
+    "1955": "(0)",
+    "1956": "(0)",
+    "1957": "(0)",
+    "1958": "(0)",
+    "1959": "(0)",
+    "1960": "(0)",
+    "1961": "(0)",
+    "1962": "(0)",
+    "1963": "(0)",
+    "1964": "(0)",
+    "1965": "(0)",
+    "1966": "(0)",
+    "1967": "(0)",
+    "1968": "(0)",
+    "1969": "(0)",
+    "1970": 36,
+    "1971": 41,
+    "1972": 47,
+    "1973": 54,
+    "1974": 57,
+    "1975": 75,
+    "1976": 105,
+    "1977": 129,
+    "1978": 131,
+    "1979": 149,
+    "1980": 160,
+    "1981": 169,
+    "1982": 188,
+    "1983": 224,
+    "1984": 260,
+    "1985": 311,
+    "1986": 326,
+    "1987": 398,
+    "1988": 425,
+    "1989": 464,
+    "1990": 575,
+    "1991": 712,
+    "1992": 859,
+    "1993": 989,
+    "1994": 1194,
+    "1995": 1513,
+    "1996": 1825,
+    "1997": 2012,
+    "1998": 2348,
+    "1999": 2624,
+    "2000": 3070,
+    "2001": 3203,
+    "2002": 3490,
+    "2003": 3657,
+    "2004": 3895,
+    "2005": 4113,
+    "2006": 4441,
+    "2007": 4981,
+    "2008": 5806,
+    "2009": 4878,
+    "2010": 5585,
+    "2011": 5146,
+    "2012": 5849,
+    "2013": 4914,
+    "2014": 5161,
+    "2015": 4881,
+    "2016": 6805,
+    "2017": 6798,
+    "2018": 9278,
+    "2019": 9571,
+    "2020": 11550,
+    "2021": 13772,
+    "2022": 13427,
+    "2023": 13301
+  }
+];
+    </script>
+
+    <script>
+        // Global variables
+        let yearSlider = null;
+        let lineChart = null;
+        let barChart = null;
+        let pieChart = null;
+        let currentFilteredData = [];
+        let allYears = [];
+        let colorIndex = 0;
+        let startYear = 1923;
+        let endYear = 2023;
+
+        // Diverse color palette for sectoral consumption
+        const materialColors = [
+            '#F44336', '#2196F3', '#4CAF50', '#FF9800', '#9C27B0',
+            '#00BCD4', '#CDDC39', '#FF5722', '#795548', '#607D8B',
+            '#E91E63', '#3F51B5', '#009688', '#8BC34A', '#FFC107',
+            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C',
+            '#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA',
+            '#26A69A', '#D4E157', '#FF3D00', '#6D4C41', '#546E7A',
+            '#AD1457', '#5E35B1', '#00ACC1', '#7CB342', '#FFB300',
+            '#512DA8', '#66BB6A', '#FF8F00', '#D32F2F', '#7B1FA2'
+        ];
+
+        function getNextMaterialColor() {
+            const color = materialColors[colorIndex % materialColors.length];
+            colorIndex++;
+            return color;
+        }
+
+        function parseRedValue(value) {
+            if (value === null || value === undefined) return null;
+            if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                const numStr = value.slice(1, -1);
+                return parseFloat(numStr) || 0;
+            }
+            return parseFloat(value) || 0;
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use embeddedRawData from the included script file (Dataset C)
+            const data = typeof embeddedRawData !== 'undefined' ? embeddedRawData : [];
+            
+            if (data.length === 0) {
+                showNoDataMessage();
+                return;
+            }
+
+            console.log('Loaded', data.length, 'data series for Sectoral Consumption');
+            
+            // Extract all years from data
+            allYears = [];
+            data.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== 'category' && !isNaN(parseInt(key))) {
+                        const year = parseInt(key);
+                        if (!allYears.includes(year)) {
+                            allYears.push(year);
+                        }
+                    }
+                });
+            });
+            allYears.sort((a, b) => a - b);
+            
+            if (allYears.length > 0) {
+                startYear = allYears[0];
+                endYear = allYears[allYears.length - 1];
+            }
+
+            initializeFilters();
+            initializeEventListeners();
+            populateSeriesFilter();
+            applyFiltersAndRender();
+        });
+
+        function showNoDataMessage() {
+            document.querySelector('.content-panel').innerHTML = `
+                <div class="no-data-message">
+                    <h3>⚠️ Veri Yüklenemedi</h3>
+                    <p>Sektörel tüketim verileri yüklenemedi. Lütfen data/C/c_embedded_data.js dosyasının mevcut olduğunu kontrol edin.</p>
+                </div>
+            `;
+        }
+
+        function initializeFilters() {
+            // Initialize year range slider
+            const yearRangeSlider = document.getElementById('yearRangeSlider');
+            
+            noUiSlider.create(yearRangeSlider, {
+                start: [startYear, endYear],
+                connect: true,
+                range: {
+                    'min': allYears[0] || 1923,
+                    'max': allYears[allYears.length - 1] || 2023
+                },
+                step: 1,
+                format: {
+                    to: function(value) {
+                        return Math.round(value);
+                    },
+                    from: function(value) {
+                        return Number(value);
+                    }
+                }
+            });
+
+            // Update inputs when slider changes
+            yearRangeSlider.noUiSlider.on('update', function(values) {
+                startYear = parseInt(values[0]);
+                endYear = parseInt(values[1]);
+                document.getElementById('yearInputStart').value = startYear;
+                document.getElementById('yearInputEnd').value = endYear;
+            });
+
+            // Apply filters when slider stops moving
+            yearRangeSlider.noUiSlider.on('set', function() {
+                applyFiltersAndRender();
+            });
+
+            yearSlider = yearRangeSlider;
+        }
+
+        function initializeEventListeners() {
+            // Year input changes
+            document.getElementById('yearInputStart').addEventListener('change', handleYearInputChange);
+            document.getElementById('yearInputEnd').addEventListener('change', handleYearInputChange);
+
+            // Tab switching
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // Sector type filtering
+            document.querySelectorAll('input[name="sectorType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    populateSeriesFilter();
+                    applyFiltersAndRender();
+                });
+            });
+
+            // Filter buttons
+            document.getElementById('selectAllBtn').addEventListener('click', function() {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                });
+                applyFiltersAndRender();
+            });
+
+            document.getElementById('deselectAllBtn').addEventListener('click', function() {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
+                applyFiltersAndRender();
+            });
+
+            // Series search
+            document.getElementById('seriesSearch').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const checkboxes = document.querySelectorAll('#seriesCheckboxes .checkbox-item');
+                
+                checkboxes.forEach(item => {
+                    const label = item.querySelector('label');
+                    if (label) {
+                        const text = label.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                });
+            });
+
+            // Chart mode changes
+            document.querySelectorAll('input[name="barChartMode"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        renderBarChart();
+                    }
+                });
+            });
+
+            document.querySelectorAll('input[name="pieChartMode"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        renderPieChart();
+                    }
+                });
+            });
+
+            // Download buttons
+            document.getElementById('downloadFullData').addEventListener('click', () => downloadData('full'));
+            document.getElementById('downloadFilteredData').addEventListener('click', () => downloadData('filtered'));
+            
+            // Chart download buttons
+            document.getElementById('downloadLineChart').addEventListener('click', () => downloadChart('lineChart', 'sektorel_tuketim_cizgi_grafik.png'));
+            document.getElementById('downloadBarChart').addEventListener('click', () => downloadChart('barChart', 'sektorel_tuketim_sutun_grafik.png'));
+            document.getElementById('downloadPieChart').addEventListener('click', () => downloadChart('pieChart', 'sektorel_tuketim_pasta_grafik.png'));
+        }
+
+        function handleYearInputChange() {
+            const start = parseInt(document.getElementById('yearInputStart').value);
+            const end = parseInt(document.getElementById('yearInputEnd').value);
+            
+            if (!isNaN(start) && !isNaN(end) && start <= end) {
+                yearSlider.noUiSlider.set([start, end]);
+                startYear = start;
+                endYear = end;
+                applyFiltersAndRender();
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}Content`).classList.add('active');
+
+            // Render chart if needed
+            if (tabName === 'line') {
+                renderLineChart();
+            } else if (tabName === 'bar') {
+                renderBarChart();
+            } else if (tabName === 'pie') {
+                renderPieChart();
+            }
+        }
+
+        function categorizeDataBySector(item) {
+            const category = item.category.toLowerCase();
+            
+            // Industry sectors
+            if (category.includes('sanayi') || category.includes('gıda') || category.includes('tekstil') || 
+                category.includes('kimya') || category.includes('çimento') || category.includes('demir') ||
+                category.includes('kağıt') || category.includes('cam') || category.includes('seramik')) {
+                return 'industry';
+            }
+            
+            // Energy sectors
+            if (category.includes('net üretim') || category.includes('ithalat') || category.includes('ihracat') ||
+                category.includes('elektrik arzı') || category.includes('kayıp')) {
+                return 'energy';
+            }
+            
+            // Other sectors (residential, commercial, transport, etc.)
+            return 'other';
+        }
+
+        function populateSeriesFilter() {
+            const container = document.getElementById('seriesCheckboxes');
+            container.innerHTML = '';
+            
+            const data = typeof embeddedRawData !== 'undefined' ? embeddedRawData : [];
+            const sectorType = document.querySelector('input[name="sectorType"]:checked').value;
+            
+            // Filter data based on selected sector type
+            let filteredData = data;
+            if (sectorType !== 'all') {
+                filteredData = data.filter(item => categorizeDataBySector(item) === sectorType);
+            }
+            
+            filteredData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `series-${index}`;
+                checkbox.value = item.category;
+                checkbox.addEventListener('change', applyFiltersAndRender);
+                
+                // Check first few items by default
+                if (index < 5) {
+                    checkbox.checked = true;
+                }
+                
+                const label = document.createElement('label');
+                label.htmlFor = `series-${index}`;
+                label.textContent = item.category;
+                
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        }
+
+        function setupTopScrollbar() {
+            const topScrollbar = document.querySelector('.top-scrollbar');
+            const topScrollbarThumb = document.querySelector('.top-scrollbar-thumb');
+            const tableContainer = document.getElementById('mainTableContainer');
+            const dataTable = document.querySelector('.data-table');
+            
+            if (!topScrollbar || !tableContainer || !dataTable) return;
+            
+            // Set the thumb width to match the table content width
+            const tableWidth = dataTable.offsetWidth;
+            topScrollbarThumb.style.width = tableWidth + 'px';
+            
+            // Synchronize scrolling: top scrollbar -> table
+            topScrollbar.addEventListener('scroll', function() {
+                tableContainer.scrollLeft = topScrollbar.scrollLeft;
+            });
+            
+            // Synchronize scrolling: table -> top scrollbar
+            tableContainer.addEventListener('scroll', function() {
+                topScrollbar.scrollLeft = tableContainer.scrollLeft;
+            });
+        }
+
+        function applyFiltersAndRender() {
+            const selectedSeries = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+
+            if (selectedSeries.length === 0) {
+                currentFilteredData = [];
+                renderTable();
+                clearCharts();
+                return;
+            }
+
+            const data = typeof embeddedRawData !== 'undefined' ? embeddedRawData : [];
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            currentFilteredData = selectedSeries.map(seriesName => {
+                const seriesData = data.find(item => item.category === seriesName);
+                if (!seriesData) return null;
+                
+                const result = { category: seriesData.category };
+                yearsInRange.forEach(year => {
+                    result[year] = seriesData[year];
+                });
+                return result;
+            }).filter(item => item !== null);
+
+            renderTable();
+            renderLineChart();
+            renderBarChart();
+            renderPieChart();
+        }
+
+        function renderTable() {
+            const container = document.getElementById('tableContainer');
+            
+            if (currentFilteredData.length === 0) {
+                container.innerHTML = '<div class="no-data-message">Gösterilecek veri yok. Lütfen en az bir sektör seçin.</div>';
+                return;
+            }
+
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            let tableHTML = '<table class="data-table"><thead><tr>';
+            tableHTML += '<th class="sticky-col">Sektör/Kategori</th>';
+            yearsInRange.forEach(year => {
+                tableHTML += `<th>${year}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+
+            currentFilteredData.forEach(item => {
+                tableHTML += '<tr>';
+                tableHTML += `<td class="sticky-col">${item.category}</td>`;
+                
+                yearsInRange.forEach(year => {
+                    const value = item[year];
+                    let displayValue = '';
+                    let className = '';
+                    
+                    if (value !== null && value !== undefined) {
+                        if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                            displayValue = value;
+                            className = 'red-value';
+                        } else {
+                            displayValue = parseFloat(value).toLocaleString('tr-TR');
+                        }
+                    }
+                    
+                    tableHTML += `<td class="${className}">${displayValue}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+
+            tableHTML += '</tbody></table>';
+            container.innerHTML = tableHTML;
+            
+            // Setup top scrollbar synchronization
+            setupTopScrollbar();
+        }
+
+        function renderLineChart() {
+            const canvas = document.getElementById('lineChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (lineChart) {
+                lineChart.destroy();
+            }
+
+            if (currentFilteredData.length === 0) {
+                return;
+            }
+
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            colorIndex = 0; // Reset colors
+            
+            const datasets = currentFilteredData.map(item => {
+                const data = yearsInRange.map(year => parseRedValue(item[year]));
+                const color = getNextMaterialColor();
+                
+                return {
+                    label: item.category,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 0
+                };
+            });
+
+            lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: yearsInRange,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { 
+                                display: true, 
+                                text: 'Değer (GWh)' 
+                            }
+                        },
+                        x: { 
+                            title: { 
+                                display: true, 
+                                text: 'Yıl' 
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: { 
+                            display: true, 
+                            text: 'Sektörel Elektrik Tüketimi Trendi',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderBarChart() {
+            const canvas = document.getElementById('barChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (barChart) {
+                barChart.destroy();
+            }
+
+            if (currentFilteredData.length === 0) {
+                return;
+            }
+
+            const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            colorIndex = 0; // Reset colors
+            
+            const chartData = currentFilteredData.map(item => {
+                const yearValues = yearsInRange.map(year => parseRedValue(item[year])).filter(v => v !== null);
+                
+                let value = 0;
+                if (yearValues.length > 0) {
+                    if (calculationMode === 'sum') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0);
+                    } else if (calculationMode === 'average') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
+                    } else if (calculationMode === 'last') {
+                        value = yearValues[yearValues.length - 1];
+                    }
+                }
+                
+                return {
+                    label: item.category,
+                    value: value,
+                    color: getNextMaterialColor()
+                };
+            });
+
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        label: `Değer (${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'})`,
+                        data: chartData.map(item => item.value),
+                        backgroundColor: chartData.map(item => item.color),
+                        borderColor: chartData.map(item => item.color),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { 
+                                display: true, 
+                                text: 'Değer (GWh)' 
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            display: false 
+                        },
+                        title: { 
+                            display: true, 
+                            text: `Sektörel Tüketim - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPieChart() {
+            const canvas = document.getElementById('pieChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (pieChart) {
+                pieChart.destroy();
+            }
+
+            if (currentFilteredData.length === 0) {
+                return;
+            }
+
+            const calculationMode = document.querySelector('input[name="pieChartMode"]:checked').value;
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            colorIndex = 0; // Reset colors
+            
+            const chartData = currentFilteredData.map(item => {
+                const yearValues = yearsInRange.map(year => parseRedValue(item[year])).filter(v => v !== null && v > 0);
+                
+                let value = 0;
+                if (yearValues.length > 0) {
+                    if (calculationMode === 'sum') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0);
+                    } else if (calculationMode === 'average') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
+                    } else if (calculationMode === 'last') {
+                        value = yearValues[yearValues.length - 1];
+                    }
+                }
+                
+                return {
+                    label: item.category,
+                    value: value,
+                    color: getNextMaterialColor()
+                };
+            }).filter(item => item.value > 0); // Only include positive values
+
+            pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        data: chartData.map(item => item.value),
+                        backgroundColor: chartData.map(item => item.color),
+                        borderColor: chartData.map(item => item.color),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 15,
+                                boxHeight: 15,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: { 
+                            display: true, 
+                            text: `Sektörel Dağılım - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function clearCharts() {
+            if (lineChart) {
+                lineChart.destroy();
+                lineChart = null;
+            }
+            if (barChart) {
+                barChart.destroy();
+                barChart = null;
+            }
+            if (pieChart) {
+                pieChart.destroy();
+                pieChart = null;
+            }
+        }
+
+        function downloadData(type) {
+            let data, filename;
+            
+            if (type === 'full') {
+                const allData = typeof embeddedRawData !== 'undefined' ? embeddedRawData : [];
+                data = convertToCSV(allData, allYears);
+                filename = 'sektorel_tuketim_tam_veri.csv';
+            } else {
+                if (currentFilteredData.length === 0) {
+                    alert('İndirilecek filtrelenmiş veri yok.');
+                    return;
+                }
+                const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+                data = convertToCSV(currentFilteredData, yearsInRange);
+                filename = `sektorel_tuketim_filtreli_${startYear}_${endYear}.csv`;
+            }
+            
+            triggerDownload(data, filename);
+        }
+
+        function convertToCSV(data, years) {
+            const headers = ['Kategori', ...years.map(String)];
+            const rows = [headers];
+            
+            data.forEach(item => {
+                const row = [item.category];
+                years.forEach(year => {
+                    let value = item[year];
+                    if (value === null || value === undefined) {
+                        value = '';
+                    }
+                    row.push(value);
+                });
+                rows.push(row);
+            });
+            
+            return rows.map(row => 
+                row.map(cell => {
+                    const str = String(cell);
+                    return str.includes(',') ? `"${str}"` : str;
+                }).join(',')
+            ).join('\r\n');
+        }
+
+        function triggerDownload(csvData, filename) {
+            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadChart(chartId, filename) {
+            const canvas = document.getElementById(chartId);
+            if (!canvas) {
+                alert('Grafik bulunamadı.');
+                return;
+            }
+
+            // Create a temporary canvas with white background
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+
+            // Fill with white background
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Draw the chart on top
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            // Download
+            tempCanvas.toBlob(function(blob) {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+        }
+    </script>
+</div></body>
+</html> 
