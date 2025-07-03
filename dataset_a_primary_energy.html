@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi (1972-2023)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333; 
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content-layout {
+            display: flex;
+            gap: 0;
+        }
+        
+        .filters-panel {
+            width: 350px;
+            background: #f8f9fa;
+            padding: 2rem;
+            border-right: 1px solid #e9ecef;
+        }
+        
+        .content-panel {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: #006400;
+            font-size: 1rem;
+        }
+        
+        .year-range-container {
+            margin: 1.5rem 0;
+        }
+        
+        .year-inputs {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .year-inputs input {
+            width: 80px;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .year-inputs span {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        #yearRangeSlider {
+            margin: 1.5rem 0;
+        }
+        
+        #yearRangeSlider .noUi-connect {
+            background: #006400;
+        }
+        
+        #yearRangeSlider .noUi-handle {
+            border-color: #006400;
+            background: #fff;
+        }
+        
+        .series-checkboxes {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #f1f3f4;
+            transition: background 0.2s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .checkbox-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 0.8rem;
+            accent-color: #006400;
+            transform: scale(1.1);
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-buttons button {
+            flex: 1;
+            padding: 0.7rem;
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-buttons button:hover {
+            background: #006400;
+            color: white;
+            border-color: #006400;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: #006400;
+            background: #f8f9fa;
+        }
+        
+        .tab-button.active {
+            color: #006400;
+            border-bottom-color: #006400;
+            background: #f8f9fa;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #006400;
+        }
+        
+        .data-table tbody tr:nth-child(odd) {
+            background: #fbfcfd;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f0f8f0;
+        }
+        
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        
+        .red-value {
+            color: #dc3545;
+            font-style: italic;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .download-buttons button {
+            padding: 1rem 1.5rem;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,100,0,0.2);
+        }
+        
+        .download-buttons button:hover {
+            background: #004d00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,100,0,0.3);
+        }
+        
+        .calculation-mode {
+            margin: 1rem 0;
+        }
+        
+        .mode-options {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #006400;
+            background: #f0f0f0;
+            width: fit-content;
+        }
+        
+        .mode-options label {
+            padding: 0.8rem 1.2rem;
+            margin: 0;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            color: #006400;
+            transition: all 0.2s ease;
+            border-right: 1px solid #006400;
+        }
+        
+        .mode-options label:last-child {
+            border-right: none;
+        }
+        
+        .mode-options input[type="radio"] {
+            display: none;
+        }
+        
+        .mode-options input[type="radio"]:checked + label {
+            background: #006400;
+            color: white;
+        }
+        
+        .no-data-message {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content-layout {
+                flex-direction: column;
+            }
+            
+            .filters-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .year-inputs {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi</h1>
+            <p>Türkiye'nin 1972-2023 dönemi birincil enerji üretimi, ithalatı ve ihracatı</p>
+        </div>
+        
+        <div class="content-layout">
+            <div class="filters-panel">
+                <div class="filter-group">
+                    <label>Yıl Aralığı</label>
+                    <div class="year-range-container">
+                        <div id="yearRangeSlider"></div>
+                        <div class="year-inputs">
+                            <input type="number" id="yearInputStart" min="1972" max="2023" value="1972">
+                            <span>-</span>
+                            <input type="number" id="yearInputEnd" min="1972" max="2023" value="2023">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Veri Serileri</label>
+                    <input type="text" id="seriesSearch" class="search-input" placeholder="Kategori ara...">
+                    <div class="filter-buttons">
+                        <button id="selectAllBtn">Hepsini Seç</button>
+                        <button id="deselectAllBtn">Hiçbirini Seçme</button>
+                    </div>
+                    <div id="seriesCheckboxes" class="series-checkboxes"></div>
+                </div>
+            </div>
+            
+            <div class="content-panel">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="table">Tablo</button>
+                    <button class="tab-button" data-tab="line">Çizgi Grafik</button>
+                    <button class="tab-button" data-tab="bar">Sütun Grafik</button>
+                    <button class="tab-button" data-tab="pie">Pasta Grafik</button>
+                </div>
+                
+                <div id="tableContent" class="tab-content active">
+                    <div id="tableContainer"></div>
+                </div>
+                
+                <div id="lineContent" class="tab-content">
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+                
+                <div id="barContent" class="tab-content">
+                    <div class="calculation-mode">
+                        <label>Hesaplama Türü:</label>
+                        <div class="mode-options">
+                            <input type="radio" id="mode-sum" name="barChartMode" value="sum" checked>
+                            <label for="mode-sum">Toplam</label>
+                            <input type="radio" id="mode-average" name="barChartMode" value="average">
+                            <label for="mode-average">Ortalama</label>
+                            <input type="radio" id="mode-last" name="barChartMode" value="last">
+                            <label for="mode-last">Son Değer</label>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="pieContent" class="tab-content">
+                    <div class="calculation-mode">
+                        <label>Hesaplama Türü:</label>
+                        <div class="mode-options">
+                            <input type="radio" id="pie-mode-sum" name="pieChartMode" value="sum" checked>
+                            <label for="pie-mode-sum">Toplam</label>
+                            <input type="radio" id="pie-mode-average" name="pieChartMode" value="average">
+                            <label for="pie-mode-average">Ortalama</label>
+                            <input type="radio" id="pie-mode-last" name="pieChartMode" value="last">
+                            <label for="pie-mode-last">Son Değer</label>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="download-buttons">
+                    <button id="downloadFullData">Tam Veri İndir (CSV)</button>
+                    <button id="downloadFilteredData">Filtrelenmiş Veri İndir (CSV)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded data -->
+    <script src="data/a/data_a_embedded.js"></script>
+
+    <script>
+        // Global variables
+        let yearSlider = null;
+        let lineChart = null;
+        let barChart = null;
+        let pieChart = null;
+        let currentFilteredData = [];
+        let allYears = [];
+        let colorIndex = 0;
+        let startYear = 1972;
+        let endYear = 2023;
+
+        // Material Design color palette
+        const materialColors = [
+            '#2196F3', '#4CAF50', '#FF9800', '#F44336', '#9C27B0',
+            '#00BCD4', '#CDDC39', '#FF5722', '#795548', '#607D8B',
+            '#E91E63', '#3F51B5', '#009688', '#8BC34A', '#FFC107',
+            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C'
+        ];
+
+        function getNextMaterialColor() {
+            const color = materialColors[colorIndex % materialColors.length];
+            colorIndex++;
+            return color;
+        }
+
+        function parseRedValue(value) {
+            if (value === null || value === undefined) return null;
+            if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                const numStr = value.slice(1, -1);
+                return parseFloat(numStr) || 0;
+            }
+            return parseFloat(value) || 0;
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use embeddedDataA from the included script file
+            const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
+            
+            if (data.length === 0) {
+                showNoDataMessage();
+                return;
+            }
+
+            console.log('Loaded', data.length, 'data series for Primary Energy');
+            
+            // Extract all years from data
+            allYears = [];
+            data.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== 'Kategori' && !isNaN(parseInt(key))) {
+                        const year = parseInt(key);
+                        if (!allYears.includes(year)) {
+                            allYears.push(year);
+                        }
+                    }
+                });
+            });
+            allYears.sort((a, b) => a - b);
+            
+            if (allYears.length > 0) {
+                startYear = allYears[0];
+                endYear = allYears[allYears.length - 1];
+            }
+
+            initializeFilters();
+            initializeEventListeners();
+            populateSeriesFilter();
+            applyFiltersAndRender();
+        });
+
+        function showNoDataMessage() {
+            document.querySelector('.content-panel').innerHTML = `
+                <div class="no-data-message">
+                    <h3>⚠️ Veri Yüklenemedi</h3>
+                    <p>Birincil enerji verileri yüklenemedi. Lütfen data/a/data_a_embedded.js dosyasının mevcut olduğunu kontrol edin.</p>
+                </div>
+            `;
+        }
+
+        function initializeFilters() {
+            // Initialize year range slider
+            const yearRangeSlider = document.getElementById('yearRangeSlider');
+            
+            noUiSlider.create(yearRangeSlider, {
+                start: [startYear, endYear],
+                connect: true,
+                range: {
+                    'min': allYears[0] || 1972,
+                    'max': allYears[allYears.length - 1] || 2023
+                },
+                step: 1,
+                format: {
+                    to: function(value) {
+                        return Math.round(value);
+                    },
+                    from: function(value) {
+                        return Number(value);
+                    }
+                }
+            });
+
+            // Update inputs when slider changes
+            yearRangeSlider.noUiSlider.on('update', function(values) {
+                startYear = parseInt(values[0]);
+                endYear = parseInt(values[1]);
+                document.getElementById('yearInputStart').value = startYear;
+                document.getElementById('yearInputEnd').value = endYear;
+            });
+
+            // Apply filters when slider stops moving
+            yearRangeSlider.noUiSlider.on('set', function() {
+                applyFiltersAndRender();
+            });
+
+            yearSlider = yearRangeSlider;
+        }
+
+        function initializeEventListeners() {
+            // Year input changes
+            document.getElementById('yearInputStart').addEventListener('change', handleYearInputChange);
+            document.getElementById('yearInputEnd').addEventListener('change', handleYearInputChange);
+
+            // Tab switching
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // Filter buttons
+            document.getElementById('selectAllBtn').addEventListener('click', function() {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                });
+                applyFiltersAndRender();
+            });
+
+            document.getElementById('deselectAllBtn').addEventListener('click', function() {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
+                applyFiltersAndRender();
+            });
+
+            // Series search
+            document.getElementById('seriesSearch').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const checkboxes = document.querySelectorAll('#seriesCheckboxes .checkbox-item');
+                
+                checkboxes.forEach(item => {
+                    const label = item.querySelector('label');
+                    if (label) {
+                        const text = label.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                });
+            });
+
+            // Bar chart mode changes
+            document.querySelectorAll('input[name="barChartMode"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        renderBarChart();
+                    }
+                });
+            });
+
+            // Pie chart mode changes
+            document.querySelectorAll('input[name="pieChartMode"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        renderPieChart();
+                    }
+                });
+            });
+
+            // Download buttons
+            document.getElementById('downloadFullData').addEventListener('click', () => downloadData('full'));
+            document.getElementById('downloadFilteredData').addEventListener('click', () => downloadData('filtered'));
+        }
+
+        function handleYearInputChange() {
+            const start = parseInt(document.getElementById('yearInputStart').value);
+            const end = parseInt(document.getElementById('yearInputEnd').value);
+            
+            if (!isNaN(start) && !isNaN(end) && start <= end) {
+                yearSlider.noUiSlider.set([start, end]);
+                startYear = start;
+                endYear = end;
+                applyFiltersAndRender();
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}Content`).classList.add('active');
+
+            // Render chart if needed
+            if (tabName === 'line') {
+                renderLineChart();
+            } else if (tabName === 'bar') {
+                renderBarChart();
+            } else if (tabName === 'pie') {
+                renderPieChart();
+            }
+        }
+
+        function populateSeriesFilter() {
+            const container = document.getElementById('seriesCheckboxes');
+            container.innerHTML = '';
+            
+            const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
+            
+            data.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `series-${index}`;
+                checkbox.value = item.Kategori;
+                checkbox.addEventListener('change', applyFiltersAndRender);
+                
+                // Check first few items by default
+                if (index < 3) {
+                    checkbox.checked = true;
+                }
+                
+                const label = document.createElement('label');
+                label.htmlFor = `series-${index}`;
+                label.textContent = item.Kategori;
+                
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        }
+
+        function applyFiltersAndRender() {
+            const selectedSeries = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+
+            if (selectedSeries.length === 0) {
+                currentFilteredData = [];
+                renderTable();
+                clearCharts();
+                return;
+            }
+
+            const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            currentFilteredData = selectedSeries.map(seriesName => {
+                const seriesData = data.find(item => item.Kategori === seriesName);
+                if (!seriesData) return null;
+                
+                const result = { Kategori: seriesName };
+                yearsInRange.forEach(year => {
+                    result[year] = seriesData[year];
+                });
+                return result;
+            }).filter(item => item !== null);
+
+            renderTable();
+            renderLineChart();
+            renderBarChart();
+            renderPieChart();
+        }
+
+        function renderTable() {
+            const container = document.getElementById('tableContainer');
+            
+            if (currentFilteredData.length === 0) {
+                container.innerHTML = '<div class="no-data-message">Gösterilecek veri yok. Lütfen en az bir kategori seçin.</div>';
+                return;
+            }
+
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            let tableHTML = '<table class="data-table"><thead><tr>';
+            tableHTML += '<th class="sticky-col">Kategori</th>';
+            yearsInRange.forEach(year => {
+                tableHTML += `<th>${year}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+
+            currentFilteredData.forEach(item => {
+                tableHTML += '<tr>';
+                tableHTML += `<td class="sticky-col">${item.Kategori}</td>`;
+                yearsInRange.forEach(year => {
+                    const value = item[year];
+                    let displayValue = '';
+                    let className = '';
+                    
+                    if (value !== null && value !== undefined) {
+                        if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                            displayValue = value;
+                            className = 'red-value';
+                        } else {
+                            displayValue = parseFloat(value).toLocaleString('tr-TR');
+                        }
+                    }
+                    
+                    tableHTML += `<td class="${className}">${displayValue}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+
+            tableHTML += '</tbody></table>';
+            container.innerHTML = tableHTML;
+        }
+
+        function renderLineChart() {
+            const canvas = document.getElementById('lineChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (lineChart) {
+                lineChart.destroy();
+            }
+
+            if (currentFilteredData.length === 0) {
+                return;
+            }
+
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            colorIndex = 0; // Reset colors
+            
+            const datasets = currentFilteredData.map(item => {
+                const data = yearsInRange.map(year => parseRedValue(item[year]));
+                const color = getNextMaterialColor();
+                
+                return {
+                    label: item.Kategori,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: color + '20',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.1
+                };
+            });
+
+            lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: yearsInRange,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { 
+                                display: true, 
+                                text: 'Değer (Bin TEP)' 
+                            }
+                        },
+                        x: { 
+                            title: { 
+                                display: true, 
+                                text: 'Yıl' 
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 6
+                            }
+                        },
+                        title: { 
+                            display: true, 
+                            text: 'Birincil Enerji Üretimi ve Tüketimi Trendi'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderBarChart() {
+            const canvas = document.getElementById('barChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (barChart) {
+                barChart.destroy();
+            }
+
+            if (currentFilteredData.length === 0) {
+                return;
+            }
+
+            const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            colorIndex = 0; // Reset colors
+            
+            const chartData = currentFilteredData.map(item => {
+                const yearValues = yearsInRange.map(year => parseRedValue(item[year])).filter(v => v !== null);
+                
+                let value = 0;
+                if (yearValues.length > 0) {
+                    if (calculationMode === 'sum') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0);
+                    } else if (calculationMode === 'average') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
+                    } else if (calculationMode === 'last') {
+                        value = yearValues[yearValues.length - 1];
+                    }
+                }
+                
+                return {
+                    label: item.Kategori,
+                    value: value,
+                    color: getNextMaterialColor()
+                };
+            });
+
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        label: `Değer (${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'})`,
+                        data: chartData.map(item => item.value),
+                        backgroundColor: chartData.map(item => item.color + '80'),
+                        borderColor: chartData.map(item => item.color),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { 
+                                display: true, 
+                                text: 'Değer (Bin TEP)' 
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            display: false 
+                        },
+                        title: { 
+                            display: true, 
+                            text: `Birincil Enerji - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPieChart() {
+            const canvas = document.getElementById('pieChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (pieChart) {
+                pieChart.destroy();
+            }
+
+            if (currentFilteredData.length === 0) {
+                return;
+            }
+
+            const calculationMode = document.querySelector('input[name="pieChartMode"]:checked').value;
+            const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+            
+            colorIndex = 0; // Reset colors
+            
+            const chartData = currentFilteredData.map(item => {
+                const yearValues = yearsInRange.map(year => parseRedValue(item[year])).filter(v => v !== null && v > 0);
+                
+                let value = 0;
+                if (yearValues.length > 0) {
+                    if (calculationMode === 'sum') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0);
+                    } else if (calculationMode === 'average') {
+                        value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
+                    } else if (calculationMode === 'last') {
+                        value = yearValues[yearValues.length - 1];
+                    }
+                }
+                
+                return {
+                    label: item.Kategori,
+                    value: value,
+                    color: getNextMaterialColor()
+                };
+            }).filter(item => item.value > 0); // Only include positive values
+
+            pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        data: chartData.map(item => item.value),
+                        backgroundColor: chartData.map(item => item.color),
+                        borderColor: chartData.map(item => item.color),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 15
+                            }
+                        },
+                        title: { 
+                            display: true, 
+                            text: `Birincil Enerji Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                        }
+                    }
+                }
+            });
+        }
+
+        function clearCharts() {
+            if (lineChart) {
+                lineChart.destroy();
+                lineChart = null;
+            }
+            if (barChart) {
+                barChart.destroy();
+                barChart = null;
+            }
+            if (pieChart) {
+                pieChart.destroy();
+                pieChart = null;
+            }
+        }
+
+        function downloadData(type) {
+            let data, filename;
+            
+            if (type === 'full') {
+                const allData = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
+                data = convertToCSV(allData, allYears);
+                filename = 'birincil_enerji_tam_veri.csv';
+            } else {
+                if (currentFilteredData.length === 0) {
+                    alert('İndirilecek filtrelenmiş veri yok.');
+                    return;
+                }
+                const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
+                data = convertToCSV(currentFilteredData, yearsInRange);
+                filename = `birincil_enerji_filtreli_${startYear}_${endYear}.csv`;
+            }
+            
+            triggerDownload(data, filename);
+        }
+
+        function convertToCSV(data, years) {
+            const headers = ['Kategori', ...years.map(String)];
+            const rows = [headers];
+            
+            data.forEach(item => {
+                const row = [item.Kategori];
+                years.forEach(year => {
+                    let value = item[year];
+                    if (value === null || value === undefined) {
+                        value = '';
+                    }
+                    row.push(value);
+                });
+                rows.push(row);
+            });
+            
+            return rows.map(row => 
+                row.map(cell => {
+                    const str = String(cell);
+                    return str.includes(',') ? `"${str}"` : str;
+                }).join(',')
+            ).join('\r\n');
+        }
+
+        function triggerDownload(csvData, filename) {
+            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html> 

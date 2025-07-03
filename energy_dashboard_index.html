@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkiye Enerji Veri Paneli - Ana Sayfa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .datasets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .dataset-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dataset-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            transition: height 0.3s ease;
+        }
+
+        .dataset-card.primary::before {
+            background: linear-gradient(135deg, #006400, #228B22);
+        }
+
+        .dataset-card.electricity::before {
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+        }
+
+        .dataset-card.sectoral::before {
+            background: linear-gradient(135deg, #ff6f00, #ff8f00);
+        }
+
+        .dataset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .dataset-card:hover::before {
+            height: 8px;
+        }
+
+        .dataset-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .dataset-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dataset-card.primary h2 {
+            color: #006400;
+        }
+
+        .dataset-card.electricity h2 {
+            color: #1976d2;
+        }
+
+        .dataset-card.sectoral h2 {
+            color: #ff6f00;
+        }
+
+        .dataset-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .dataset-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-badge {
+            background: #f0f0f0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .dataset-card.primary .detail-badge {
+            background: #e8f5e8;
+            color: #006400;
+        }
+
+        .dataset-card.electricity .detail-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .dataset-card.sectoral .detail-badge {
+            background: #fff3e0;
+            color: #ff6f00;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #333;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .dataset-card.primary .action-button {
+            background: #006400;
+        }
+
+        .dataset-card.electricity .action-button {
+            background: #1976d2;
+        }
+
+        .dataset-card.sectoral .action-button {
+            background: #ff6f00;
+        }
+
+        .action-button:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+            }
+
+            .datasets-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .dataset-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🇹🇷 Türkiye Enerji Veri Paneli</h1>
+        <p>Türkiye'nin 1923-2023 dönemi enerji üretimi, tüketimi ve sektörel dağılımlarını keşfetmek için etkileşimli veri görselleştirme araçları</p>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="datasets-grid">
+            <!-- Dataset A: Primary Energy -->
+            <a href="dataset_a_primary_energy.html" class="dataset-card primary">
+                <span class="dataset-icon">🏭</span>
+                <h2>Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi</h2>
+                <p>Türkiye'nin birincil enerji kaynaklarına göre üretim, ithalat, ihracat ve tüketim verilerini analiz edin.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">1972-2023</span>
+                    <span class="detail-badge">Bin TEP</span>
+                    <span class="detail-badge">50+ Kategori</span>
+                </div>
+                <div class="action-button">
+                    Verileri Keşfet <span>→</span>
+                </div>
+            </a>
+
+            <!-- Dataset B: Electricity -->
+            <a href="dataset_b_electricity.html" class="dataset-card electricity">
+                <span class="dataset-icon">⚡</span>
+                <h2>Elektrik Enerjisinin Kaynaklara Göre Kurulu Gücü ve Üretimi</h2>
+                <p>Elektrik üretim kapasitesi ve üretim miktarlarını kaynak bazında detaylı şekilde inceleyin.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">1970-2023</span>
+                    <span class="detail-badge">MW / GWh</span>
+                    <span class="detail-badge">Kaynak Bazlı</span>
+                </div>
+                <div class="action-button">
+                    Verileri Keşfet <span>→</span>
+                </div>
+            </a>
+
+            <!-- Dataset C: Sectoral Consumption -->
+            <a href="dataset_c_sectoral_consumption.html" class="dataset-card sectoral">
+                <span class="dataset-icon">📊</span>
+                <h2>Elektrik Brüt Üretimi - Sektörel Tüketim Dağılımı</h2>
+                <p>100 yıllık elektrik üretimi ve sektörel tüketim dağılımını pasta grafikleri ile görselleştirin.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">1923-2023</span>
+                    <span class="detail-badge">GWh</span>
+                    <span class="detail-badge">100+ Sektör</span>
+                    <span class="detail-badge">Asırlık Veri</span>
+                </div>
+                <div class="action-button">
+                    Verileri Keşfet <span>→</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>
+            Veriler <a href="https://ourworldindata.org" target="_blank">Our World in Data</a> tarzında etkileşimli görselleştirmelerle sunulmuştur.<br>
+            Tüm veriler istemci tarafında işlenir ve şeffaflık için açık kaynaklıdır.
+        </p>
+    </div>
+
+    <script>
+        // Add some interactive hover effects
+        document.querySelectorAll('.dataset-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add click analytics (optional)
+        document.querySelectorAll('.dataset-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const datasetName = this.querySelector('h2').textContent;
+                console.log(`User navigated to: ${datasetName}`);
+                
+                // You could add Google Analytics or other tracking here
+                // gtag('event', 'dataset_access', {
+                //     'dataset_name': datasetName
+                // });
+            });
+        });
+    </script>
+</body>
+</html> 
