@@ -611,12 +611,16 @@
         let startYear = 1923;
         let endYear = 2023;
 
-        // Material Design color palette for sectoral data (warm tones)
+        // Diverse color palette for sectoral consumption
         const materialColors = [
-            '#FF9800', '#FF5722', '#E91E63', '#9C27B0', '#673AB7',
-            '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4', '#009688',
-            '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF6F00',
-            '#795548', '#9E9E9E', '#607D8B', '#F44336', '#8E24AA'
+            '#F44336', '#2196F3', '#4CAF50', '#FF9800', '#9C27B0',
+            '#00BCD4', '#CDDC39', '#FF5722', '#795548', '#607D8B',
+            '#E91E63', '#3F51B5', '#009688', '#8BC34A', '#FFC107',
+            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C',
+            '#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA',
+            '#26A69A', '#D4E157', '#FF3D00', '#6D4C41', '#546E7A',
+            '#AD1457', '#5E35B1', '#00ACC1', '#7CB342', '#FFB300',
+            '#512DA8', '#66BB6A', '#FF8F00', '#D32F2F', '#7B1FA2'
         ];
 
         function getNextMaterialColor() {
@@ -986,10 +990,11 @@
                     label: item.category,
                     data: data,
                     borderColor: color,
-                    backgroundColor: color + '20',
-                    borderWidth: 2,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
                     fill: false,
-                    tension: 0.1
+                    tension: 0.1,
+                    pointRadius: 0
                 };
             });
 
@@ -1019,15 +1024,24 @@
                     },
                     plugins: {
                         legend: { 
-                            position: 'top',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 6
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         title: { 
                             display: true, 
-                            text: 'Sektörel Elektrik Tüketimi Trendi'
+                            text: 'Sektörel Elektrik Tüketimi Trendi',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -1079,9 +1093,9 @@
                     datasets: [{
                         label: `Değer (${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'})`,
                         data: chartData.map(item => item.value),
-                        backgroundColor: chartData.map(item => item.color + '80'),
+                        backgroundColor: chartData.map(item => item.color),
                         borderColor: chartData.map(item => item.color),
-                        borderWidth: 2
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -1163,15 +1177,24 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { 
-                            position: 'right',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 15
+                                boxWidth: 15,
+                                boxHeight: 15,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         title: { 
                             display: true, 
-                            text: `Sektörel Dağılım - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                            text: `Sektörel Dağılım - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }

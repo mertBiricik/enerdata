@@ -598,12 +598,16 @@
         let startYear = 1970;
         let endYear = 2023;
 
-        // Material Design color palette for electricity (blue tones)
+        // Diverse color palette for electricity
         const materialColors = [
-            '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50',
-            '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722',
-            '#795548', '#9E9E9E', '#607D8B', '#E91E63', '#9C27B0',
-            '#673AB7', '#3F51B5', '#1976D2', '#0277BD', '#0288D1'
+            '#2196F3', '#FF9800', '#4CAF50', '#F44336', '#9C27B0',
+            '#00BCD4', '#CDDC39', '#FF5722', '#795548', '#607D8B',
+            '#E91E63', '#3F51B5', '#009688', '#8BC34A', '#FFC107',
+            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C',
+            '#1E88E5', '#FB8C00', '#43A047', '#E53935', '#8E24AA',
+            '#26A69A', '#D4E157', '#FF3D00', '#6D4C41', '#546E7A',
+            '#AD1457', '#5E35B1', '#00ACC1', '#7CB342', '#FFB300',
+            '#512DA8', '#66BB6A', '#FF8F00', '#D32F2F', '#7B1FA2'
         ];
 
         function getNextMaterialColor() {
@@ -969,10 +973,11 @@
                     label: label,
                     data: data,
                     borderColor: color,
-                    backgroundColor: color + '20',
-                    borderWidth: 2,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
                     fill: false,
-                    tension: 0.1
+                    tension: 0.1,
+                    pointRadius: 0
                 };
             });
 
@@ -1002,15 +1007,24 @@
                     },
                     plugins: {
                         legend: { 
-                            position: 'top',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 6
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         title: { 
                             display: true, 
-                            text: 'Elektrik Üretimi ve Kurulu Güç Trendi'
+                            text: 'Elektrik Üretimi ve Kurulu Güç Trendi',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -1067,9 +1081,9 @@
                     datasets: [{
                         label: `Değer (${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'})`,
                         data: chartData.map(item => item.value),
-                        backgroundColor: chartData.map(item => item.color + '80'),
+                        backgroundColor: chartData.map(item => item.color),
                         borderColor: chartData.map(item => item.color),
-                        borderWidth: 2
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -1156,15 +1170,24 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { 
-                            position: 'right',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 15
+                                boxWidth: 15,
+                                boxHeight: 15,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         title: { 
                             display: true, 
-                            text: `Elektrik Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`
+                            text: `Elektrik Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : calculationMode === 'average' ? 'Ortalama' : 'Son Değer'} (${startYear}-${endYear})`,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }

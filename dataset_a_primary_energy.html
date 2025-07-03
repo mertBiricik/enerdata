@@ -527,12 +527,16 @@
         let startYear = 1972;
         let endYear = 2023;
 
-        // Material Design color palette
+        // Diverse color palette for primary energy
         const materialColors = [
-            '#2196F3', '#4CAF50', '#FF9800', '#F44336', '#9C27B0',
+            '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0',
             '#00BCD4', '#CDDC39', '#FF5722', '#795548', '#607D8B',
             '#E91E63', '#3F51B5', '#009688', '#8BC34A', '#FFC107',
-            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C'
+            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C',
+            '#1E88E5', '#43A047', '#FB8C00', '#E53935', '#8E24AA',
+            '#26A69A', '#D4E157', '#FF3D00', '#6D4C41', '#546E7A',
+            '#AD1457', '#5E35B1', '#00ACC1', '#7CB342', '#FFB300',
+            '#512DA8', '#66BB6A', '#FF8F00', '#D32F2F', '#7B1FA2'
         ];
 
         function getNextMaterialColor() {
@@ -869,9 +873,7 @@
                     borderWidth: 3,
                     fill: false,
                     tension: 0.1,
-                    pointBackgroundColor: color,
-                    pointBorderColor: color,
-                    pointRadius: 4
+                    pointRadius: 0
                 };
             });
 
