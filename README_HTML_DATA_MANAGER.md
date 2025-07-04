@@ -1,20 +1,20 @@
 # HTML Data Manager for Energy Dashboard
 
-This Python script helps you prepare your energy dashboard HTML files for WordPress deployment and revert them back to the original structure when needed.
+Python script for preparing energy dashboard HTML files for WordPress deployment and reverting to original structure.
 
-## 🎯 Purpose
+## Purpose
 
-WordPress doesn't always handle external JavaScript files well in custom HTML blocks. This script:
-- **Embeds** external JS data directly into HTML files for WordPress deployment
-- **Reverts** embedded files back to the original external JS structure
-- **Protects** styling from WordPress theme interference with `!important` CSS rules
+WordPress does not handle external JavaScript files reliably in custom HTML blocks. This script:
+- Embeds external JS data directly into HTML files for WordPress deployment
+- Reverts embedded files back to external JS structure
+- Protects styling from WordPress theme interference with `!important` CSS rules
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.6 or higher
 - No additional packages required (uses only standard library)
 
-## 🚀 Usage
+## Usage
 
 ### Check Current Status
 ```bash
@@ -44,7 +44,7 @@ This will:
 - Clean up backup files
 - Return to external JS file structure
 
-## 📁 File Structure
+## File Structure
 
 ### Before Embedding (Original):
 ```
@@ -68,7 +68,7 @@ dataset_c_sectoral_consumption.html.backup # Backup of original
 dataset_c_sectoral_consumption_embedded.html # WordPress-ready version
 ```
 
-## 🎨 WordPress Integration
+## WordPress Integration
 
 ### For WordPress Deployment:
 1. Run `python html_data_manager.py embed`
@@ -82,31 +82,31 @@ dataset_c_sectoral_consumption_embedded.html # WordPress-ready version
 - Font families, colors, and layouts protected
 - Canvas elements properly sized for responsive design
 
-## 🔧 What the Script Does
+## What the Script Does
 
 ### Embedding Process:
-1. **Reads** external JS data files (e.g., `data/a/data_a_embedded.js`)
-2. **Replaces** `<script src="...">` tags with inline `<script>` containing data
-3. **Adds** WordPress-safe CSS styling to `<head>`
-4. **Wraps** content in protective container div
-5. **Creates** backup of original files
-6. **Generates** `*_embedded.html` files ready for WordPress
+1. Reads external JS data files (e.g., `data/a/data_a_embedded.js`)
+2. Replaces `<script src="...">` tags with inline `<script>` containing data
+3. Adds WordPress-safe CSS styling to `<head>`
+4. Wraps content in protective container div
+5. Creates backup of original files
+6. Generates `*_embedded.html` files ready for WordPress
 
 ### Reversion Process:
-1. **Restores** original files from `.backup` copies
-2. **Removes** embedded versions
-3. **Cleans up** backup files
-4. **Returns** to external JS file structure
+1. Restores original files from `.backup` copies
+2. Removes embedded versions
+3. Cleans up backup files
+4. Returns to external JS file structure
 
-## 🛡️ Safety Features
+## Safety Features
 
-- **Automatic backups** before any modifications
-- **Non-destructive** operations (originals preserved)
-- **Error handling** for missing files
-- **UTF-8 encoding** support for international characters
-- **Detailed logging** of all operations
+- Automatic backups before any modifications
+- Non-destructive operations (originals preserved)
+- Error handling for missing files
+- UTF-8 encoding support for international characters
+- Detailed logging of all operations
 
-## 📝 Example Workflow
+## Example Workflow
 
 ```bash
 # Check current status
@@ -126,7 +126,7 @@ python html_data_manager.py revert
 python html_data_manager.py embed
 ```
 
-## ⚠️ Important Notes
+## Important Notes
 
 - Always run `status` first to check file availability
 - Use `*_embedded.html` files ONLY for WordPress
@@ -134,10 +134,10 @@ python html_data_manager.py embed
 - The script handles Turkish characters properly with UTF-8 encoding
 - WordPress-safe CSS ensures consistent appearance across themes
 
-## 🎉 Benefits
+## Benefits
 
-- **Easy WordPress deployment** without external file dependencies
-- **Style protection** from WordPress theme interference  
-- **Reversible process** for seamless development workflow
-- **Automated backups** prevent data loss
-- **Single command** operation for both embedding and reverting 
+- Easy WordPress deployment without external file dependencies
+- Style protection from WordPress theme interference  
+- Reversible process for seamless development workflow
+- Automated backups prevent data loss
+- Single command operation for both embedding and reverting 
