@@ -569,10 +569,10 @@
                     <label>Veri Türü</label>
                     <div class="type-selector">
                         <div class="type-options">
-                            <input type="radio" id="typeProduction" name="dataType" value="production" checked>
-                            <label for="typeProduction">Üretim</label>
-                            <input type="radio" id="typeCapacity" name="dataType" value="capacity">
+                            <input type="radio" id="typeCapacity" name="dataType" value="capacity" checked>
                             <label for="typeCapacity">Kurulu Güç</label>
+                            <input type="radio" id="typeProduction" name="dataType" value="production">
+                            <label for="typeProduction">Üretim</label>
                         </div>
                     </div>
                 </div>
@@ -703,6 +703,17 @@
             const color = materialColors[colorIndex % materialColors.length];
             colorIndex++;
             return color;
+        }
+
+        // Turkish number formatting functions
+        function formatTableNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return parseFloat(value).toFixed(1);
+        }
+
+        function formatGraphNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
         function parseRedValue(value) {
@@ -1040,11 +1051,12 @@
                     let className = '';
                     
                     if (value !== null && value !== undefined) {
-                        if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                        const isRed = typeof value === 'string' && value.startsWith('(') && value.endsWith(')');
+                        if (isRed) {
                             displayValue = value;
                             className = 'red-value';
                         } else {
-                            displayValue = parseFloat(value).toLocaleString('tr-TR');
+                            displayValue = formatTableNumber(value);
                         }
                     }
                     
@@ -1111,6 +1123,11 @@
                             title: { 
                                 display: true, 
                                 text: 'Değer (MW / GWh)' 
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatGraphNumber(value);
+                                }
                             }
                         },
                         x: { 
@@ -1139,6 +1156,13 @@
                             font: {
                                 size: 16,
                                 weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y);
+                                }
                             }
                         }
                     }
@@ -1208,6 +1232,11 @@
                             title: { 
                                 display: true, 
                                 text: 'Değer (MW / GWh)' 
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatGraphNumber(value);
+                                }
                             }
                         }
                     },
@@ -1218,6 +1247,13 @@
                         title: { 
                             display: true, 
                             text: `Elektrik - ${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'} (${startYear}-${endYear})`
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y);
+                                }
+                            }
                         }
                     }
                 }
@@ -1298,6 +1334,13 @@
                             font: {
                                 size: 16,
                                 weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + formatGraphNumber(context.parsed);
+                                }
                             }
                         }
                     }

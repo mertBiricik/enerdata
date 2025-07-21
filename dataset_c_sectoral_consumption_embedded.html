@@ -4192,6 +4192,8 @@ const embeddedRawData = [
                             displayValue = value;
                             className = 'red-value';
                         } else {
+                            displayValue = formatTableNumber(value);
+                        }
                             displayValue = parseFloat(value).toLocaleString('tr-TR');
                         }
                     }
@@ -4537,6 +4539,17 @@ const embeddedRawData = [
                 link.click();
                 URL.revokeObjectURL(link.href);
             });
+        }
+
+        // Turkish number formatting functions
+        function formatTableNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return parseFloat(value).toFixed(1);
+        }
+
+        function formatGraphNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
     </script>
 </div></body>

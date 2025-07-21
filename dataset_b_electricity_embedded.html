@@ -674,10 +674,10 @@
                     <label>Veri Türü</label>
                     <div class="type-selector">
                         <div class="type-options">
-                            <input type="radio" id="typeProduction" name="dataType" value="production" checked>
-                            <label for="typeProduction">Üretim</label>
-                            <input type="radio" id="typeCapacity" name="dataType" value="capacity">
+                            <input type="radio" id="typeCapacity" name="dataType" value="capacity" checked>
                             <label for="typeCapacity">Kurulu Güç</label>
+                            <input type="radio" id="typeProduction" name="dataType" value="production">
+                            <label for="typeProduction">Üretim</label>
                         </div>
                     </div>
                 </div>
@@ -4349,6 +4349,17 @@ const embeddedDataB = [
             return color;
         }
 
+        // Turkish number formatting functions
+        function formatTableNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return parseFloat(value).toFixed(1);
+        }
+
+        function formatGraphNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
         function parseRedValue(value) {
             if (value === null || value === undefined) return null;
             if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
@@ -4688,7 +4699,7 @@ const embeddedDataB = [
                             displayValue = value;
                             className = 'red-value';
                         } else {
-                            displayValue = parseFloat(value).toLocaleString('tr-TR');
+                            displayValue = formatTableNumber(value);
                         }
                     }
                     
@@ -4755,6 +4766,11 @@ const embeddedDataB = [
                             title: { 
                                 display: true, 
                                 text: 'Değer (MW / GWh)' 
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatGraphNumber(value);
+                                }
                             }
                         },
                         x: { 
@@ -4783,6 +4799,13 @@ const embeddedDataB = [
                             font: {
                                 size: 16,
                                 weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y);
+                                }
                             }
                         }
                     }
@@ -4852,6 +4875,12 @@ const embeddedDataB = [
                             title: { 
                                 display: true, 
                                 text: 'Değer (MW / GWh)' 
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatGraphNumber(value);
+                                }
+                            }
                             }
                         }
                     },
@@ -4942,6 +4971,13 @@ const embeddedDataB = [
                             font: {
                                 size: 16,
                                 weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + formatGraphNumber(context.parsed);
+                                }
                             }
                         }
                     }

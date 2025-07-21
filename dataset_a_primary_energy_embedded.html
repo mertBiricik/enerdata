@@ -3200,7 +3200,7 @@ const embeddedDataA = [
                             displayValue = value;
                             className = 'red-value';
                         } else {
-                            displayValue = parseFloat(value).toLocaleString('tr-TR');
+                            displayValue = formatTableNumber(value);
                         }
                     }
                     
@@ -3545,6 +3545,17 @@ const embeddedDataA = [
                 link.click();
                 URL.revokeObjectURL(link.href);
             });
+        }
+
+        // Turkish number formatting functions
+        function formatTableNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return parseFloat(value).toFixed(1);
+        }
+
+        function formatGraphNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
     </script>
 </div></body>

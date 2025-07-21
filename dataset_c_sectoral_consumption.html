@@ -983,6 +983,33 @@
             });
         }
 
+        function populateSeriesCheckboxes(data) {
+            const container = document.getElementById('seriesCheckboxes');
+            container.innerHTML = '';
+            
+            data.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `series-${index}`;
+                checkbox.value = item.Kategori;
+                checkbox.addEventListener('change', applyFiltersAndRender);
+                
+                // Check all items by default
+                checkbox.checked = true;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `series-${index}`;
+                label.textContent = item.Kategori;
+                
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        }
+
         function setupTopScrollbar() {
             const topScrollbar = document.querySelector('.top-scrollbar');
             const topScrollbarThumb = document.querySelector('.top-scrollbar-thumb');
@@ -1068,7 +1095,7 @@
                             displayValue = value;
                             className = 'red-value';
                         } else {
-                            displayValue = parseFloat(value).toLocaleString('tr-TR');
+                            displayValue = formatTableNumber(value);
                         }
                     }
                     
@@ -1129,7 +1156,12 @@
                             beginAtZero: true,
                             title: { 
                                 display: true, 
-                                text: 'Değer (GWh)' 
+                                text: 'Değer (Mtep)' 
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatGraphNumber(value);
+                                }
                             }
                         },
                         x: { 
@@ -1144,8 +1176,8 @@
                             position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 10,
-                                boxHeight: 10,
+                                boxWidth: 15,
+                                boxHeight: 15,
                                 padding: 15,
                                 font: {
                                     size: 12
@@ -1154,10 +1186,17 @@
                         },
                         title: { 
                             display: true, 
-                            text: 'Sektörel Elektrik Tüketimi Trendi',
+                            text: 'Sektörel Enerji Tüketimi Trendi',
                             font: {
                                 size: 16,
                                 weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y);
+                                }
                             }
                         }
                     }
@@ -1221,7 +1260,12 @@
                             beginAtZero: true,
                             title: { 
                                 display: true, 
-                                text: 'Değer (GWh)' 
+                                text: 'Değer (Mtep)' 
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatGraphNumber(value);
+                                }
                             }
                         }
                     },
@@ -1232,6 +1276,13 @@
                         title: { 
                             display: true, 
                             text: `Sektörel Tüketim - ${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'} (${startYear}-${endYear})`
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y);
+                                }
+                            }
                         }
                     }
                 }
@@ -1303,10 +1354,17 @@
                         },
                         title: { 
                             display: true, 
-                            text: `Sektörel Dağılım - ${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'} (${startYear}-${endYear})`,
+                            text: `Sektörel Tüketim Dağılımı - ${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'} (${startYear}-${endYear})`,
                             font: {
                                 size: 16,
                                 weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + formatGraphNumber(context.parsed);
+                                }
                             }
                         }
                     }
@@ -1414,6 +1472,17 @@
                 URL.revokeObjectURL(link.href);
             });
         }
+
+        // Turkish number formatting functions
+        function formatTableNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return parseFloat(value).toFixed(1);
+        }
+
+        function formatGraphNumber(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
     </script>
 </body>
-</html> 
+</html>
