@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elektrik Brüt Üretimi - Sektörel Tüketim Dağılımı</title>
+    <title>Sektörel Enerji Tüketimi Dağılımı (1923-2023)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
@@ -118,46 +118,6 @@
             background: #fff;
         }
         
-        .sector-type-selector {
-            margin-bottom: 1.5rem;
-        }
-        
-        .sector-type-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #006400;
-            background: #f0f0f0;
-        }
-        
-        .sector-type-options label {
-            padding: 0.7rem 1rem;
-            margin: 0;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 500;
-            color: #006400;
-            transition: all 0.2s ease;
-            border-right: 1px solid #006400;
-            flex: 1;
-            min-width: 80px;
-        }
-        
-        .sector-type-options label:last-child {
-            border-right: none;
-        }
-        
-        .sector-type-options input[type="radio"] {
-            display: none;
-        }
-        
-        .sector-type-options input[type="radio"]:checked + label {
-            background: #006400;
-            color: white;
-        }
-        
         .series-checkboxes {
             max-height: 350px;
             overflow-y: auto;
@@ -168,11 +128,15 @@
         }
         
         .checkbox-item {
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            padding: 0.7rem 1rem;
-            border-bottom: 1px solid #f1f3f4;
-            transition: background 0.2s ease;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: #006400;
+            transform: scale(1.1);
         }
         
         .checkbox-item:hover {
@@ -181,19 +145,6 @@
         
         .checkbox-item:last-child {
             border-bottom: none;
-        }
-        
-        .checkbox-item input[type="checkbox"] {
-            margin-right: 0.8rem;
-            accent-color: #006400;
-            transform: scale(1.1);
-        }
-        
-        .checkbox-item label {
-            margin: 0;
-            font-weight: 400;
-            cursor: pointer;
-            flex: 1;
         }
         
         .filter-buttons {
@@ -552,46 +503,83 @@
             .download-buttons {
                 flex-direction: column;
             }
-            
-            .sector-type-options {
-                flex-direction: column;
-            }
-            
-            .sector-type-options label {
-                border-right: none;
-                border-bottom: 1px solid #006400;
-            }
-            
-            .sector-type-options label:last-child {
-                border-bottom: none;
-            }
+        }
+
+        /* Hierarchical category styling */
+        .category-group {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .category-group-header {
+            background: #f0f0f0;
+            padding: 12px 15px;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .category-group-header:hover {
+            background: #e8e8e8;
+        }
+
+        .category-group-toggle {
+            font-size: 12px;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .category-group-content {
+            padding: 15px;
+            display: block;
+        }
+
+        .category-group-content.collapsed {
+            display: none;
+        }
+
+        .parent-category {
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 8px;
+        }
+
+        .sub-category {
+            margin-left: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .sub-category input[type="checkbox"] {
+            transform: scale(0.9);
+            accent-color: #006400;
+        }
+
+        .category-total {
+            font-weight: bold;
+            color: #d63384;
+            background: #fff5f5;
+            padding: 4px 8px;
+            border-radius: 3px;
+            margin-left: 20px;
         }
     </style>
 </head>
 <body>
     <div class="main-container">
         <div class="header">
-            <h1>Elektrik Brüt Üretimi - Sektörel Tüketim Dağılımı</h1>
+            <h1>Sektörel Enerji Tüketimi Dağılımı (1923-2023)</h1>
         </div>
         
         <div class="content-layout">
             <div class="filters-panel">
-                <div class="filter-group">
-                    <label>Sektör Kategorisi</label>
-                    <div class="sector-type-selector">
-                        <div class="sector-type-options">
-                            <input type="radio" id="sectorAll" name="sectorType" value="all" checked>
-                            <label for="sectorAll">Tümü</label>
-                            <input type="radio" id="sectorIndustry" name="sectorType" value="industry">
-                            <label for="sectorIndustry">Sanayi</label>
-                            <input type="radio" id="sectorEnergy" name="sectorType" value="energy">
-                            <label for="sectorEnergy">Enerji</label>
-                            <input type="radio" id="sectorOther" name="sectorType" value="other">
-                            <label for="sectorOther">Diğer</label>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="filter-group">
                     <label>Yıl Aralığı</label>
                     <div class="year-range-container">
@@ -762,7 +750,7 @@
 
             initializeFilters();
             initializeEventListeners();
-            populateSeriesFilter();
+            populateSeriesCheckboxes(data);
             applyFiltersAndRender();
         });
 
@@ -823,14 +811,6 @@
                 button.addEventListener('click', function() {
                     const tabName = this.getAttribute('data-tab');
                     switchTab(tabName);
-                });
-            });
-
-            // Sector type filtering
-            document.querySelectorAll('input[name="sectorType"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    populateSeriesFilter();
-                    applyFiltersAndRender();
                 });
             });
 
@@ -925,88 +905,154 @@
             }
         }
 
-        function categorizeDataBySector(item) {
-            const category = item.category.toLowerCase();
-            
-            // Industry sectors
-            if (category.includes('sanayi') || category.includes('gıda') || category.includes('tekstil') || 
-                category.includes('kimya') || category.includes('çimento') || category.includes('demir') ||
-                category.includes('kağıt') || category.includes('cam') || category.includes('seramik')) {
-                return 'industry';
-            }
-            
-            // Energy sectors
-            if (category.includes('net üretim') || category.includes('ithalat') || category.includes('ihracat') ||
-                category.includes('elektrik arzı') || category.includes('kayıp')) {
-                return 'energy';
-            }
-            
-            // Other sectors (residential, commercial, transport, etc.)
-            return 'other';
-        }
-
-        function populateSeriesFilter() {
-            const container = document.getElementById('seriesCheckboxes');
-            container.innerHTML = '';
-            
-            const data = typeof embeddedRawData !== 'undefined' ? embeddedRawData : [];
-            const sectorType = document.querySelector('input[name="sectorType"]:checked').value;
-            
-            // Filter data based on selected sector type
-            let filteredData = data;
-            if (sectorType !== 'all') {
-                filteredData = data.filter(item => categorizeDataBySector(item) === sectorType);
-            }
-            
-            filteredData.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'checkbox-item';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `series-${index}`;
-                checkbox.value = item.category;
-                checkbox.addEventListener('change', applyFiltersAndRender);
-                
-                // Check first few items by default
-                if (index < 5) {
-                    checkbox.checked = true;
-                }
-                
-                const label = document.createElement('label');
-                label.htmlFor = `series-${index}`;
-                label.textContent = item.category;
-                
-                div.appendChild(checkbox);
-                div.appendChild(label);
-                container.appendChild(div);
-            });
-        }
-
         function populateSeriesCheckboxes(data) {
             const container = document.getElementById('seriesCheckboxes');
             container.innerHTML = '';
             
-            data.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'checkbox-item';
+            // Define hierarchical structure for sectoral consumption
+            const categoryHierarchy = {
+                'Elektrik Arzı': {
+                    title: 'Elektrik Arzı',
+                    categories: [
+                        'Net Üretim',
+                        'İthalat (+)',
+                        'İhracat (-)'
+                    ],
+                    total: 'Elektrik Arzı'
+                },
+                'Çevrim ve Kayıplar': {
+                    title: 'Çevrim ve Kayıplar',
+                    categories: [
+                        'Çevrim ve Enerji Sektörü',
+                        'Elektrik Santralları Brüt Üretimi',
+                        'Petrol Rafinerileri Tüketimi',
+                        'İç Tüketim ve Kayıp'
+                    ],
+                    total: null
+                },
+                'Sanayi Tüketimi': {
+                    title: 'Sanayi Tüketimi',
+                    categories: [
+                        'Gıda', 'Şeker', 'Tekstil', 'Kağıt',
+                        'Seramik', 'Cam ve Cam Ürünleri',
+                        'Kimya-Petrokimya', 'Gübre', 'Çimento',
+                        'Demirçelik', 'Demirdışı Metaller',
+                        'Motorlu Kara Taşıt Sanayi', 'Diğer Sanayi'
+                    ],
+                    total: 'Sanayi Tüketimi'
+                },
+                'Ulaştırma Sektörü': {
+                    title: 'Ulaştırma Sektörü',
+                    categories: [
+                        'Demiryolları',
+                        'Boru Hatları'
+                    ],
+                    total: 'Ulaştırma'
+                },
+                'Diğer Sektörler': {
+                    title: 'Diğer Sektörler',
+                    categories: [
+                        'Konut, Ticarethane ve Hizmetler',
+                        'Tarım ve Hayvancılık',
+                        'Diğer Sektörler'
+                    ],
+                    total: null
+                },
+                'Ana Toplamlar': {
+                    title: 'Ana Toplamlar',
+                    categories: [
+                        'Nihai Tüketim'
+                    ],
+                    total: null
+                }
+            };
+
+            // Get available categories from data (note: using 'category' field for Dataset C)
+            const availableCategories = data.map(item => item.category || item.Kategori);
+            
+            Object.keys(categoryHierarchy).forEach(groupKey => {
+                const group = categoryHierarchy[groupKey];
+                const groupCategories = group.categories.filter(cat => 
+                    availableCategories.includes(cat)
+                );
                 
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `series-${index}`;
-                checkbox.value = item.Kategori;
-                checkbox.addEventListener('change', applyFiltersAndRender);
+                if (groupCategories.length === 0 && !group.total) return;
                 
-                // Check all items by default
-                checkbox.checked = true;
+                // Create group container
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'category-group';
                 
-                const label = document.createElement('label');
-                label.htmlFor = `series-${index}`;
-                label.textContent = item.Kategori;
+                // Create group header
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'category-group-header';
+                headerDiv.innerHTML = `
+                    <span>${group.title}</span>
+                    <span class="category-group-toggle">▼</span>
+                `;
                 
-                div.appendChild(checkbox);
-                div.appendChild(label);
-                container.appendChild(div);
+                // Create content container
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'category-group-content';
+                
+                // Add individual categories
+                groupCategories.forEach(category => {
+                    const item = data.find(d => (d.category || d.Kategori) === category);
+                    if (item) {
+                        const categoryDiv = document.createElement('div');
+                        categoryDiv.className = 'checkbox-item sub-category';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        checkbox.value = category;
+                        checkbox.addEventListener('change', applyFiltersAndRender);
+                        checkbox.checked = true;
+                        
+                        const label = document.createElement('label');
+                        label.htmlFor = checkbox.id;
+                        label.textContent = category;
+                        
+                        categoryDiv.appendChild(checkbox);
+                        categoryDiv.appendChild(label);
+                        contentDiv.appendChild(categoryDiv);
+                    }
+                });
+                
+                // Add total category if exists
+                if (group.total && availableCategories.includes(group.total)) {
+                    const totalItem = data.find(d => (d.category || d.Kategori) === group.total);
+                    if (totalItem) {
+                        const totalDiv = document.createElement('div');
+                        totalDiv.className = 'checkbox-item category-total';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `series-${group.total.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        checkbox.value = group.total;
+                        checkbox.addEventListener('change', applyFiltersAndRender);
+                        checkbox.checked = true;
+                        
+                        const label = document.createElement('label');
+                        label.htmlFor = checkbox.id;
+                        label.textContent = group.total;
+                        
+                        totalDiv.appendChild(checkbox);
+                        totalDiv.appendChild(label);
+                        contentDiv.appendChild(totalDiv);
+                    }
+                }
+                
+                // Add toggle functionality
+                headerDiv.addEventListener('click', () => {
+                    const isCollapsed = contentDiv.classList.contains('collapsed');
+                    contentDiv.classList.toggle('collapsed');
+                    const toggle = headerDiv.querySelector('.category-group-toggle');
+                    toggle.textContent = isCollapsed ? '▼' : '▶';
+                });
+                
+                groupDiv.appendChild(headerDiv);
+                groupDiv.appendChild(contentDiv);
+                container.appendChild(groupDiv);
             });
         }
 
