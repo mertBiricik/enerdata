@@ -731,6 +731,10 @@
                     <div class="chart-container">
                         <canvas id="pieChart"></canvas>
                     </div>
+                    <div id="pieLegendContainer" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-family: 'Segoe UI', Arial, sans-serif; display: none;">
+                        <div style="font-weight: bold; margin-bottom: 10px; color: #333;">Kategori Dağılımı:</div>
+                        <div id="pieLegendContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;"></div>
+                    </div>
                     <div class="chart-download">
                         <button id="downloadPieChart">Pasta Grafiği İndir</button>
                     </div>
@@ -4180,7 +4184,7 @@ const embeddedRawData = [
                 const seriesData = data.find(item => item.category === seriesName);
                 if (!seriesData) return null;
                 
-                const result = { category: seriesData.category };
+                const result = { Sektor: seriesData.category };
                 yearsInRange.forEach(year => {
                     result[year] = seriesData[year];
                 });
@@ -4248,7 +4252,7 @@ const embeddedRawData = [
             Object.keys(tableGroups).forEach(groupKey => {
                 const group = tableGroups[groupKey];
                 const groupData = currentFilteredData.filter(item => 
-                    group.categories.includes(item.category)
+                    group.categories.includes(item.Sektor)
                 );
                 
                 if (groupData.length === 0) return;
@@ -4263,11 +4267,11 @@ const embeddedRawData = [
                 
                 // Add category rows
                 groupData.forEach(item => {
-                    const isTotal = item.category.includes('Tüketim') || item.category.includes('Arzı') || item.category.includes('Ulaştırma');
+                    const isTotal = item.Sektor.includes('Tüketim') || item.Sektor.includes('Arzı') || item.Sektor.includes('Ulaştırma');
                     const rowClass = `table-category-item ${group.cssClass}${isTotal ? ' totals' : ''}`;
                     
                     tableHTML += `<tr class="${rowClass}">`;
-                    tableHTML += `<td class="sticky-col">${item.category}</td>`;
+                    tableHTML += `<td class="sticky-col">${item.Sektor}</td>`;
                     
                     yearsInRange.forEach(year => {
                         const value = item[year];
@@ -4564,7 +4568,7 @@ const embeddedRawData = [
                 }
                 
                 return {
-                    label: item.category,
+                    label: item.Sektor,
                     value: value,
                     color: getNextMaterialColor()
                 };
@@ -4627,6 +4631,7 @@ const embeddedRawData = [
             }
 
             if (currentFilteredData.length === 0) {
+                document.getElementById('pieLegendContainer').style.display = 'none';
                 return;
             }
 
@@ -4648,11 +4653,18 @@ const embeddedRawData = [
                 }
                 
                 return {
-                    label: item.category,
+                    label: item.Sektor,
                     value: value,
                     color: getNextMaterialColor()
                 };
-            }).filter(item => item.value > 0); // Only include positive values
+            }).filter(item => item.value > 0)
+            .sort((a, b) => b.value - a.value);
+
+            // Calculate percentages
+            const total = chartData.reduce((sum, item) => sum + item.value, 0);
+            chartData.forEach(item => {
+                item.percentage = ((item.value / total) * 100).toFixed(1);
+            });
 
             pieChart = new Chart(ctx, {
                 type: 'pie',
@@ -4660,9 +4672,10 @@ const embeddedRawData = [
                     labels: chartData.map(item => item.label),
                     datasets: [{
                         data: chartData.map(item => item.value),
-                        backgroundColor: chartData.map(item => item.color),
+                        backgroundColor: chartData.map(item => item.color + 'CC'),
                         borderColor: chartData.map(item => item.color),
-                        borderWidth: 2
+                        borderWidth: 2,
+                        hoverOffset: 8
                     }]
                 },
                 options: {
@@ -4670,28 +4683,131 @@ const embeddedRawData = [
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { 
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                boxWidth: 15,
-                                boxHeight: 15,
-                                padding: 15,
-                                font: {
-                                    size: 12
-                                }
-                            }
+                            display: false
                         },
                         title: { 
                             display: false
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            cornerRadius: 8,
                             callbacks: {
+                                title: function(tooltipItems) {
+                                    const index = tooltipItems[0].dataIndex;
+                                    return chartData[index].label;
+                                },
                                 label: function(context) {
-                                    return context.label + ': ' + formatGraphNumber(context.parsed);
+                                    const index = context.dataIndex;
+                                    const value = formatGraphNumber(context.parsed);
+                                    const percentage = chartData[index].percentage;
+                                    return [`Değer: ${value}%`, `Oran: ${percentage}%`];
                                 }
                             }
                         }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
+                            right: 10
+                        }
+                    },
+                    onHover: (event, activeElements, chart) => {
+                        updatePieLegendHover(activeElements.length > 0 ? activeElements[0].index : -1);
                     }
+                }
+            });
+
+            createPieLegend(chartData);
+        }
+
+        function createPieLegend(chartData) {
+            const legendContainer = document.getElementById('pieLegendContainer');
+            const legendContent = document.getElementById('pieLegendContent');
+            
+            legendContainer.style.display = 'block';
+            legendContent.innerHTML = '';
+            
+            chartData.forEach((item, index) => {
+                const legendItem = document.createElement('div');
+                legendItem.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    background: white;
+                    border: 1px solid #e0e0e0;
+                    font-size: 13px;
+                `;
+                
+                legendItem.innerHTML = `
+                    <div style="
+                        width: 16px;
+                        height: 16px;
+                        background-color: ${item.color};
+                        border-radius: 4px;
+                        margin-right: 10px;
+                        flex-shrink: 0;
+                    "></div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${item.label}
+                        </div>
+                        <div style="font-size: 11px; color: #666; margin-top: 2px;">
+                            ${formatGraphNumber(item.value)}% (${item.percentage}%)
+                        </div>
+                    </div>
+                `;
+                
+                legendItem.addEventListener('click', () => {
+                    const meta = pieChart.getDatasetMeta(0);
+                    meta.data[index].hidden = !meta.data[index].hidden;
+                    pieChart.update();
+                    
+                    if (meta.data[index].hidden) {
+                        legendItem.style.opacity = '0.5';
+                        legendItem.style.textDecoration = 'line-through';
+                    } else {
+                        legendItem.style.opacity = '1';
+                        legendItem.style.textDecoration = 'none';
+                    }
+                });
+                
+                legendItem.addEventListener('mouseenter', () => {
+                    if (!pieChart.getDatasetMeta(0).data[index].hidden) {
+                        legendItem.style.background = '#f0f0f0';
+                        legendItem.style.borderColor = item.color;
+                    }
+                });
+                
+                legendItem.addEventListener('mouseleave', () => {
+                    legendItem.style.background = 'white';
+                    legendItem.style.borderColor = '#e0e0e0';
+                });
+                
+                legendContent.appendChild(legendItem);
+            });
+        }
+
+        function updatePieLegendHover(hoveredIndex) {
+            const legendItems = document.querySelectorAll('#pieLegendContent > div');
+            legendItems.forEach((item, index) => {
+                if (index === hoveredIndex) {
+                    item.style.background = '#e3f2fd';
+                    item.style.borderColor = '#2196F3';
+                } else {
+                    item.style.background = 'white';
+                    item.style.borderColor = '#e0e0e0';
                 }
             });
         }
@@ -4736,7 +4852,7 @@ const embeddedRawData = [
             const rows = [headers];
             
             data.forEach(item => {
-                const row = [item.category];
+                const row = [item.Sektor];
                 years.forEach(year => {
                     let value = item[year];
                     if (value === null || value === undefined) {
@@ -4804,6 +4920,22 @@ const embeddedRawData = [
                         label: dataset.label,
                         color: dataset.borderColor,
                         visible: lineChart.isDatasetVisible(index)
+                    }))
+                };
+                
+                // Calculate required legend height
+                const itemsPerRow = Math.floor((width - 160) / 280);
+                const visibleItems = legendData.items.filter(item => item.visible);
+                const totalRows = Math.ceil(visibleItems.length / itemsPerRow);
+                legendHeight = 60 + (totalRows * 30) + 20; // Title + rows + padding
+            } else if (hasPieLegend && pieChart && pieChart.data) {
+                legendData = {
+                    type: 'pie',
+                    items: pieChart.data.datasets[0].data.map((value, index) => ({
+                        label: pieChart.data.labels[index],
+                        color: pieChart.data.datasets[0].backgroundColor[index],
+                        value: value,
+                        visible: !pieChart.getDatasetMeta(0).data[index].hidden
                     }))
                 };
                 
