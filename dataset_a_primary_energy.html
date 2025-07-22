@@ -394,6 +394,55 @@
             background: #f0f8f0;
         }
         
+        /* Category group separation in tables */
+        .table-group-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            font-weight: bold;
+            color: #006400;
+            font-size: 0.9rem;
+            border-top: 2px solid #006400;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table-group-header .sticky-col {
+            background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%) !important;
+            font-style: italic;
+            text-align: left !important;
+            font-weight: bold;
+            color: #006400;
+            border-right: 1px solid #dee2e6;
+        }
+        
+        .table-group-header td:not(.sticky-col) {
+            background: #f8f9fa !important;
+        }
+        
+        .table-category-item {
+            border-left: 3px solid transparent;
+        }
+        
+        .table-category-item.energy-supply {
+            border-left-color: #28a745;
+        }
+        
+        .table-category-item.transformation {
+            border-left-color: #fd7e14;
+        }
+        
+        .table-category-item.industry {
+            border-left-color: #dc3545;
+        }
+        
+        .table-category-item.other-sectors {
+            border-left-color: #6f42c1;
+        }
+        
+        .table-category-item.totals {
+            border-left-color: #343a40;
+            background: #f8f9fa;
+            font-weight: 500;
+        }
+        
         .sticky-col {
             position: sticky;
             left: 0;
@@ -1263,6 +1312,35 @@
 
             const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
             
+            // Define category groupings for table display
+            const tableGroups = {
+                'Enerji Arzı': {
+                    title: 'Enerji Arzı',
+                    categories: ['Yerli Üretim (+)', 'İthalat (+)', 'İhracat (-)', 'İhrakiye (-)', 'Stok Değişimi (+/-)', 'ENERJİ ÜRÜNLERİ ARZI'],
+                    cssClass: 'energy-supply'
+                },
+                'Çevrim ve Kayıplar': {
+                    title: 'Çevrim ve Kayıplar',
+                    categories: ['Elektrik ve Isı Üretimi', 'İkincil Kömür Üreten/Tüketen Tesisler', 'Petrol Rafinerileri', 'İç Tüketim ve Kayıp', 'ÇEVRİM VE ENERJİ SEKTÖRÜ'],
+                    cssClass: 'transformation'
+                },
+                'Sanayi Tüketimi': {
+                    title: 'Sanayi Tüketimi',
+                    categories: ['Gıda', 'Şeker', 'Tekstil', 'Kağıt', 'Kimya-Petrokimya', 'Gübre', 'Cam ve Cam Ürünleri', 'Seramik', 'Çimento', 'Demir-Çelik', 'Demir Dışı Metaller', 'Motorlu Kara Taşıtları Sanayi', 'Diğer Sanayi', 'SANAYİ TÜKETİMİ'],
+                    cssClass: 'industry'
+                },
+                'Diğer Sektörler': {
+                    title: 'Diğer Sektörler',
+                    categories: ['Demiryolları', 'Kara Yolları', 'İç Suyolları', 'Boru Hatları', 'Hava Yolları', 'Konut, Ticarethane ve Hizmetler', 'Tarım ve Hayvancılık', 'Diğer Sektörler', 'ULAŞTIRMA'],
+                    cssClass: 'other-sectors'
+                },
+                'Ana Toplamlar': {
+                    title: 'Ana Toplamlar',
+                    categories: ['SEKTÖRLER TOPLAMI', 'TOPLAM NİHAİ ENERJİ TÜKETİMİ', 'İstatistiksel Fark (+/-)'],
+                    cssClass: 'totals'
+                }
+            };
+            
             let tableHTML = '<table class="data-table"><thead><tr>';
             tableHTML += '<th class="sticky-col">Kategori</th>';
             yearsInRange.forEach(year => {
@@ -1270,26 +1348,48 @@
             });
             tableHTML += '</tr></thead><tbody>';
 
-            currentFilteredData.forEach(item => {
-                tableHTML += '<tr>';
-                tableHTML += `<td class="sticky-col">${item.Kategori}</td>`;
-                yearsInRange.forEach(year => {
-                    const value = item[year];
-                    let displayValue = '';
-                    let className = '';
-                    
-                    if (value !== null && value !== undefined) {
-                        if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
-                            displayValue = value;
-                            className = 'red-value';
-                        } else {
-                            displayValue = formatTableNumber(value);
-                        }
-                    }
-                    
-                    tableHTML += `<td class="${className}">${displayValue}</td>`;
+            // Group and render data
+            Object.keys(tableGroups).forEach(groupKey => {
+                const group = tableGroups[groupKey];
+                const groupData = currentFilteredData.filter(item => 
+                    group.categories.includes(item.Kategori)
+                );
+                
+                if (groupData.length === 0) return;
+                
+                // Add group header
+                tableHTML += `<tr class="table-group-header">`;
+                tableHTML += `<td class="sticky-col">${group.title}</td>`;
+                yearsInRange.forEach(() => {
+                    tableHTML += '<td></td>';
                 });
                 tableHTML += '</tr>';
+                
+                // Add category rows
+                groupData.forEach(item => {
+                    const isTotal = item.Kategori.includes('TOPLAM') || item.Kategori.includes('ARZI') || item.Kategori.includes('SEKTÖRÜ') || item.Kategori.includes('TÜKETİMİ') || item.Kategori.includes('ULAŞTIRMA');
+                    const rowClass = `table-category-item ${group.cssClass}${isTotal ? ' totals' : ''}`;
+                    
+                    tableHTML += `<tr class="${rowClass}">`;
+                    tableHTML += `<td class="sticky-col">${item.Kategori}</td>`;
+                    yearsInRange.forEach(year => {
+                        const value = item[year];
+                        let displayValue = '';
+                        let className = '';
+                        
+                        if (value !== null && value !== undefined) {
+                            if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                                displayValue = value;
+                                className = 'red-value';
+                            } else {
+                                displayValue = formatTableNumber(value);
+                            }
+                        }
+                        
+                        tableHTML += `<td class="${className}">${displayValue}</td>`;
+                    });
+                    tableHTML += '</tr>';
+                });
             });
 
             tableHTML += '</tbody></table>';
@@ -1638,27 +1738,140 @@
                 return;
             }
 
-            // Create a temporary canvas with white background
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
+            // Create enhanced canvas with professional layout
+            createProfessionalChartImage(canvas, filename, chartId);
+        }
 
+        function createProfessionalChartImage(chartCanvas, filename, chartType) {
+            // Create a larger canvas for the professional layout
+            const exportCanvas = document.createElement('canvas');
+            const ctx = exportCanvas.getContext('2d');
+            
+            // Set canvas dimensions (similar to Our World in Data)
+            const width = 1200;
+            const height = 800;
+            exportCanvas.width = width;
+            exportCanvas.height = height;
+            
             // Fill with white background
-            tempCtx.fillStyle = 'white';
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
             
-            // Draw the chart on top
-            tempCtx.drawImage(canvas, 0, 0);
+            // Load and draw logo
+            const logo = new Image();
+            logo.crossOrigin = 'anonymous';
+            logo.onload = function() {
+                // Draw logo in top-right corner
+                const logoSize = 60;
+                ctx.drawImage(logo, width - logoSize - 20, 20, logoSize, logoSize);
+                
+                // Continue with rest of the drawing
+                drawChartContent();
+            };
             
-            // Download
-            tempCanvas.toBlob(function(blob) {
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = URL.createObjectURL(blob);
-                link.click();
-                URL.revokeObjectURL(link.href);
-            });
+            logo.onerror = function() {
+                // If logo fails to load, continue without it
+                console.warn('Logo could not be loaded, continuing without it');
+                drawChartContent();
+            };
+            
+            // Try to load logo
+            logo.src = 'logo.jpg';
+            
+            function drawChartContent() {
+                // Set up typography
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                
+                // Main title
+                ctx.fillStyle = '#333333';
+                ctx.font = 'bold 28px "Segoe UI", Arial, sans-serif';
+                const mainTitle = getChartTitle(chartType);
+                ctx.fillText(mainTitle, 40, 30);
+                
+                // Subtitle with data info
+                ctx.fillStyle = '#666666';
+                ctx.font = '16px "Segoe UI", Arial, sans-serif';
+                const subtitle = getChartSubtitle(chartType);
+                ctx.fillText(subtitle, 40, 70);
+                
+                // Data source and period
+                ctx.fillStyle = '#888888';
+                ctx.font = '14px "Segoe UI", Arial, sans-serif';
+                const dataInfo = `Dönem: ${startYear}-${endYear} | Veri Kaynakı: Türkiye'nin Enerji Geleceği (1923-2123)`;
+                ctx.fillText(dataInfo, 40, 100);
+                
+                // Draw the main chart
+                const chartAreaTop = 140;
+                const chartAreaHeight = height - chartAreaTop - 100;
+                const chartAreaWidth = width - 80;
+                
+                // Create a temporary canvas to scale the original chart
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = chartAreaWidth;
+                tempCanvas.height = chartAreaHeight;
+                
+                // Fill temp canvas with white background
+                tempCtx.fillStyle = '#ffffff';
+                tempCtx.fillRect(0, 0, chartAreaWidth, chartAreaHeight);
+                
+                // Draw the original chart scaled to fit
+                tempCtx.drawImage(chartCanvas, 0, 0, chartAreaWidth, chartAreaHeight);
+                
+                // Draw the scaled chart onto main canvas
+                ctx.drawImage(tempCanvas, 40, chartAreaTop);
+                
+                // Add footer with website info
+                ctx.fillStyle = '#999999';
+                ctx.font = '12px "Segoe UI", Arial, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText('Türkiye Enerji Veri Platformu', width - 40, height - 30);
+                
+                // Add border around chart area
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(40, chartAreaTop, chartAreaWidth, chartAreaHeight);
+                
+                // Download the final image
+                exportCanvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                }, 'image/png');
+            }
+        }
+
+        function getChartTitle(chartType) {
+            const baseTitle = 'Türkiye Birincil Enerji';
+            switch(chartType) {
+                case 'lineChart':
+                    return `${baseTitle} - Zaman Serisi Analizi`;
+                case 'barChart':
+                    const barMode = document.querySelector('input[name="barChartMode"]:checked').value;
+                    return `${baseTitle} - ${barMode === 'sum' ? 'Toplam' : 'Ortalama'} Değerler`;
+                case 'pieChart':
+                    const pieMode = document.querySelector('input[name="pieChartMode"]:checked').value;
+                    return `${baseTitle} - Kaynak Dağılımı (${pieMode === 'sum' ? 'Toplam' : 'Ortalama'})`;
+                default:
+                    return baseTitle;
+            }
+        }
+
+        function getChartSubtitle(chartType) {
+            const selectedCount = document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked').length;
+            switch(chartType) {
+                case 'lineChart':
+                    return `${selectedCount} kategori için yıllık değişim trendi (Mtep)`;
+                case 'barChart':
+                    return `${selectedCount} kategori için karşılaştırmalı analiz (Mtep)`;
+                case 'pieChart':
+                    return `${selectedCount} kategori için oransal dağılım analizi (Mtep)`;
+                default:
+                    return `Birincil enerji üretim ve tüketim verileri (Mtep)`;
+            }
         }
     </script>
 </body>
