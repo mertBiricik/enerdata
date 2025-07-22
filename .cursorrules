@@ -1,0 +1,163 @@
+# Turkey Energy Dashboard Project - Cursor Rules
+
+## Project Overview
+This project contains three interactive energy dashboards for Turkey with embedded data and professional chart export capabilities:
+
+1. **dataset_a_primary_energy.html** - Primary Energy Production & Consumption (1972-2023)
+2. **dataset_b_electricity.html** - Electricity Capacity & Generation by Sources  
+3. **dataset_c_sectoral_consumption.html** - Sectoral Energy Consumption (1923-2023)
+
+## File Modification Safety Protocol
+
+### ⚠️ CRITICAL: Always Use Safe Modification Procedure
+When making ANY changes to HTML files, ALWAYS follow this sequence:
+
+```bash
+# 1. Remove base64 logo data (prevents LLM crashes)
+python remove_base64.py
+
+# 2. Remove embedded JavaScript data (makes files safe to edit)
+python remove_data.py
+
+# 3. Make your changes to HTML files
+# ... edit files ...
+
+# 4. Restore base64 logo data
+python restore_base64.py
+
+# 5. Re-embed JavaScript data
+python restore_data.py
+```
+
+### 🚨 Why This Process is Required:
+- **Base64 data**: Large embedded logo data can crash LLM context
+- **Embedded JS data**: 50-70KB of JavaScript data per file makes editing unsafe
+- **WordPress compatibility**: Files need embedded data for WordPress deployment
+
+## Utility Scripts
+
+### Data Management
+- `remove_base64.py` - Removes base64 logo data, replaces with placeholder
+- `restore_base64.py` - Restores base64 logo from logo.jpg file
+- `remove_data.py` - Removes embedded JavaScript data, restores external references
+- `restore_data.py` - Embeds JavaScript data from data/ directory
+
+### Data Conversion
+- `csv_to_js.py` - Converts CSV files to JavaScript format
+- `excel_to_js.py` - Converts Excel files to JavaScript format
+
+## Data Sources
+- `data/a/data_a_embedded.js` - Primary energy data (embeddedDataA)
+- `data/b/data_b_embedded.js` - Electricity data (embeddedDataB)  
+- `data/C/c_embedded_data.js` - Sectoral consumption data (embeddedRawData)
+
+## Chart Quality Features
+
+### Enhanced Legends
+- **Line charts**: Truncated labels (25 chars), clickable toggles, line-style indicators
+- **Bar charts**: Horizontal layout for >8 items, no redundant legends, full labels in tooltips
+- **Pie charts**: Percentage displays, sorted by value, side legend for >8 items
+
+### High-Quality Export
+- **Resolution**: 1800×1200px at 3x pixel ratio (5400×3600 actual)
+- **Typography**: Professional fonts with proper scaling
+- **Logo**: Embedded high-res logo with drop shadow
+- **Layout**: Proper margins and spacing for publication quality
+
+### WordPress Compatibility
+- **Font override**: `!important` declarations prevent serif font override
+- **Color override**: `!important` declarations ensure white header text
+- **Embedded data**: No external dependencies for WordPress upload
+
+## Chart Improvements Applied
+
+### Scaling & Visual Quality
+- Increased canvas export resolution (1800×1200 @ 3x DPI)
+- Better point visibility with hover effects
+- Improved grid lines and typography
+- Professional color palette with transparency
+
+### Legend Structure
+- **Line charts**: Line indicators, truncated labels, percentage space usage
+- **Bar charts**: No legend (redundant), full labels in tooltips
+- **Pie charts**: Percentage display, value-sorted, adaptive positioning
+
+### Interactivity
+- Enhanced tooltips with units and context
+- Clickable legends for data series toggle
+- Better hover effects and visual feedback
+- Responsive layout for different screen sizes
+
+## Development Guidelines
+
+### Making Chart Modifications
+1. Follow safety protocol above
+2. Test on all three dashboard types
+3. Verify export quality at high resolution
+4. Check WordPress compatibility (fonts/colors)
+5. Ensure mobile responsiveness
+
+### Adding New Features
+1. Implement in one file first
+2. Test thoroughly
+3. Apply to other files with consistent naming
+4. Update this rules file with new procedures
+
+### Color Scheme
+- Primary: #006400 (dark green)
+- Secondary: #228B22 (forest green)  
+- Text: White on headers (!important for WordPress)
+- Charts: Material Design color palette
+
+### Font Requirements
+- Primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+- Use `!important` declarations for WordPress compatibility
+- Maintain consistent sizing hierarchy
+
+## File Structure
+```
+/
+├── dataset_a_primary_energy.html (139KB with embedded data)
+├── dataset_b_electricity.html (142KB with embedded data)
+├── dataset_c_sectoral_consumption.html (135KB with embedded data)
+├── logo.jpg (source logo file)
+├── energy_dashboard_index.html (main index)
+├── remove_base64.py (logo safety)
+├── restore_base64.py (logo restoration)
+├── remove_data.py (data safety)
+├── restore_data.py (data embedding)
+├── csv_to_js.py (data conversion)
+├── excel_to_js.py (data conversion)
+├── html_data_manager.py (advanced data management)
+└── data/
+    ├── a/data_a_embedded.js (primary energy)
+    ├── b/data_b_embedded.js (electricity)
+    └── C/c_embedded_data.js (sectoral consumption)
+```
+
+## Common Tasks
+
+### Update Chart Styling
+```bash
+python remove_base64.py && python remove_data.py
+# Edit HTML files with new styles
+python restore_base64.py && python restore_data.py
+```
+
+### Change Data Source
+```bash
+# Update data files in data/ directory
+python restore_data.py  # Re-embed updated data
+```
+
+### WordPress Deployment
+- Files are ready for direct upload after embedding
+- No external dependencies required
+- Professional export quality maintained
+
+## Best Practices
+- Always test export functionality after chart modifications
+- Verify legend readability with different data sets
+- Check responsive behavior on mobile devices
+- Maintain consistent styling across all three dashboards
+- Document any new safety procedures in this file 

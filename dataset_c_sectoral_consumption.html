@@ -691,6 +691,10 @@
                     <div class="chart-container">
                         <canvas id="lineChart"></canvas>
                     </div>
+                    <div id="lineLegendContainer" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-family: 'Segoe UI', Arial, sans-serif; display: none;">
+                        <div style="font-weight: bold; margin-bottom: 10px; color: #333;">Veri Serileri:</div>
+                        <div id="lineLegendContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 8px;"></div>
+                    </div>
                     <div class="chart-download">
                         <button id="downloadLineChart">Çizgi Grafiği İndir</button>
                     </div>
@@ -4301,6 +4305,7 @@ const embeddedRawData = [
             }
 
             if (currentFilteredData.length === 0) {
+                document.getElementById('lineLegendContainer').style.display = 'none';
                 return;
             }
 
@@ -4312,14 +4317,18 @@ const embeddedRawData = [
                 const color = getNextMaterialColor();
                 
                 return {
-                    label: item.category,
+                    label: item.Sektor,
                     data: data,
                     borderColor: color,
                     backgroundColor: 'transparent',
-                    borderWidth: 3,
+                    borderWidth: 2.5,
                     fill: false,
-                    tension: 0.1,
-                    pointRadius: 0
+                    tension: 0.15,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    pointBackgroundColor: 'transparent',
+                    pointBorderColor: 'transparent',
+                    pointBorderWidth: 0
                 };
             });
 
@@ -4332,55 +4341,205 @@ const embeddedRawData = [
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: false
+                    },
+                    onHover: (event, activeElements, chart) => {
+                        // Update external legend hover based on closest element
+                        if (activeElements.length > 0) {
+                            const closestElement = activeElements[0];
+                            updateLineLegendHover(closestElement.datasetIndex);
+                        } else {
+                            updateLineLegendHover(-1);
+                        }
+                    },
                     scales: {
                         y: { 
                             beginAtZero: true,
                             title: { 
                                 display: true, 
-                                text: 'Değer (Mtep)' 
+                                text: 'Tüketim (%)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
                             },
                             ticks: {
                                 callback: function(value) {
                                     return formatGraphNumber(value);
+                                },
+                                font: {
+                                    size: 12
                                 }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                lineWidth: 1
                             }
                         },
                         x: { 
                             title: { 
                                 display: true, 
-                                text: 'Yıl' 
+                                text: 'Yıl',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                maxTicksLimit: 10
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                lineWidth: 1
                             }
                         }
                     },
                     plugins: {
                         legend: { 
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                boxWidth: 15,
-                                boxHeight: 15,
-                                padding: 15,
-                                font: {
-                                    size: 12
-                                }
-                            }
+                            display: false
                         },
                         title: { 
                             display: true, 
                             text: 'Sektörel Enerji Tüketimi Trendi',
                             font: {
-                                size: 16,
-                                weight: 'bold'
+                                size: 18,
+                                weight: 'bold',
+                                family: "'Segoe UI', Arial, sans-serif"
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
                             }
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            cornerRadius: 8,
+                            displayColors: true,
                             callbacks: {
+                                title: function(tooltipItems) {
+                                    return 'Yıl: ' + tooltipItems[0].label;
+                                },
                                 label: function(context) {
-                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y);
+                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y) + '%';
                                 }
                             }
                         }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
+                            right: 10
+                        }
                     }
+                }
+            });
+
+            createLineLegend(datasets);
+        }
+
+        function createLineLegend(datasets) {
+            const legendContainer = document.getElementById('lineLegendContainer');
+            const legendContent = document.getElementById('lineLegendContent');
+            
+            legendContainer.style.display = 'block';
+            legendContent.innerHTML = '';
+            
+            datasets.forEach((dataset, index) => {
+                const legendItem = document.createElement('div');
+                legendItem.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    background: white;
+                    border: 2px solid #e0e0e0;
+                    font-size: 13px;
+                `;
+                
+                legendItem.innerHTML = `
+                    <div style="
+                        width: 40px;
+                        height: 4px;
+                        background-color: ${dataset.borderColor};
+                        border-radius: 2px;
+                        margin-right: 12px;
+                        flex-shrink: 0;
+                    "></div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${dataset.label}
+                        </div>
+                        <div style="font-size: 11px; color: #666; margin-top: 3px;">
+                            ${dataset.data.filter(v => v !== null && v !== undefined).length} veri noktası
+                        </div>
+                    </div>
+                `;
+                
+                legendItem.addEventListener('click', () => {
+                    const meta = lineChart.getDatasetMeta(index);
+                    meta.hidden = meta.hidden === null ? !lineChart.data.datasets[index].hidden : null;
+                    lineChart.update();
+                    
+                    if (meta.hidden) {
+                        legendItem.style.opacity = '0.5';
+                        legendItem.style.textDecoration = 'line-through';
+                    } else {
+                        legendItem.style.opacity = '1';
+                        legendItem.style.textDecoration = 'none';
+                    }
+                });
+                
+                legendItem.addEventListener('mouseenter', () => {
+                    if (!lineChart.getDatasetMeta(index).hidden) {
+                        legendItem.style.background = '#f0f8ff';
+                        legendItem.style.borderColor = dataset.borderColor;
+                        legendItem.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                    }
+                });
+                
+                legendItem.addEventListener('mouseleave', () => {
+                    legendItem.style.background = 'white';
+                    legendItem.style.borderColor = '#e0e0e0';
+                    legendItem.style.boxShadow = 'none';
+                });
+                
+                legendContent.appendChild(legendItem);
+            });
+        }
+
+        function updateLineLegendHover(hoveredIndex) {
+            const legendItems = document.querySelectorAll('#lineLegendContent > div');
+            legendItems.forEach((item, index) => {
+                if (index === hoveredIndex) {
+                    item.style.background = '#e3f2fd';
+                    item.style.borderColor = '#2196F3';
+                    item.style.transform = 'translateY(-2px)';
+                    item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                } else {
+                    item.style.background = 'white';
+                    item.style.borderColor = '#e0e0e0';
+                    item.style.transform = 'translateY(0)';
+                    item.style.boxShadow = 'none';
                 }
             });
         }
@@ -4641,9 +4800,39 @@ const embeddedRawData = [
             const ctx = exportCanvas.getContext('2d');
             
             // Set high DPI canvas dimensions for better quality
-            const pixelRatio = window.devicePixelRatio || 2; // Use at least 2x for retina quality
-            const width = 1600; // Increased from 1200
-            const height = 1000; // Increased from 800
+            const pixelRatio = window.devicePixelRatio || 3;
+            const width = 1800;
+            let height = 1200; // Base height
+            
+            // Check if we have external legends and adjust height accordingly
+            const hasLineLegend = document.getElementById('lineLegendContainer').style.display !== 'none';
+            const hasPieLegend = document.getElementById('pieLegendContainer') ? 
+                document.getElementById('pieLegendContainer').style.display !== 'none' : false;
+            
+            // Store legend data before processing
+            let legendData = null;
+            let legendHeight = 0;
+            
+            if (hasLineLegend && lineChart && lineChart.data) {
+                legendData = {
+                    type: 'line',
+                    items: lineChart.data.datasets.map((dataset, index) => ({
+                        label: dataset.label,
+                        color: dataset.borderColor,
+                        visible: lineChart.isDatasetVisible(index)
+                    }))
+                };
+                
+                // Calculate required legend height
+                const itemsPerRow = Math.floor((width - 160) / 280);
+                const visibleItems = legendData.items.filter(item => item.visible);
+                const totalRows = Math.ceil(visibleItems.length / itemsPerRow);
+                legendHeight = 60 + (totalRows * 30) + 20; // Title + rows + padding
+            }
+            
+            if (hasLineLegend || hasPieLegend) {
+                height += legendHeight + 40; // Add legend height plus some extra padding
+            }
             
             // Set actual canvas size (high DPI)
             exportCanvas.width = width * pixelRatio;
@@ -4671,17 +4860,15 @@ const embeddedRawData = [
             logo.crossOrigin = 'anonymous';
             logo.onload = function() {
                 // High-quality logo rendering with preserved aspect ratio
-                const maxLogoSize = 180; // Increased logo size
+                const maxLogoSize = 200;
                 const logoAspectRatio = 1.500;
-                const logoMargin = 30; // Increased margin for better positioning
+                const logoMargin = 40;
                 
                 let logoWidth, logoHeight;
                 if (logoAspectRatio > 1) {
-                    // Wide logo (landscape)
                     logoWidth = maxLogoSize;
                     logoHeight = maxLogoSize / logoAspectRatio;
                 } else {
-                    // Tall logo (portrait)
                     logoHeight = maxLogoSize;
                     logoWidth = maxLogoSize * logoAspectRatio;
                 }
@@ -4698,8 +4885,8 @@ const embeddedRawData = [
                 ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
                 
                 // Optional: Add subtle drop shadow for better visibility
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-                ctx.shadowBlur = 3;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+                ctx.shadowBlur = 4;
                 ctx.shadowOffsetX = 2;
                 ctx.shadowOffsetY = 2;
                 
@@ -4711,11 +4898,9 @@ const embeddedRawData = [
                 
                 // Continue with rest of the drawing
                 drawChartContent();
-            };;
-            ;
+            };
             
             logo.onerror = function() {
-                // If logo fails to load, continue without it
                 console.warn('Logo could not be loaded, continuing without it');
                 drawChartContent();
             };
@@ -4731,34 +4916,41 @@ const embeddedRawData = [
                 ctx.imageSmoothingQuality = 'high';
                 
                 // Main title with improved typography
-                ctx.fillStyle = '#1a1a1a'; // Darker for better contrast
-                ctx.font = 'bold 34px "Segoe UI", Arial, sans-serif'; // Larger font
+                ctx.fillStyle = '#1a1a1a';
+                ctx.font = 'bold 42px "Segoe UI", Arial, sans-serif';
                 const mainTitle = getChartTitle(chartType);
-                ctx.fillText(mainTitle, 50, 40); // Adjusted positioning
+                ctx.fillText(mainTitle, 60, 50);
                 
                 // Subtitle with data info
-                ctx.fillStyle = '#4a4a4a'; // Better contrast
-                ctx.font = '20px "Segoe UI", Arial, sans-serif'; // Larger font
+                ctx.fillStyle = '#4a4a4a';
+                ctx.font = '24px "Segoe UI", Arial, sans-serif';
                 const subtitle = getChartSubtitle(chartType);
-                ctx.fillText(subtitle, 50, 85);
+                ctx.fillText(subtitle, 60, 105);
                 
                 // Data source and period with improved styling
                 ctx.fillStyle = '#666666';
-                ctx.font = '16px "Segoe UI", Arial, sans-serif'; // Larger font
+                ctx.font = '18px "Segoe UI", Arial, sans-serif';
                 const dataInfo = `Dönem: ${startYear}-${endYear} | Veri Kaynağı: Türkiye'nin Enerji Geleceği (1923-2123)`;
-                ctx.fillText(dataInfo, 50, 120);
+                ctx.fillText(dataInfo, 60, 145);
                 
-                // Draw the main chart with higher quality
-                const chartAreaTop = 170; // Adjusted for larger fonts
-                const chartAreaHeight = height - chartAreaTop - 120;
-                const chartAreaWidth = width - 100; // Increased margins
+                // Calculate chart area
+                const chartAreaTop = 200;
+                let chartAreaHeight = height - chartAreaTop - 150;
+                const chartAreaWidth = width - 120;
+                
+                // Adjust chart height if we have external legends
+                let legendAreaTop = chartAreaTop + chartAreaHeight + 20;
+                if (hasLineLegend || hasPieLegend) {
+                    chartAreaHeight -= (legendHeight + 40); // Reduce chart height to make room for legend
+                    legendAreaTop = chartAreaTop + chartAreaHeight + 20;
+                }
                 
                 // Create a temporary high-resolution canvas to scale the original chart
                 const tempCanvas = document.createElement('canvas');
                 const tempCtx = tempCanvas.getContext('2d');
                 
                 // Set high resolution for chart scaling
-                const chartPixelRatio = 2;
+                const chartPixelRatio = 3;
                 tempCanvas.width = chartAreaWidth * chartPixelRatio;
                 tempCanvas.height = chartAreaHeight * chartPixelRatio;
                 
@@ -4779,18 +4971,23 @@ const embeddedRawData = [
                 // Draw the scaled chart onto main canvas with high quality
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(tempCanvas, 50, chartAreaTop, chartAreaWidth, chartAreaHeight);
+                ctx.drawImage(tempCanvas, 60, chartAreaTop, chartAreaWidth, chartAreaHeight);
+                
+                // Draw external legend if present
+                if (legendData) {
+                    drawExternalLegendFromData(ctx, legendData, legendAreaTop, width);
+                }
                 
                 // Add footer with website info
                 ctx.fillStyle = '#888888';
-                ctx.font = '14px "Segoe UI", Arial, sans-serif'; // Larger font
+                ctx.font = '16px "Segoe UI", Arial, sans-serif';
                 ctx.textAlign = 'right';
-                ctx.fillText('Türkiye Enerji Veri Platformu', width - 50, height - 40);
+                ctx.fillText('Türkiye Enerji Veri Platformu', width - 60, height - 50);
                 
                 // Add border around chart area with better styling
                 ctx.strokeStyle = '#d0d0d0';
-                ctx.lineWidth = 1.5; // Slightly thicker
-                ctx.strokeRect(50, chartAreaTop, chartAreaWidth, chartAreaHeight);
+                ctx.lineWidth = 2;
+                ctx.strokeRect(60, chartAreaTop, chartAreaWidth, chartAreaHeight);
                 
                 // Download the final image with high quality
                 exportCanvas.toBlob(function(blob) {
@@ -4799,8 +4996,86 @@ const embeddedRawData = [
                     link.href = URL.createObjectURL(blob);
                     link.click();
                     URL.revokeObjectURL(link.href);
-                }, 'image/png', 1.0); // Maximum quality
+                }, 'image/png', 1.0);
             }
+        }
+
+        function drawExternalLegendFromData(ctx, legendData, startY, canvasWidth) {
+            if (!legendData || !legendData.items || legendData.items.length === 0) return;
+            
+            // Calculate required dimensions
+            const itemWidth = 280;
+            const itemHeight = 25;
+            const itemsPerRow = Math.floor((canvasWidth - 160) / itemWidth);
+            const visibleItems = legendData.items.filter(item => item.visible);
+            const totalRows = Math.ceil(visibleItems.length / itemsPerRow);
+            const legendHeight = 60 + (totalRows * (itemHeight + 5)) + 20; // Title + rows + padding
+            
+            // Set up legend styling with dynamic height
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(60, startY, canvasWidth - 120, legendHeight);
+            
+            // Draw legend border
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(60, startY, canvasWidth - 120, legendHeight);
+            
+            // Draw legend title
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
+            ctx.textAlign = 'left';
+            const legendTitle = legendData.type === 'line' ? 'Veri Serileri:' : 'Kategori Dağılımı:';
+            ctx.fillText(legendTitle, 80, startY + 20);
+            
+            // Draw legend items
+            let currentX = 80;
+            let currentY = startY + 50;
+            let visibleIndex = 0;
+            
+            legendData.items.forEach((item, index) => {
+                if (!item.visible) return; // Skip hidden items
+                
+                if (visibleIndex > 0 && visibleIndex % itemsPerRow === 0) {
+                    currentY += itemHeight + 5;
+                    currentX = 80;
+                }
+                
+                // Convert color to canvas format
+                let canvasColor = item.color;
+                if (typeof canvasColor === 'string' && canvasColor.startsWith('#')) {
+                    // Already a hex color
+                } else if (typeof canvasColor === 'string' && canvasColor.startsWith('rgb')) {
+                    // Already an RGB color
+                } else {
+                    canvasColor = '#333333'; // Fallback
+                }
+                
+                // Draw color indicator
+                if (legendData.type === 'line') {
+                    // Draw line for line charts
+                    ctx.strokeStyle = canvasColor;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, currentY + 8);
+                    ctx.lineTo(currentX + 30, currentY + 8);
+                    ctx.stroke();
+                } else {
+                    // Draw rectangle for pie charts
+                    ctx.fillStyle = canvasColor;
+                    ctx.fillRect(currentX, currentY + 2, 12, 12);
+                }
+                
+                // Draw text
+                ctx.fillStyle = '#333333';
+                ctx.font = '13px "Segoe UI", Arial, sans-serif';
+                ctx.textAlign = 'left';
+                const displayText = item.label && item.label.length > 25 ? 
+                    item.label.substring(0, 22) + '...' : (item.label || '');
+                ctx.fillText(displayText, currentX + 40, currentY + 12);
+                
+                currentX += itemWidth;
+                visibleIndex++;
+            });
         }
 
         function getChartTitle(chartType) {
