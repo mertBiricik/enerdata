@@ -310,6 +310,7 @@ def create_html_from_template(template_path, js_data, output_path, title):
             (r'const embeddedDataA = \[[\s\S]*?\];', lambda: f'const embeddedDataA = {js_data_str};'),
             (r'const embeddedDataB = \[[\s\S]*?\];', lambda: f'const embeddedDataB = {js_data_str};'),
             (r'const embeddedDataC = \[[\s\S]*?\];', lambda: f'const embeddedDataC = {js_data_str};'),
+            (r'const embeddedYasalData = \[[\s\S]*?\];', lambda: f'const embeddedYasalData = {js_data_str};'),
         ]
         
         new_html_content = html_content
