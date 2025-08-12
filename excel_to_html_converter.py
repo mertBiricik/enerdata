@@ -420,7 +420,19 @@ def get_title_from_filename(filename):
     # Remove file extension
     name = filename.replace('.xlsx', '').replace('.html', '')
     
-    # Split by underscore and create title
+    # Define proper Turkish titles for files 4-7
+    title_map = {
+        '4_yasal_duzenlemeler': 'Yasal Düzenlemeler',
+        '5_strateji_ve_politika_belgeleri': 'Strateji ve Politika Belgeleri',
+        '6_kalkinma_planlari': 'Kalkınma Planları',
+        '7_ab_ilerleme_raporlari': 'AB İlerleme Raporları'
+    }
+    
+    # Check if it's one of the special files
+    if name in title_map:
+        return title_map[name]
+    
+    # Split by underscore and create title for other files
     parts = name.split('_')
     if len(parts) >= 2:
         number = parts[0]

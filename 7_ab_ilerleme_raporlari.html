@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7. Ab Ilerleme Raporlari</title>
+    <title>AB İlerleme Raporları</title>
     <style>
         * { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
@@ -219,7 +219,7 @@
 <body>
     <div class="main-container">
         <div class="header">
-            <h1>7. Ab Ilerleme Raporlari</h1>
+            <h1>AB İlerleme Raporları</h1>
         </div>
         
         <div class="controls">
@@ -558,7 +558,7 @@
                     ` : ''}
                     ${doc.erisimLinki || doc.Link || doc.link ? `
                         <a href="${doc.erisimLinki || doc.Link || doc.link}" target="_blank" class="access-link">
-                            📋 Tam Metne Erişim
+                            Belgeye Erişim
                         </a>
                     ` : ''}
                 </div>
@@ -699,7 +699,7 @@
             const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = '7. Ab Ilerleme Raporlari_documents.csv';
+            link.download = 'AB İlerleme Raporları_documents.csv';
             link.click();
         }
         

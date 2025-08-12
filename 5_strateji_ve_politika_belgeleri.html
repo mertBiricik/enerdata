@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5. Strateji Ve Politika Belgeleri</title>
+    <title>Strateji ve Politika Belgeleri</title>
     <style>
         * { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
@@ -219,7 +219,7 @@
 <body>
     <div class="main-container">
         <div class="header">
-            <h1>5. Strateji Ve Politika Belgeleri</h1>
+            <h1>Strateji ve Politika Belgeleri</h1>
         </div>
         
         <div class="controls">
@@ -729,7 +729,7 @@
                     ` : ''}
                     ${doc.erisimLinki || doc.Link || doc.link ? `
                         <a href="${doc.erisimLinki || doc.Link || doc.link}" target="_blank" class="access-link">
-                            📋 Tam Metne Erişim
+                            Belgeye Erişim
                         </a>
                     ` : ''}
                 </div>
@@ -870,7 +870,7 @@
             const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = '5. Strateji Ve Politika Belgeleri_documents.csv';
+            link.download = 'Strateji ve Politika Belgeleri_documents.csv';
             link.click();
         }
         
