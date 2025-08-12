@@ -213,7 +213,7 @@ def clean_text_for_json(text):
     text_str = text_str.replace('\n', ' ')  # Replace line breaks with spaces
     text_str = text_str.replace('\r', ' ')  # Replace carriage returns
     text_str = text_str.replace('\t', ' ')  # Replace tabs
-    text_str = text_str.replace('"', '\\"')  # Escape quotes (though json.dumps should handle this)
+    # Don't manually escape quotes - json.dumps() will handle this properly
     
     # Clean up multiple spaces
     import re
@@ -329,6 +329,7 @@ def create_html_from_template(template_path, js_data, output_path, title):
             (r'const embeddedDataA = \[[\s\S]*?\];', lambda: f'const embeddedDataA = {js_data_str};'),
             (r'const embeddedDataB = \[[\s\S]*?\];', lambda: f'const embeddedDataB = {js_data_str};'),
             (r'const embeddedDataC = \[[\s\S]*?\];', lambda: f'const embeddedDataC = {js_data_str};'),
+            (r'const embeddedData = \[[\s\S]*?\];', lambda: f'const embeddedData = {js_data_str};'),
             (r'const embeddedYasalData = \[[\s\S]*?\];', lambda: f'const embeddedYasalData = {js_data_str};'),
         ]
         
@@ -440,8 +441,11 @@ def get_title_from_filename(filename):
     # Remove file extension
     name = filename.replace('.xlsx', '').replace('.html', '')
     
-    # Define proper Turkish titles for files 4-7
+    # Define proper Turkish titles for all files (without numbers)
     title_map = {
+        '1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi': 'Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi',
+        '2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi': 'Elektrik Enerjisinin Kaynaklara Göre Kurulu Gücü ve Üretimi',
+        '3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi': 'Elektrik Enerjisinin Brüt Üretimi ve Sektörel Tüketimi',
         '4_yasal_duzenlemeler': 'Yasal Düzenlemeler',
         '5_strateji_ve_politika_belgeleri': 'Strateji ve Politika Belgeleri',
         '6_kalkinma_planlari': 'Kalkınma Planları',
@@ -512,11 +516,11 @@ def choose_template(excel_path, current_dir):
     
     excel_name = excel_path.name
     
-    # For file 4 specifically, always use the original backup
+    # For file 4, use unified template to avoid corrupted backup data
     if '4_yasal_duzenlemeler' in excel_name:
-        backup_template = current_dir / 'backup_html' / '4_yasal_duzenlemeler.html'
-        if backup_template.exists():
-            return backup_template
+        unified_template = current_dir / 'unified_document_template.html'
+        if unified_template.exists():
+            return unified_template
     
     # For files 5-7 (document catalogs), use the unified document template
     if any(keyword in excel_name for keyword in ['strateji', 'kalkinma', 'ab_ilerleme', 'politika']):
