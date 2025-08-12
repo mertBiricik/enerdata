@@ -203,6 +203,25 @@ def fix_link_format(link):
     return link_str
 
 
+def clean_text_for_json(text):
+    """Clean text to prevent JSON syntax errors"""
+    if not text or pd.isna(text):
+        return text
+    
+    text_str = str(text)
+    # Replace problematic characters that break JSON
+    text_str = text_str.replace('\n', ' ')  # Replace line breaks with spaces
+    text_str = text_str.replace('\r', ' ')  # Replace carriage returns
+    text_str = text_str.replace('\t', ' ')  # Replace tabs
+    text_str = text_str.replace('"', '\\"')  # Escape quotes (though json.dumps should handle this)
+    
+    # Clean up multiple spaces
+    import re
+    text_str = re.sub(r'\s+', ' ', text_str).strip()
+    
+    return text_str
+
+
 def convert_document_excel(excel_path):
     """Convert document catalog Excel to JavaScript data format"""
     all_docs = []
@@ -243,7 +262,7 @@ def convert_document_excel(excel_path):
                         if not pd.isna(value):
                             # Clean and standardize common field names
                             clean_header = header.strip()
-                            value_str = str(value).strip()
+                            value_str = clean_text_for_json(str(value).strip())
                             
                             # More specific field mapping
                             if 'no' in clean_header.lower() and any(word in clean_header.lower() for word in ['kanun', 'law', 'mevzuat']):
