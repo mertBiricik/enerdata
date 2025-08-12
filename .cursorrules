@@ -14,6 +14,53 @@ This project contains interactive energy dashboards and qualitative research doc
 6. **6_kalkinma_planlari.html** - Development Plans (embeddedKalkinmaData, 12 documents)
 7. **7_ab_ilerleme_raporlari.html** - EU Progress Reports (embeddedAbData, 26 documents)
 
+## 🚨 CRITICAL RULE: NEVER MANUALLY EDIT JAVASCRIPT DATA FILES
+
+### ⛔ FORBIDDEN: Manual Data Editing
+**NEVER directly edit these files:**
+- `nitel_data/yasal_data.js`
+- `nitel_data/strateji_data.js` 
+- `nitel_data/kalkinma_data.js`
+- `nitel_data/ab_data.js`
+- `data/a/data_a_embedded.js`
+- `data/b/data_b_embedded.js`
+- `data/C/c_embedded_data.js`
+
+### ⛔ FORBIDDEN: Creating Multiple Fix Scripts
+**NEVER create multiple band-aid scripts for every issue:**
+- No emergency fix scripts
+- No specific issue fix scripts  
+- No temporary patch scripts
+- No test/debug scripts (except for testing)
+
+### ✅ REQUIRED: Only Use These Script Categories
+**ONLY these script types are allowed:**
+
+1. **Safety Procedures (Required):**
+   - `remove_base64.py` - Remove logo data before editing
+   - `restore_base64.py` - Restore logo data after editing
+   - `remove_data.py` - Remove embedded data before editing
+   - `restore_data.py` - Restore embedded data after editing
+
+2. **Data Conversion Scripts (One per category):**
+   - `convert_nitel_data.py` - Single comprehensive script for all qualitative data (files 4,5,6,7)
+   - `convert_nicel_data.py` - Single comprehensive script for all quantitative data (files 1,2,3)
+
+### ✅ REQUIRED: Automated Data Management
+**Always use these methods for data changes:**
+1. **Source Data**: Edit original Excel files in `nitel/` and `new_data/` directories
+2. **Conversion Scripts**: Use ONLY the two conversion scripts above
+3. **Safety Protocol**: Always follow remove_data → convert → restore_data
+4. **Data Integrity**: Maintain data consistency through automation
+
+### Why This Rule Exists:
+- **Data Corruption**: Manual edits cause JavaScript syntax errors
+- **Script Proliferation**: Multiple fix scripts create maintenance nightmare
+- **Inconsistency**: Source Excel files become out of sync with JS data
+- **Debugging Nightmare**: Multiple scripts break automated workflows
+- **Loss of Links**: Original source data contains links that get lost in manual edits
+- **Scalability**: Manual editing doesn't scale with hundreds of documents
+
 ## File Modification Safety Protocol
 
 ### ⚠️ CRITICAL: Always Use Safe Modification Procedure

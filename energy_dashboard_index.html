@@ -210,6 +210,67 @@
             opacity: 1;
         }
 
+        /* Qualitative Research Documents Section */
+        .section-divider {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 2px solid #dee2e6;
+        }
+
+        .section-divider h2 {
+            color: #006400;
+            font-size: 2rem;
+            margin: 0 0 1rem;
+            font-weight: 600;
+        }
+
+        .section-divider p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* Legal Regulations Card */
+        .dataset-card.legal {
+            background: linear-gradient(135deg, #6f42c1 0%, #8e44ad 100%);
+        }
+        
+        .dataset-card.legal .dataset-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Strategy Documents Card */
+        .dataset-card.strategy {
+            background: linear-gradient(135deg, #fd7e14 0%, #e83e8c 100%);
+        }
+        
+        .dataset-card.strategy .dataset-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Development Plans Card */
+        .dataset-card.development {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+        }
+        
+        .dataset-card.development .dataset-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* EU Progress Reports Card */
+        .dataset-card.eu-reports {
+            background: linear-gradient(135deg, #003399 0%, #0066cc 100%);
+        }
+        
+        .dataset-card.eu-reports .dataset-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -281,6 +342,72 @@
                 </div>
                 <div class="action-button">
                     Veriyi Keşfet <span>→</span>
+                </div>
+            </a>
+
+            <!-- Qualitative Research Documents Section -->
+            <div class="section-divider">
+                <h2>Nitel Araştırma Belgeleri</h2>
+                <p>Türkiye enerji politikalarının gelişim sürecini belgeler üzerinden inceleyin</p>
+            </div>
+
+            <!-- Document 4: Legal Regulations -->
+            <a href="4_yasal_duzenlemeler.html" class="dataset-card legal">
+                <span class="dataset-icon">⚖️</span>
+                <h2>Yasal Düzenlemeler</h2>
+                <p>Türkiye enerji sektörünü şekillendiren temel kanun, yönetmelik ve düzenlemeleri inceleyin.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">35 Belge</span>
+                    <span class="detail-badge">Kanun & Yönetmelik</span>
+                    <span class="detail-badge">Tarihsel Gelişim</span>
+                </div>
+                <div class="action-button">
+                    Belgeleri İncele <span>→</span>
+                </div>
+            </a>
+
+            <!-- Document 5: Strategy Documents -->
+            <a href="5_strateji_ve_politika_belgeleri.html" class="dataset-card strategy">
+                <span class="dataset-icon">📋</span>
+                <h2>Strateji ve Politika Belgeleri</h2>
+                <p>Enerji politikası oluşturma sürecindeki strateji belgeleri ve politika dokümanları.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">45 Belge</span>
+                    <span class="detail-badge">Strateji & Politika</span>
+                    <span class="detail-badge">Uzun Vadeli Planlama</span>
+                </div>
+                <div class="action-button">
+                    Belgeleri İncele <span>→</span>
+                </div>
+            </a>
+
+            <!-- Document 6: Development Plans -->
+            <a href="6_kalkinma_planlari.html" class="dataset-card development">
+                <span class="dataset-icon">📈</span>
+                <h2>Kalkınma Planları</h2>
+                <p>Türkiye'nin kalkınma planlarında enerji sektörüne yönelik hedef ve stratejiler.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">12 Plan</span>
+                    <span class="detail-badge">Kalkınma Hedefleri</span>
+                    <span class="detail-badge">Sektörel Stratejiler</span>
+                </div>
+                <div class="action-button">
+                    Planları İncele <span>→</span>
+                </div>
+            </a>
+
+            <!-- Document 7: EU Progress Reports -->
+            <a href="7_ab_ilerleme_raporlari.html" class="dataset-card eu-reports">
+                <span class="dataset-icon">🇪🇺</span>
+                <h2>AB İlerleme Raporları</h2>
+                <p>Avrupa Birliği uyum sürecinde enerji sektörüne yönelik değerlendirme raporları.</p>
+                <div class="dataset-details">
+                    <span class="detail-badge">26 Rapor</span>
+                    <span class="detail-badge">AB Uyum</span>
+                    <span class="detail-badge">İlerleme Değerlendirmesi</span>
+                </div>
+                <div class="action-button">
+                    Raporları İncele <span>→</span>
                 </div>
             </a>
         </div>
