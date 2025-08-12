@@ -61,6 +61,7 @@ enerdata/
 - **Error Handling**: Graceful degradation for missing or malformed data
 - **Text Cleaning**: `clean_text_for_json()` function prevents JSON syntax errors by removing line breaks, carriage returns, and tabs
 - **Data Variable Consistency**: All document files (4-7) use `embeddedData` variable for unified template compatibility
+- **Title Standardization**: All files use clean Turkish titles without numbers for professional appearance
 
 ## Development Guidelines
 
