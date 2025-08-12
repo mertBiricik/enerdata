@@ -1,11 +1,18 @@
 # Turkey Energy Dashboard Project - Cursor Rules
 
 ## Project Overview
-This project contains three interactive energy dashboards for Turkey with embedded data and professional chart export capabilities:
+This project contains interactive energy dashboards and qualitative research documents for Turkey with embedded data and professional export capabilities:
 
+### Main Dashboards
 1. **dataset_a_primary_energy.html** - Primary Energy Production & Consumption (1972-2023)
 2. **dataset_b_electricity.html** - Electricity Capacity & Generation by Sources  
 3. **dataset_c_sectoral_consumption.html** - Sectoral Energy Consumption (1923-2023)
+
+### Nitel (Qualitative) Research Documents
+4. **4_yasal_duzenlemeler.html** - Legal Regulations Archive (embeddedYasalData, 35 documents)
+5. **5_strateji_ve_politika_belgeleri.html** - Strategy & Policy Documents (embeddedStratejiData, 45 documents)
+6. **6_kalkinma_planlari.html** - Development Plans (embeddedKalkinmaData, 12 documents)
+7. **7_ab_ilerleme_raporlari.html** - EU Progress Reports (embeddedAbData, 26 documents)
 
 ## File Modification Safety Protocol
 
@@ -33,6 +40,13 @@ python restore_data.py
 - **Base64 data**: Large embedded logo data can crash LLM context
 - **Embedded JS data**: 50-70KB of JavaScript data per file makes editing unsafe
 - **WordPress compatibility**: Files need embedded data for WordPress deployment
+- **Nitel files support**: Updated scripts now handle files 4,5,6,7 with proper variable mapping
+
+### 🚩 CRITICAL JavaScript Syntax Issues to Avoid:
+- **Unescaped line breaks**: Multi-line strings in JSON data MUST be on single lines
+- **String literals**: All text content in "amac" fields must be properly escaped
+- **Example error**: `"text line 1\nline 2"` breaks JavaScript - must be `"text line 1 line 2"`
+- **Debugging**: Add try-catch blocks and console.log statements to isolate loading issues
 
 ## Utility Scripts
 
@@ -47,9 +61,17 @@ python restore_data.py
 - `excel_to_js.py` - Converts Excel files to JavaScript format
 
 ## Data Sources
+
+### Dashboard Data
 - `data/a/data_a_embedded.js` - Primary energy data (embeddedDataA)
 - `data/b/data_b_embedded.js` - Electricity data (embeddedDataB)  
 - `data/C/c_embedded_data.js` - Sectoral consumption data (embeddedRawData)
+
+### Nitel (Qualitative) Data
+- `nitel_data/yasal_data.js` - Legal regulations data (embeddedYasalData)
+- `nitel_data/strateji_data.js` - Strategy documents data (embeddedStratejiData)
+- `nitel_data/kalkinma_data.js` - Development plans data (embeddedKalkinmaData)
+- `nitel_data/ab_data.js` - EU progress reports data (embeddedAbData)
 
 ## Chart Quality Features
 
@@ -120,19 +142,28 @@ python restore_data.py
 ├── dataset_a_primary_energy.html (139KB with embedded data)
 ├── dataset_b_electricity.html (142KB with embedded data)
 ├── dataset_c_sectoral_consumption.html (135KB with embedded data)
+├── 4_yasal_duzenlemeler.html (Legal Regulations - embeddedYasalData)
+├── 5_strateji_ve_politika_belgeleri.html (Strategy Documents - embeddedStratejiData)
+├── 6_kalkinma_planlari.html (Development Plans - embeddedKalkinmaData)
+├── 7_ab_ilerleme_raporlari.html (EU Progress Reports - embeddedAbData)
 ├── logo.jpg (source logo file)
 ├── energy_dashboard_index.html (main index)
 ├── remove_base64.py (logo safety)
 ├── restore_base64.py (logo restoration)
-├── remove_data.py (data safety)
-├── restore_data.py (data embedding)
+├── remove_data.py (data safety - updated for nitel files)
+├── restore_data.py (data embedding - updated for nitel files)
 ├── csv_to_js.py (data conversion)
 ├── excel_to_js.py (data conversion)
 ├── html_data_manager.py (advanced data management)
-└── data/
-    ├── a/data_a_embedded.js (primary energy)
-    ├── b/data_b_embedded.js (electricity)
-    └── C/c_embedded_data.js (sectoral consumption)
+├── data/
+│   ├── a/data_a_embedded.js (primary energy)
+│   ├── b/data_b_embedded.js (electricity)
+│   └── C/c_embedded_data.js (sectoral consumption)
+└── nitel_data/
+    ├── yasal_data.js (legal regulations)
+    ├── strateji_data.js (strategy documents)
+    ├── kalkinma_data.js (development plans)
+    └── ab_data.js (EU progress reports)
 ```
 
 ## Common Tasks
@@ -155,9 +186,67 @@ python restore_data.py  # Re-embed updated data
 - No external dependencies required
 - Professional export quality maintained
 
+## Troubleshooting JavaScript Data Loading Issues
+
+### Common Errors and Fixes
+
+#### 1. "Uncaught SyntaxError: string literal contains an unescaped line break"
+**Cause**: Multi-line text in JSON data with literal line breaks
+**Location**: Usually in "amac" (purpose) fields of nitel documents
+**Fix**: Join all text into single line, remove literal line breaks
+```javascript
+// WRONG - breaks JavaScript
+"amac": "Line 1
+Line 2"
+
+// CORRECT - single line
+"amac": "Line 1 Line 2"
+```
+
+#### 2. "embeddedData is undefined" 
+**Cause**: JavaScript syntax error prevents data array from loading
+**Debugging Steps**:
+1. Add console.log debugging to DOMContentLoaded event
+2. Check browser console for syntax errors
+3. Validate JSON structure manually
+4. Look for unescaped quotes, missing commas, extra commas
+
+#### 3. "Veri yüklenirken hata oluştu" (Data loading error)
+**Cause**: Runtime error during data processing
+**Fix**: Add try-catch blocks around initialization code
+**Example**:
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        if (typeof embeddedYasalData !== 'undefined') {
+            // ... initialization code ...
+        } else {
+            document.getElementById('loading').textContent = 'Veri yüklenirken hata oluştu.';
+        }
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        document.getElementById('loading').textContent = 'Veri yüklenirken hata oluştu.';
+    }
+});
+```
+
+### Debugging Tools
+- Use browser Developer Console (F12) to check for errors
+- Add temporary console.log statements for debugging
+- Validate JavaScript syntax with Node.js: `node -c filename.html`
+- Check JSON structure separately if needed
+
+### WordPress Deployment Issues
+- **WordPress font override**: Ensure `!important` on font-family declarations
+- **WordPress color override**: Ensure `!important` on header text colors  
+- **External dependencies**: All data must be embedded, no external file references
+- **File size limits**: Monitor embedded data size for WordPress upload limits
+
 ## Best Practices
 - Always test export functionality after chart modifications
 - Verify legend readability with different data sets
 - Check responsive behavior on mobile devices
-- Maintain consistent styling across all three dashboards
+- Maintain consistent styling across all dashboards
+- Test in browser console before deployment
+- Keep backup copies before major modifications
 - Document any new safety procedures in this file 
