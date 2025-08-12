@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strateji ve Politika Belgeleri</title>
+    <style>
+        * { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 20px;
+            background: white;
+            color: #333; 
+            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .main-container {
+            max-width: 1600px;
+            width: 95%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: white !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: white !important;
+        }
+        
+        .controls {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-box, .date-filter {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box:focus, .date-filter:focus {
+            outline: none;
+            border-color: #228B22;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .documents-container {
+            padding: 1.5rem;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        
+        .document-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .document-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .document-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #006400;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .document-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .meta-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 80px;
+        }
+        
+        .meta-value {
+            color: #333;
+        }
+        
+        .access-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            transition: transform 0.2s;
+        }
+        
+        .access-link:hover {
+            transform: translateY(-1px);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .document-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Strateji ve Politika Belgeleri</h1>
+        </div>
+        
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchBox" class="search-box" placeholder="Belge adı, yazar veya yayınevi bazında arama yapın...">
+                <input type="text" id="yearFilter" class="date-filter" placeholder="Yıl filtresi (örn: 2010, 2000-2020)">
+                <select id="categoryFilter" class="date-filter">
+                    <option value="">Tüm Kategoriler</option>
+                </select>
+                <button class="export-btn" onclick="exportData()">📄 Excel'e Aktar</button>
+            </div>
+            <div class="stats">
+                <span id="totalCount">Yükleniyor...</span>
+                <span id="filteredCount"></span>
+                <span id="dateRange"></span>
+            </div>
+        </div>
+        
+        <div class="documents-container">
+            <div class="loading" id="loading">Belgeler yükleniyor...</div>
+            <div id="documentsGrid" style="display: none;"></div>
+            <div class="no-results" id="noResults" style="display: none;">
+                Arama kriterlerinize uygun belge bulunamadı.
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Data -->
+    <script>
+const embeddedStratejiData = [
+  {
+    "id": "1",
+    "yazar": "10. Yıl Komisyonu",
+    "baslik": "10. Yıl, 1923-1933",
+    "basimTarihi": "1933",
+    "yayinevi": "Hakimiyeti Milliye Matbaası",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.nadirkitap.com/10-1923-1933-t-c-turkiye-cumhuriyeti-nin-10-yili-nafia-10-yilda-turkiye-nafiasi-1923-1933-kitap3350680.html?srsltid=AfmBOop8cCdIj28V59trd1p_NPsijHHmgWnj0gqvS392p-K91y9pYpIW",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "2",
+    "yazar": "Şevket Aydınelli",
+    "baslik": "Türkiyenin Energi Ekonomisi ve Elektriklendirilmesi",
+    "basimTarihi": "1940",
+    "yayinevi": "Elektrik İşleri Etüt İdaresi Neşriyatından",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.nadirkitap.com/turkiyenin-energi-enerji-ekonomisi-ve-elektriklendirilmesi-kitap12954975.html?srsltid=AfmBOorf9DpbNfq7_Lzrgy6wMomBjGsnSvg114ekbjguZjc0YKxryvi_",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "3",
+    "yazar": "Bayındırlık Vekaleti",
+    "baslik": "Türkiye I. İstişari Enerji Kongresi, 6-11 Nisan 1953",
+    "basimTarihi": "1953",
+    "yayinevi": "Akın Matbaacılık Ltd.Or.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://kutuphane.tarimorman.gov.tr/vufind/Record/1198494",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "4",
+    "yazar": "Türk Standardları Enstitüsü",
+    "baslik": "Türkiye Genel Enerji Raporu (18-20 Kasım 1968'de Ankara'da Toplanan Türkiye 2. Genel Enerji Kongresi İçin Hazırlanmıştır)",
+    "basimTarihi": "1968",
+    "yayinevi": "Türk Standartları Enstitüsü",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://kutuphane.sbb.gov.tr/vufind/Record/60853",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "5",
+    "yazar": "Türkiye Jeotermal Enerji Kurumu",
+    "baslik": "Türkiye I. Jeotermal Enerji Simpozyumu Tebliğler, 2-7 Kasım 1971, Ankara",
+    "basimTarihi": "1973",
+    "yayinevi": "Türkiye Jeotermal Enerji Kurumu",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.nadirkitap.com/turkiye-1-jeotermal-enerji-simpozyumu-2-7-kasim-1971-ankara-tebligler-first-geothermal-energy-symposium-of-turkey-kitap29376072.html?srsltid=AfmBOoo6n56kc-c0ARsriOw3EXi0w0KzF-rycu4PR4jSm0aLSQDzjm5b",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "6",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "50. Yılda Yurudumuzun Enerji ve Doğal Kaynakları",
+    "basimTarihi": "1973",
+    "yayinevi": "DSİ Matbaası",
+    "basimYeri": "Ankara",
+    "erisimLinki": "http://katalog.tdk.gov.tr/details?id=103454&materialType=BK&query=Kaynaklar",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "7",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "1977 Yılı Uzun Vadeli Enerji Hammaddeleri Projesi Programları",
+    "basimTarihi": "1977",
+    "yayinevi": "MTAE Matbaası",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.nadirkitap.com/1977-yili-uzun-vadeli-enerji-hammaddeleri-projesi-programlari-bitumlu-sist-kitap29376627.html?srsltid=AfmBOoqNVvLppBV37QZkMHC2Jw17-d3GMhewbvcY7VWccYEkT9b2C4ZG",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "8",
+    "yazar": "Cumhurbaşkanlığı Strateji ve Bütçe Planlama Başkanlığı",
+    "baslik": "Uzun Vadeli Strateji ve Sekizinci Beş Yıllık Kalkınma Planı (2001-2005)",
+    "basimTarihi": "2001",
+    "yayinevi": "Cumhurbaşkanlığı Strateji ve Bütçe Planlama Başkanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Uzun_Vadeli_Strateji_ve_Sekizinci_Bes_Yillik_Kalkinma_Plani-2001-2005.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "9",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Elektrik Enerjisi Sektörü Reformu ve Özelleştirme Belgesi",
+    "basimTarihi": "2004",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/SGB/tr/Belgeler/813926-9elektrik_enerjisi_sektoru_reformu_ve_ozellestirme_strateji_belgesi.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "10",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Elektrik Enerjisi Sektörü Reformu ve Özelleştirme Strateji Belgesi",
+    "basimTarihi": "2004",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/SGB/tr/Belgeler/813926-9elektrik_enerjisi_sektoru_reformu_ve_ozellestirme_strateji_belgesi.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "11",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Enerji Sektöründe Sera Gazı Azaltımı Çalışma Grubu Raporu",
+    "basimTarihi": "2006",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/SGB/tr/Belgeler/19067-8enerji_grubu_raporu.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "12",
+    "yazar": "Devlet Planlama Teşkilatı Müsteşarlığı",
+    "baslik": "Arz Güvenliği Strateji Belgesi",
+    "basimTarihi": "2009",
+    "yayinevi": "Devlet Planlama Teşkilatı Müsteşarlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/SGB/tr/Belgeler/813444-6arz_guvenligi_strateji_belgesi.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "13",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "2010-2023 Enerji Verimliliği Strateji Belgesi",
+    "basimTarihi": "2012",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://resmigazete.gov.tr/eskiler/2012/02/20120225-7.htm",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "14",
+    "yazar": "Resmi Gazete",
+    "baslik": "Enerji Verimliliği Strateji Belgesi 2012-2023",
+    "basimTarihi": "2012",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://resmigazete.gov.tr/eskiler/2012/02/20120225-7.htm",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "15",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2012",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/sites/default/files/dd924b618b4d692_ek_0.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "16",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2014",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/sites/default/files/9aca139809cf620_ek_0.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "17",
+    "yazar": "Ulaştırma ve Altyapı Bakanlığı",
+    "baslik": "Ulusal Akıllı Şebekeler Strateji Belgesi",
+    "basimTarihi": "2015",
+    "yayinevi": "Ulaştırma ve Altyapı Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.uab.gov.tr/uploads/pages/kutuphane/ulusal-akilli-ulas-im-sistemleri-strateji-belgesi-ve-2020-2023-eylem-plani.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "18",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Bilgi Güvenliği Politikası",
+    "basimTarihi": "2016",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.temsan.gov.tr/files/4062025110332_d.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "19",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2016",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/sites/default/files/5a810b69dea7107_ek.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "20",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "2015-2019 Stratejik Planı",
+    "basimTarihi": "2017",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "http://www.sp.gov.tr/tr/stratejik-plan/s/1070/Enerji+ve+Tabii+Kaynaklar+Bakanligi+2015-2019",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "21",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Ulusal Enerji Verimliliği Eylem Planı (2017-2023)",
+    "basimTarihi": "2018",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/EVCED/tr/EnerjiVerimliliği/UlusalEnerjiVerimliliğiEylemPlanı/Belgeler/UEVEP.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "22",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2018",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/sites/default/files/EnerjiGorunumu2018_1.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "23",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "ETKB 2019-2023 Stratejik Planı",
+    "basimTarihi": "2019",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.mmo.org.tr/wp-content/uploads/2020/05/ETKB-2019-2023_Stratejik_Planı.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "24",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Türkiye Enerji Görünümü Raporu",
+    "basimTarihi": "2019",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr/Media/Dizin/EVCED/tr/EnerjiVerimliliği/Eğitimler/EY_Modül_1_Eğitim_Sunumları/1_2.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "25",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Enerji Verimliliği Stratejik İletişim Planı",
+    "basimTarihi": "2020",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://aklinlaverimliyasa.com/uploads/2020/09/ENERJİ-VERİMLİLİĞİ-STRATEJİK-İLETİŞİM-PLANI.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "26",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Kamu Binalarında Tasarruf Hedefi ve Uygulama Rehberi",
+    "basimTarihi": "2020",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr/Media/Dizin/BHIM/tr/Duyurular//Kamu_Binalarında_Tasarruf_Hedefi_Uygulama_Rehberi_202110051630.docx",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "27",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2020",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/kitaplar/turkiyenin-enerji-gorunumu-2020",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "28",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Türkiye Madencilik Sektörü Gelişim Raporu 2020",
+    "basimTarihi": "2021",
+    "yayinevi": "Özyurt Matbaacılık",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/TKDB/tr/Belgeler/TMSGR2020.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "29",
+    "yazar": "Ticaret Bakanlığı",
+    "baslik": "Türkiye Yeşil Mutabakat Eylem Plan",
+    "basimTarihi": "2021",
+    "yayinevi": "Ticaret Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://ticaret.gov.tr/data/640f220d13b8761b449ccb42/YESIL%20MUTABAKAT%20Eylem%20Planı.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "30",
+    "yazar": "Çevre, Şehircilik, İklim Değişikliği Bakanlığı",
+    "baslik": "İklim Şurası Raporu",
+    "basimTarihi": "2022",
+    "yayinevi": "Çevre, Şehircilik, İklim Değişikliği Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://iklim.gov.tr/db/turkce/dokumanlar/iklim-surasi-3135-20241024123150.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "31",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Ulusal Enerji Planı",
+    "basimTarihi": "2022",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerjiverimliligi.enerji.gov.tr/template/dist/pdf/Türkiye_Ulusal_Enerji_Planı.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "32",
+    "yazar": "Ticaret Bakanlığı",
+    "baslik": "Yeşil Mutabakat Çalışma Grubu - Yıllık Faaliyet Raporu",
+    "basimTarihi": "2022",
+    "yayinevi": "Ticaret Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://ticaret.gov.tr/data/643ffd6a13b8767b208ca8e4/YMEP%202022%20Faaliyet%20Raporu.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "33",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Türkiye Ulusal Enerji Planı",
+    "basimTarihi": "2022",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerjiverimliligi.enerji.gov.tr/template/dist/pdf/Türkiye_Ulusal_Enerji_Planı.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "34",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2022",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/sites/default/files/teg%202022.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "35",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Türkiye Hidrojen Teknolojileri Stratejisi ve Yol Haritası",
+    "basimTarihi": "2023",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr/Media/Dizin/SGB/tr/Kurumsal_Politikalar/HSP/ETKB_Hidrojen_Stratejik_Plan2023.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "36",
+    "yazar": "Ticaret Bakanlığı",
+    "baslik": "Yeşil Mutabakat Çalışma Grubu - Yıllık Faaliyet Raporu",
+    "basimTarihi": "2023",
+    "yayinevi": "Ticaret Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://ticaret.gov.tr/data/667a91b813b87625f00bf578/Yeşil%20Mutabakat%20Çalışma%20Grubu%20Yıllık%20Faaliyet%20Raporu%20-%202023..pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "37",
+    "yazar": "T.C. Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
+    "baslik": "2024 Yılı Performans Programı",
+    "basimTarihi": "2024",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2024/01/2024-Yili-Performans-Programi.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "38",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Enerji Verimliliği 2030 Stratejisi ve Ulusal Enerji Verimliliği Eylem Planı",
+    "basimTarihi": "2024",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/EVCED/tr/EnerjiVerimlili%C4%9Fi/UlusalEnerjiVerimlili%C4%9FiEylemPlan%C4%B1/Belgeler/2UlusalEnerjiVerimlili%C4%9FiEylemPlan%C4%B1.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "39",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Enerji Verimliliği 2030 Stratejisi ve II. Ulusal Enerji Verimliliği Eylem Planı",
+    "basimTarihi": "2024",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr//Media/Dizin/EVCED/tr/EnerjiVerimliliği/UlusalEnerjiVerimliliğiEylemPlanı/Belgeler/2UlusalEnerjiVerimliliğiEylemPlanı.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "40",
+    "yazar": "Ticaret Bakanlığı",
+    "baslik": "Avrupa Yeşil Mutabakatı ve Türkiye’nin Yeşil Mutabakat Eylem Planı",
+    "basimTarihi": "2024",
+    "yayinevi": "Ticaret Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://webdosya.csb.gov.tr/db/dongusel/icerikler/avrupa-yes-l-mutabakati-ve-turk-ye-n-n-yes-l-mutabakat-eylem-plani-20241013175758.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "41",
+    "yazar": "Çevre, Şehircilik, İklim Değişikliği Bakanlığı",
+    "baslik": "İklim Değişikliği Azaltım Stratejisi̇ ve Eylem Planı (2024-2030)",
+    "basimTarihi": "2024",
+    "yayinevi": "Çevre, Şehircilik, İklim Değişikliği Bakanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://iklim.gov.tr/db/turkce/icerikler/files/İklim%20Değişikliği%20Azaltım%20Stratejisi%20ve%20Eylem%20Planı%20(2024-2030).pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "42",
+    "yazar": "Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
+    "baslik": "On İkinci Kalkınma Planı (2024-2028)",
+    "basimTarihi": "2024",
+    "yayinevi": "Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2023/12/On-Ikinci-Kalkinma-Plani_2024-2028_11122023.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "43",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "ETKB 2024–2028 Stratejik Planı",
+    "basimTarihi": "2024",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr/Media/Dizin/SGB/tr/Kurumsal_Politikalar/ETKB_2024-2028_Stratejik_Plani.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "44",
+    "yazar": "T.M.M.O.B. Makine Mühendisleri Odası",
+    "baslik": "Türkiye'nin Enerji Görünümü",
+    "basimTarihi": "2024",
+    "yayinevi": "T.M.M.O.B. M.M.O.",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://www.mmo.org.tr/sites/default/files/gonderi_dosya_ekleri/t%C3%BCrkiyenin_enerji_g%C3%B6r%C3%BCn%C3%BCm%C3%BC_kitap.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  },
+  {
+    "id": "45",
+    "yazar": "Enerji ve Tabii Kaynaklar Bakanlığı",
+    "baslik": "Kritik Madenler Strateji Belgesi Çalışmaları",
+    "basimTarihi": "2025",
+    "yayinevi": "ETKB",
+    "basimYeri": "Ankara",
+    "erisimLinki": "https://enerji.gov.tr/Media/Dizin/TKDB/tr/Belgeler/Türkiye_Kritik_ve_Stratejik_Madenler_Raporu.pdf",
+    "category": "Strateji ve Politika Belgeleri"
+  }
+];
+</script>
+    
+    <script>
+        let allDocuments = [];
+        let filteredDocuments = [];
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Belirtilmemiş';
+            return dateStr.toString();
+        }
+        
+        function extractYear(dateStr) {
+            if (!dateStr) return null;
+            const match = dateStr.toString().match(/(\d{4})/);
+            return match ? parseInt(match[1]) : null;
+        }
+        
+        function renderDocuments(documents) {
+            const grid = document.getElementById('documentsGrid');
+            const loading = document.getElementById('loading');
+            const noResults = document.getElementById('noResults');
+            
+            loading.style.display = 'none';
+            
+            if (!documents || documents.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            grid.style.display = 'block';
+            
+            const html = documents.map(doc => `
+                <div class="document-card">
+                    <div class="document-title">${doc.baslik || 'Başlık belirtilmemiş'}</div>
+                    <div class="document-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Yazar:</span>
+                            <span class="meta-value">${doc.yazar || 'Belirtilmemiş'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Basım Tarihi:</span>
+                            <span class="meta-value">${formatDate(doc.basimTarihi)}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Yayınevi:</span>
+                            <span class="meta-value">${doc.yayinevi || 'Belirtilmemiş'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Basım Yeri:</span>
+                            <span class="meta-value">${doc.basimYeri || 'Belirtilmemiş'}</span>
+                        </div>
+                    </div>
+                    ${doc.erisimLinki ? `
+                        <a href="${doc.erisimLinki}" target="_blank" class="access-link">
+                            🔗 Belgeye Erişim
+                        </a>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            grid.innerHTML = html;
+        }
+        
+        function categorizeDocument(doc) {
+            const title = (doc.baslik || '').toLowerCase();
+            const author = (doc.yazar || '').toLowerCase();
+            const publisher = (doc.yayinevi || '').toLowerCase();
+            const content = title + ' ' + author + ' ' + publisher;
+            
+            if (content.includes('kongre') || content.includes('konferans') || content.includes('sempozyum')) {
+                return 'Kongre ve Konferanslar';
+            }
+            if (content.includes('plan') || content.includes('program') || content.includes('strateji')) {
+                return 'Plan ve Stratejiler';
+            }
+            if (content.includes('rapor') || content.includes('araştırma') || content.includes('inceleme')) {
+                return 'Raporlar ve Araştırmalar';
+            }
+            if (content.includes('devlet') || content.includes('bakanlık') || content.includes('resmi')) {
+                return 'Resmi Yayınlar';
+            }
+            if (content.includes('yıl') && (content.includes('1923') || content.includes('cumhuriyet'))) {
+                return 'Cumhuriyet Dönemi';
+            }
+            if (content.includes('ekonomi') || content.includes('kalkınma') || content.includes('sanayi')) {
+                return 'Ekonomik Politikalar';
+            }
+            return 'Diğer Stratejik Belgeler';
+        }
+        
+        function populateCategoryFilter() {
+            const categories = [...new Set(allDocuments.map(doc => categorizeDocument(doc)))].sort();
+            const select = document.getElementById('categoryFilter');
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                select.appendChild(option);
+            });
+        }
+        
+        function filterDocuments() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const yearFilter = document.getElementById('yearFilter').value.trim();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            let filtered = allDocuments;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(doc => 
+                    (doc.baslik && doc.baslik.toLowerCase().includes(searchTerm)) ||
+                    (doc.yazar && doc.yazar.toLowerCase().includes(searchTerm)) ||
+                    (doc.yayinevi && doc.yayinevi.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (yearFilter) {
+                if (yearFilter.includes('-')) {
+                    const [startYear, endYear] = yearFilter.split('-').map(y => parseInt(y.trim()));
+                    filtered = filtered.filter(doc => {
+                        const year = extractYear(doc.basimTarihi);
+                        return year && year >= startYear && year <= endYear;
+                    });
+                } else {
+                    const targetYear = parseInt(yearFilter);
+                    filtered = filtered.filter(doc => {
+                        const year = extractYear(doc.basimTarihi);
+                        return year === targetYear;
+                    });
+                }
+            }
+            
+            if (categoryFilter) {
+                filtered = filtered.filter(doc => categorizeDocument(doc) === categoryFilter);
+            }
+            
+            filteredDocuments = filtered;
+            renderDocuments(filteredDocuments);
+            updateStats();
+        }
+        
+        function updateStats() {
+            const totalCount = document.getElementById('totalCount');
+            const filteredCount = document.getElementById('filteredCount');
+            const dateRange = document.getElementById('dateRange');
+            
+            totalCount.textContent = `Toplam ${allDocuments.length} strateji belgesi`;
+            
+            if (filteredDocuments.length !== allDocuments.length) {
+                filteredCount.textContent = `Görüntülenen: ${filteredDocuments.length}`;
+            } else {
+                filteredCount.textContent = '';
+            }
+            
+            const years = allDocuments.map(doc => extractYear(doc.basimTarihi)).filter(y => y);
+            if (years.length > 0) {
+                const minYear = Math.min(...years);
+                const maxYear = Math.max(...years);
+                dateRange.textContent = `${minYear} - ${maxYear}`;
+            }
+        }
+        
+        function exportData() {
+            const csvContent = [
+                ['ID', 'Yazar', 'Başlık', 'Basım Tarihi', 'Yayınevi', 'Basım Yeri', 'Erişim Linki'].join(','),
+                ...filteredDocuments.map(doc => [
+                    doc.id || '',
+                    `"${(doc.yazar || '').replace(/"/g, '""')}"`,
+                    `"${(doc.baslik || '').replace(/"/g, '""')}"`,
+                    doc.basimTarihi || '',
+                    `"${(doc.yayinevi || '').replace(/"/g, '""')}"`,
+                    `"${(doc.basimYeri || '').replace(/"/g, '""')}"`,
+                    doc.erisimLinki || ''
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'strateji_politika_belgeleri.csv';
+            link.click();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof embeddedStratejiData !== 'undefined') {
+                allDocuments = embeddedStratejiData;
+                filteredDocuments = [...allDocuments];
+                populateCategoryFilter();
+                renderDocuments(filteredDocuments);
+                updateStats();
+                
+                document.getElementById('searchBox').addEventListener('input', filterDocuments);
+                document.getElementById('yearFilter').addEventListener('input', filterDocuments);
+                document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+            } else {
+                document.getElementById('loading').textContent = 'Veri yüklenirken hata oluştu.';
+            }
+        });
+    </script>
+</body>
+</html>

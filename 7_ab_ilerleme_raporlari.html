@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB İlerleme Raporları - Türkiye Enerji Politikaları Arşivi</title>
+    <style>
+        * { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 20px;
+            background: white;
+            color: #333; 
+            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .main-container {
+            max-width: 1600px;
+            width: 95%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: white !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: white !important;
+        }
+        
+        .controls {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-box, .year-filter, .author-filter {
+            flex: 1;
+            min-width: 150px;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box:focus, .year-filter:focus, .author-filter:focus {
+            outline: none;
+            border-color: #228B22;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .documents-container {
+            padding: 1.5rem;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        
+        .document-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .document-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .document-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #006400;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .document-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .meta-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 100px;
+        }
+        
+        .meta-value {
+            color: #333;
+        }
+        
+        .content-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .content-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .energy-section {
+            border-left: 4px solid #ff7043;
+        }
+        
+        .environment-section {
+            border-left: 4px solid #4caf50;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .section-content {
+            line-height: 1.5;
+            color: #555;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .document-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>AB İlerleme Raporları</h1>
+        </div>
+        
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchBox" class="search-box" placeholder="Rapor adı veya içerik bazında arama yapın...">
+                <input type="text" id="yearFilter" class="year-filter" placeholder="Yıl (örn: 2020)">
+                <select id="authorFilter" class="author-filter">
+                    <option value="">Tüm Hazırlayanlar</option>
+                </select>
+                <select id="categoryFilter" class="author-filter">
+                    <option value="">Tüm Kategoriler</option>
+                </select>
+                <button class="export-btn" onclick="exportData()">📄 Excel'e Aktar</button>
+            </div>
+            <div class="stats">
+                <span id="totalCount">Yükleniyor...</span>
+                <span id="filteredCount"></span>
+                <span id="dateRange"></span>
+            </div>
+        </div>
+        
+        <div class="documents-container">
+            <div class="loading" id="loading">Belgeler yükleniyor...</div>
+            <div id="documentsGrid" style="display: none;"></div>
+            <div class="no-results" id="noResults" style="display: none;">
+                Arama kriterlerinize uygun belge bulunamadı.
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Data -->
+    <script>
+const embeddedAbData = [
+  {
+    "id": "1",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "1998",
+    "raporNo": null,
+    "raporBaslik": "Türkiye'nin Katılım Yönünde İlerlemesi Üzerine Komisyon'un 1998 Düzenli Raporu",
+    "enerjiIcerigi": "3. Üyelik yükümlülüklerini üstlenme yeteneği, 3.2 Topluluk müktesebatının Avrupa stratejisi kapsamına giren unsurları, Enerji, s. 33-34.",
+    "cevreIcerigi": "3. Üyelik yükümlülüğünü üstlenme yeteneği, 3.2 Topluluk müktesebatının Avrupa stratejisi kapsamına giren unsurları, Çevre, s. 32.",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "2",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "1999",
+    "raporNo": null,
+    "raporBaslik": "Türkiye'nin Katılım Yönünde İlerlemesi'ne İlişkin Komisyon 1999 Düzenli Raporu",
+    "enerjiIcerigi": "3. Üyelik yükümlülüklerini üstlenme yeteneği, 3.2 Avrupa stratejisi kapsamındaki Müktesebat sektörleri, Enerji, s. 36.",
+    "cevreIcerigi": "3. Üyelik yükümlülüklerini üstlenme yeteneği, 3.2 Avrupa stratejisi kapsamındaki Müktesebat sektörleri, Çevre, s. 34-35.",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "3",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2000",
+    "raporNo": null,
+    "raporBaslik": "Türkiye'nin Katılım Yönünde İlerlemesi Üzerine Komisyon'un 2000 Düzenli Raporu",
+    "enerjiIcerigi": "3. Üyelik vecibelerini üstlenme yeteneği, 3.1. Müktesebat başlıkları, Başlık 14: Enerji, s. 39.",
+    "cevreIcerigi": "3. Üyelik vecibelerini üstlenme yeteneği, 3.1. Müktesebat başlıkları, Başlık 22: Çevre, s. 45.",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "4",
+    "hazirlayan": "Avrupa Toplulukları Komisyonu",
+    "tarih": "2001",
+    "raporNo": "Brüksel, 13.11.2001 SEC(2001) 1756",
+    "raporBaslik": "Türkiye'nin Avrupa Birliğine Katılım Sürecine İlişkin 2001 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.2. Müktesebat başlıkları, Bölüm 14: Enerji, s.68",
+    "cevreIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.2. Müktesebat başlıkları, Bölüm 22: Çevre, s.77",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "5",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2002",
+    "raporNo": null,
+    "raporBaslik": "Türkiye'nin Avrupa Birliğine Katılım Sürecine İlişkin 2002 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.1. Müktesebat başlıkları, Başlık 14: Enerji, s.83",
+    "cevreIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.2. Müktesebat başlıkları, Başlık 22: Çevre, s.97",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "6",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2003",
+    "raporNo": null,
+    "raporBaslik": "Türkiye'nin Avrupa Birliğine Katılım Sürecine İlişkin 2002 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.1. Müktesebat başlıkları, Başlık 14: Enerji, s.86",
+    "cevreIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.1. Müktesebat başlıkları, Başlık 22: Enerji, s.101",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "7",
+    "hazirlayan": "Avrupa Toplulukları Komisyonu",
+    "tarih": "2004",
+    "raporNo": "Brüksel, 6.10.2004 SEC(2004) 1201",
+    "raporBaslik": "Türkiye'nin Katılım Yönünde İlerlemesi Hakkında 2004 Yılı Düzenli Raporu",
+    "enerjiIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.1. Müktesebat bölümleri, Bölüm 14: Enerji, s.98",
+    "cevreIcerigi": "3. Üyelikten kaynaklanan yükümlülüklerin üstlenilebilmesi yeteneği, 3.1. Müktesebat bölümleri, Bölüm 22: Enerji, s.115",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "8",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2005",
+    "raporNo": "Brüksel, 9 Kasım 2005 SEC (2005) 1426",
+    "raporBaslik": "Türkiye 2005 İlerleme Raporu",
+    "enerjiIcerigi": "3. Üyelik Yükümlülüklerini Yerine Getirme Kabiliyeti, 3.1. Müktesebat Fasılları, Fasıl 15: Enerji, s. 99",
+    "cevreIcerigi": "3. Üyelik Yükümlülüklerini Yerine Getirme Kabiliyeti, 3.1. Müktesebat Fasılları, Fasıl 27: Çevre, s.138",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "9",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2006",
+    "raporNo": "Brüksel, 8 Kasım 2006 SEC (2006) 1390",
+    "raporBaslik": "Türkiye 2006 İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Yerine Getirme Kabiliyeti, 4.15. Fasıl 15: Enerji, s.47",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Yerine Getirme Kabiliyeti, 4.27. Fasıl 27: Çevre, s.66",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "10",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2007",
+    "raporNo": "Brüksel, 6 Kasım 2007 SEC (2007) 1436",
+    "raporBaslik": "Türkiye 2007 İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Yerine Getirme Kabiliyeti, 4.15. Fasıl 15: Enerji, s.49",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Yerine Getirme Kabiliyeti, 4.27. Fasıl 27: Çevre, s.69",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "11",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2008",
+    "raporNo": "Brüksel, 5 Kasım 2008 SEC (2008) 2699",
+    "raporBaslik": "Türkiye 2008 İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.57",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre, s.78",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "12",
+    "hazirlayan": "Avrupa Toplulukları Komisyonu",
+    "tarih": "2009",
+    "raporNo": "Brüksel, 14.10.2009 SEC(2009) 1334",
+    "raporBaslik": "2009 Yılı Türkiye İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.59",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre, s.80",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "13",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2010",
+    "raporNo": "Brüksel, 09 2010 SEC(2010) 1327",
+    "raporBaslik": "Türkiye 2010 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.64",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre, s.89",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "14",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2011",
+    "raporNo": "Brüksel, 12 Ekim 2011 SEC (2011) 1201",
+    "raporBaslik": "Türkiye 2011 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.72",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre, s.99",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "15",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2012",
+    "raporNo": "Brüksel, 10 Ekim 2012 SEC (2012) 336",
+    "raporBaslik": "Türkiye 2012 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.76",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre ve İklim Değişikliği, s.104",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "16",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2013",
+    "raporNo": "Brüksel, 16 Ekim 2013 SWD(2013) 417",
+    "raporBaslik": "Türkiye 2013 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.36",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre ve İklim Değişikliği, s.71",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "17",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2014",
+    "raporNo": "Brüksel, 08.10.2014 SWD(2014) 307",
+    "raporBaslik": "Türkiye 2014 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.36",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre ve İklim Değişikliği, s.68",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "18",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2015",
+    "raporNo": "Brüksel, 10.11.2015 SWD(2015) 216",
+    "raporBaslik": "Türkiye 2015 Yılı İlerleme Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.51",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre ve İklim Değişikliği, s.83",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "19",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2016",
+    "raporNo": "Brüksel, 9.11.2016 SWD(2016) 336 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2016 Bildirimi, 2016 Türkiye Raporu",
+    "enerjiIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.15. Fasıl 15: Enerji, s.53",
+    "cevreIcerigi": "4. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 4.27. Fasıl 27: Çevre ve İklim Değişikliği, s.86",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "20",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2018",
+    "raporNo": "Strazburg, 17.4.2018 SWD(2018) 153 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2018 Bilgilendirmesi, 2018 Türkiye Raporu",
+    "enerjiIcerigi": "5. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 5.15. Fasıl 15: Enerji, s.78",
+    "cevreIcerigi": "5. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 5.27. Fasıl 27: Çevre ve İklim Değişikliği, s.90",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "21",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2019",
+    "raporNo": "Brüksel, 29.5.2019 SWD(2019) 220 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2019 Bilgilendirmesi, 2019 Türkiye Raporu",
+    "enerjiIcerigi": "5. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 5.15. Fasıl 15: Enerji, s.88",
+    "cevreIcerigi": "5. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 5.27. Fasıl 27: Çevre ve İklim Değişikliği, s.104",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "22",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2020",
+    "raporNo": "Brüksel, 6.10.2020 SWD(2020) 335 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2020 Bilgilendirmesi, 2020 Türkiye Raporu",
+    "enerjiIcerigi": "5. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 5.15. Fasıl 15: Enerji, s.88",
+    "cevreIcerigi": "5. Üyelik Yükümlülüklerini Üstlenebilme Yeteneği, 5.27. Fasıl 27: Çevre ve İklim Değişikliği, s.105",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "23",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2021",
+    "raporNo": "Strazburg, 19.10.2021 SWD(2021) 290 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2021 Bilgilendirmesi, 2021 Türkiye Raporu",
+    "enerjiIcerigi": "Grup 4: Yeşil gündem ve sürdürülebilir bağlantısallık, Fasıl 15: Enerji, s.105-107",
+    "cevreIcerigi": "Grup 4: Yeşil gündem ve sürdürülebilir bağlantısallık, Fasıl 27: Çevre ve İklim Değişikliği, s.108-110",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "24",
+    "hazirlayan": "Avrupa Birliği Komisyonu",
+    "tarih": "2022",
+    "raporNo": "Brüksel, 12.10.2022 SWD(2022) 333 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2022 Bilgilendirmesi, 2022 Türkiye Raporu",
+    "enerjiIcerigi": "Grup 4: Yeşil gündem ve sürdürülebilir bağlantısallık, Fasıl 15: Enerji, s.112-115",
+    "cevreIcerigi": "Grup 4: Yeşil gündem ve sürdürülebilir bağlantısallık, Fasıl 27: Çevre ve İklim Değişikliği, s.116-119",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "25",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2023",
+    "raporNo": "Brüksel, 8.11.2023 SWD(2023) 696 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2023 Bilgilendirmesi, 2023 Türkiye Raporu",
+    "enerjiIcerigi": "Grup 4: Yeşil Gündem ve Sürdürülebilir Bağlantısallık, Fasıl 15: Enerji, s. 115-117.",
+    "cevreIcerigi": "Grup 4: Yeşil Gündem ve Sürdürülebilir Bağlantısallık, Fasıl 27 Çevre ve İklim Değişikliği, s. 119-120.",
+    "category": "AB İlerleme Raporları"
+  },
+  {
+    "id": "26",
+    "hazirlayan": "Avrupa Komisyonu",
+    "tarih": "2024",
+    "raporNo": "Brüksel, 30.10.2024 SWD(2024) 696 nihai",
+    "raporBaslik": "AB Genişleme Politikasına İlişkin 2024 Bildirimi, 20024 Türkiye Raporu",
+    "enerjiIcerigi": "Grup 4: Yeşil Gündem ve Sürdürülebilir Bağlantısallık, Fasıl 15: Enerji, s. 70-71",
+    "cevreIcerigi": "Grup 4: Yeşil Gündem ve Sürdürülebilir Bağlantısallık, Fasıl 27 Çevre ve İklim Değişikliği, s. 71-73",
+    "category": "AB İlerleme Raporları"
+  }
+];
+</script>
+    
+    <script>
+        let allDocuments = [];
+        let filteredDocuments = [];
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Belirtilmemiş';
+            return dateStr.toString();
+        }
+        
+        function extractYear(dateStr) {
+            if (!dateStr) return null;
+            const match = dateStr.toString().match(/(\d{4})/);
+            return match ? parseInt(match[1]) : null;
+        }
+        
+        function renderDocuments(documents) {
+            const grid = document.getElementById('documentsGrid');
+            const loading = document.getElementById('loading');
+            const noResults = document.getElementById('noResults');
+            
+            loading.style.display = 'none';
+            
+            if (!documents || documents.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            grid.style.display = 'block';
+            
+            const html = documents.map(doc => `
+                <div class="document-card">
+                    <div class="document-title">${doc.raporBaslik || 'Başlık belirtilmemiş'}</div>
+                    <div class="document-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Hazırlayan:</span>
+                            <span class="meta-value">${doc.hazirlayan || 'Belirtilmemiş'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Tarih:</span>
+                            <span class="meta-value">${formatDate(doc.tarih)}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Rapor No:</span>
+                            <span class="meta-value">${doc.raporNo || 'Belirtilmemiş'}</span>
+                        </div>
+                    </div>
+                    ${(doc.enerjiIcerigi || doc.cevreIcerigi) ? `
+                        <div class="content-sections">
+                            ${doc.enerjiIcerigi ? `
+                                <div class="content-section energy-section">
+                                    <div class="section-title">🔋 Enerji İçeriği</div>
+                                    <div class="section-content">${doc.enerjiIcerigi}</div>
+                                </div>
+                            ` : ''}
+                            ${doc.cevreIcerigi ? `
+                                <div class="content-section environment-section">
+                                    <div class="section-title">🌱 Çevre ve İklim Değişikliği</div>
+                                    <div class="section-content">${doc.cevreIcerigi}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            grid.innerHTML = html;
+        }
+        
+        function categorizeDocument(doc) {
+            const title = (doc.raporBaslik || '').toLowerCase();
+            const energyContent = (doc.enerjiIcerigi || '').toLowerCase();
+            const envContent = (doc.cevreIcerigi || '').toLowerCase();
+            const year = extractYear(doc.tarih);
+            
+            if (year && year >= 2010) {
+                return '2010 Sonrası Raporlar';
+            }
+            if (year && year >= 2005) {
+                return '2005-2010 Dönemi';
+            }
+            if (year && year >= 2000) {
+                return '2000-2005 Dönemi';
+            }
+            if (year && year >= 1995) {
+                return '1995-2000 Dönemi';
+            }
+            if (energyContent && energyContent.length > envContent.length) {
+                return 'Enerji Odaklı Raporlar';
+            }
+            if (envContent && envContent.length > energyContent.length) {
+                return 'Çevre Odaklı Raporlar';
+            }
+            return 'Genel İlerleme Raporları';
+        }
+        
+        function populateAuthorFilter() {
+            const authors = [...new Set(allDocuments.map(doc => doc.hazirlayan).filter(Boolean))].sort();
+            const select = document.getElementById('authorFilter');
+            
+            authors.forEach(author => {
+                const option = document.createElement('option');
+                option.value = author;
+                option.textContent = author;
+                select.appendChild(option);
+            });
+        }
+        
+        function populateCategoryFilter() {
+            const categories = [...new Set(allDocuments.map(doc => categorizeDocument(doc)))].sort();
+            const select = document.getElementById('categoryFilter');
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                select.appendChild(option);
+            });
+        }
+        
+        function filterDocuments() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const yearFilter = document.getElementById('yearFilter').value.trim();
+            const authorFilter = document.getElementById('authorFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            let filtered = allDocuments;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(doc => 
+                    (doc.raporBaslik && doc.raporBaslik.toLowerCase().includes(searchTerm)) ||
+                    (doc.hazirlayan && doc.hazirlayan.toLowerCase().includes(searchTerm)) ||
+                    (doc.enerjiIcerigi && doc.enerjiIcerigi.toLowerCase().includes(searchTerm)) ||
+                    (doc.cevreIcerigi && doc.cevreIcerigi.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (yearFilter) {
+                const targetYear = parseInt(yearFilter);
+                filtered = filtered.filter(doc => {
+                    const year = extractYear(doc.tarih);
+                    return year === targetYear;
+                });
+            }
+            
+            if (authorFilter) {
+                filtered = filtered.filter(doc => doc.hazirlayan === authorFilter);
+            }
+            
+            if (categoryFilter) {
+                filtered = filtered.filter(doc => categorizeDocument(doc) === categoryFilter);
+            }
+            
+            filteredDocuments = filtered;
+            renderDocuments(filteredDocuments);
+            updateStats();
+        }
+        
+        function updateStats() {
+            const totalCount = document.getElementById('totalCount');
+            const filteredCount = document.getElementById('filteredCount');
+            const dateRange = document.getElementById('dateRange');
+            
+            totalCount.textContent = `Toplam ${allDocuments.length} AB ilerleme raporu`;
+            
+            if (filteredDocuments.length !== allDocuments.length) {
+                filteredCount.textContent = `Görüntülenen: ${filteredDocuments.length}`;
+            } else {
+                filteredCount.textContent = '';
+            }
+            
+            const years = allDocuments.map(doc => extractYear(doc.tarih)).filter(y => y);
+            if (years.length > 0) {
+                const minYear = Math.min(...years);
+                const maxYear = Math.max(...years);
+                dateRange.textContent = `${minYear} - ${maxYear}`;
+            }
+        }
+        
+        function exportData() {
+            const csvContent = [
+                ['ID', 'Hazırlayan', 'Tarih', 'Rapor No', 'Rapor Başlık', 'Enerji İçeriği', 'Çevre İçeriği'].join(','),
+                ...filteredDocuments.map(doc => [
+                    doc.id || '',
+                    `"${(doc.hazirlayan || '').replace(/"/g, '""')}"`,
+                    doc.tarih || '',
+                    `"${(doc.raporNo || '').replace(/"/g, '""')}"`,
+                    `"${(doc.raporBaslik || '').replace(/"/g, '""')}"`,
+                    `"${(doc.enerjiIcerigi || '').replace(/"/g, '""')}"`,
+                    `"${(doc.cevreIcerigi || '').replace(/"/g, '""')}"`,
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'ab_ilerleme_raporlari.csv';
+            link.click();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof embeddedAbData !== 'undefined') {
+                allDocuments = embeddedAbData;
+                filteredDocuments = [...allDocuments];
+                populateAuthorFilter();
+                populateCategoryFilter();
+                renderDocuments(filteredDocuments);
+                updateStats();
+                
+                document.getElementById('searchBox').addEventListener('input', filterDocuments);
+                document.getElementById('yearFilter').addEventListener('input', filterDocuments);
+                document.getElementById('authorFilter').addEventListener('change', filterDocuments);
+                document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+            } else {
+                document.getElementById('loading').textContent = 'Veri yüklenirken hata oluştu.';
+            }
+        });
+    </script>
+</body>
+</html>
