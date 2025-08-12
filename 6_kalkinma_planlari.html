@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkınma Planları</title>
+    <title>6. Kalkinma Planlari</title>
     <style>
         * { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
@@ -66,7 +66,7 @@
             flex-wrap: wrap;
         }
         
-        .search-box, .institution-filter {
+        .search-box, .date-filter {
             flex: 1;
             min-width: 200px;
             padding: 0.75rem;
@@ -76,7 +76,7 @@
             transition: border-color 0.3s;
         }
         
-        .search-box:focus, .institution-filter:focus {
+        .search-box:focus, .date-filter:focus {
             outline: none;
             border-color: #228B22;
         }
@@ -136,7 +136,7 @@
         
         .document-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 0.5rem;
             margin-bottom: 1rem;
             font-size: 0.9rem;
@@ -150,51 +150,34 @@
         .meta-label {
             font-weight: 600;
             color: #666;
-            min-width: 120px;
+            min-width: 80px;
         }
         
         .meta-value {
             color: #333;
         }
         
-        .energy-content {
+        .document-purpose {
             background: #f8f9fa;
             padding: 1rem;
             border-radius: 8px;
             border-left: 4px solid #228B22;
-            margin-bottom: 1rem;
-        }
-        
-        .energy-content h4 {
-            margin: 0 0 0.5rem 0;
-            color: #006400;
-            font-size: 1rem;
-        }
-        
-        .energy-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .energy-item {
-            background: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            border: 1px solid #dee2e6;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #444;
         }
         
         .access-link {
             display: inline-block;
-            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
-            color: white;
+            margin-top: 1rem;
             padding: 0.5rem 1rem;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
             text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
-            font-weight: 600;
-            transition: transform 0.2s;
         }
         
         .access-link:hover {
@@ -236,24 +219,22 @@
 <body>
     <div class="main-container">
         <div class="header">
-            <h1>Kalkınma Planları</h1>
+            <h1>6. Kalkinma Planlari</h1>
         </div>
         
         <div class="controls">
             <div class="search-container">
-                <input type="text" id="searchBox" class="search-box" placeholder="Plan adı veya içerik bazında arama yapın...">
-                <select id="institutionFilter" class="institution-filter">
-                    <option value="">Tüm Kurumlar</option>
-                </select>
-                <select id="categoryFilter" class="institution-filter">
-                    <option value="">Tüm Plan Türleri</option>
+                <input type="text" id="searchBox" class="search-box" placeholder="Başlık, içerik veya anahtar kelime ile arama yapın...">
+                <input type="text" id="yearFilter" class="date-filter" placeholder="Yıl filtresi (örn: 1935, 1980-1990)">
+                <select id="categoryFilter" class="date-filter">
+                    <option value="">Tüm Kategoriler</option>
                 </select>
                 <button class="export-btn" onclick="exportData()">📄 Excel'e Aktar</button>
             </div>
             <div class="stats">
                 <span id="totalCount">Yükleniyor...</span>
                 <span id="filteredCount"></span>
-                <span id="institutionCount"></span>
+                <span id="dateRange"></span>
             </div>
         </div>
         
@@ -267,168 +248,122 @@
     </div>
 
     <!-- Embedded Data -->
-    <script>
-const embeddedKalkinmaData = [
-  {
-    "id": "1",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Plânlama Teşkilâtı",
-    "baslik": "Kalkınma Plânı (Birinci Beş Yıl) 1963-1967",
-    "enerjiIcerigi": [
-      "Genel Enerji Durumu (s. 372-376), Kok Kömürü- Havagazı (s. 377-378), Elektrik (s. 379-383).",
-      "Enerji Durumu ve Sorunlar: Enerjinin %51’i ticari olmayan kaynaklardan (odun, tezek) sağlanıyor. Bu kaynaklar ekonomik ve çevresel kayba yol açıyor. Petrol ihtiyacının %80’i ithal ediliyor.",
-      "Enerji arzı ve sanayileşme, temel öncelikler olarak ele alınmış; çevresel etkiler bu plan döneminde politika gündemine dahil edilmemiştir."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Kalkinma_Plani_Birinci_Bes_Yillik_1963-1967.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "2",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı Müsteşarlığı",
-    "baslik": "İkinci Beş Yıllık Kalkınma Planı 1968 - 1972",
-    "enerjiIcerigi": [
-      "Genel Enerji (s. 553-555), Kok Havagazı (s. 556-557), Elektrik Sektörü (s. 558-560).",
-      "Enerji Durumu ve Sorunlar: Ticari yakıtların (kömür, petrol, hidroelektrik) tüketimi artmış, ticari olmayan yakıtların oranı düşmüştür. Hızla sanayileşen ve şehirleşen Türkiye, enerji arzında darboğaz riski ile karşı karşıyadır. Tabii gaz üretimi henüz yoktur; bu alanda yeni aramalara ve ithalata ağırlık verilecektir.",
-      "Enerji arzı ve sanayileşme, temel öncelikler olarak ele alınmış; çevresel etkiler bu plan döneminde politika gündemine dahil edilmemiştir."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Ikinci_Bes_Kalkinma_Plani-1968-1972.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "3",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Üçüncü Beş Yıllık Kalkınma Planı 1973 - 1977",
-    "enerjiIcerigi": [
-      "Planlı Dönemde Gelişmeler (s. 565- 569), Uzun Dönemde Gelişme Hedefleri (s. 570-571), Üçüncü Plan Hedefleri (s.571- 578), İlkeler ve Tedbirler (s. 578).",
-      "Enerji Durumu ve Sorunlar: 1962-1972 arasında kişi başına birinci enerji tüketimi 453 kg'dan 620 kg'a yükselmiştir. Yerli iç üretim sağlanamadığı için enerji dışa bağımlılık artmıştır. Elektrik üretmindeki artış hedefi büyük oranda tutturulsa da hidrolik enerji kullanım oranı beklenen ölçüde artmamıştır. Havagazı üretimi sınırlı kalmış; buna karşılık LPG ve fuel-oil tüketimi hızla artmıştır",
-      "Çevre Sorunları genel başlığı altığında Tanım ve Kapsam (s. 866) ve İlkeler ve Tedbirler (s.866-867).",
-      "Enerji arzı ve sanayileşme, temel öncelikler olarak ele alınmış; çevresel etkiler bu plan döneminde politika gündemine dahil edilmemiştir."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/08/Yeni-Strateji-ve-Kalkinma-Plani_Ucuncu-Bes-Yil_1973_1977.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "4",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Dördüncü Beş Yıllık Kalkınma Planı 1979 - 1983",
-    "enerjiIcerigi": [
-      "Planlı Dönemde Gelişmeler (s.394-399), Hedefler (s.399-406), İlkeler ve Tedbirler (s.406-408).",
-      "Enerji Durumu ve Sorunlar: Enerji ihtiyacı zamanında, yeterli ölçü ve kalitede karşılanamamış; özellikle elektrik sektörü ekonomide darboğaz oluşturan bir alan haline gelmiştir. Linyit ve hidrolik gibi yerli kaynakların rezervleri yeterince değerlendirelememiş; yeni rezerv arayışlarında ve işletmeye alınmasında yetersizlik yaşanmıştır. Artan enerji talebiyle yurt içi üretim yetersiz kalmış ithalata bağımlılık artmıştır. 1977 itibarıyla enerji tüketiminin yalnızca %50'si yerli üretimle karşılanabilmiştir.",
-      "Çevre Sorunları genel başlığı altında Su Kirlenmesi (s.83), Hava Kirlenmesi (s.84), Toprak Erozyonu ve Kirlenmesi (s.84-85), Gürültü (s.85), Dinlenme Yerleri (s.85).",
-      "Enerji arzının artırılması, ekonomik büyüme ve sanayileşmenin temel girdisi olarak görülmüş; çevresel etkiler bu dönemde enerji planlamasında neredeyse hiç dikkate alınmamıştır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/08/Dorduncu-Bes-Yillik-Kalkinma-Plani_1979_1983.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "5",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Beşinci Beş Yıllık Kalkınma Planı  1985 - 1989",
-    "enerjiIcerigi": [
-      "Hedefler (s.103-104), İlkeler ve Politikalar (s.104-111).",
-      "Enerji Durumu ve Sorunlar: Enerji talebi hızla artarken arzın yeterli ve güvenilir şekilde sağlanmasında sıkıntılar yaşanmış özellikle elektrik enerjisinde darboğazlar oluşmuştur. Yerli enerji kaynakları yeterince değerlendirelememiş dışa bağımlılık özellikle petrol ürünleri arasında yüksek kalmıştır (1983'te tüketimin %44,6'sı petrolden).Elektrik üretiminde kayıplar, yatırım gecikmeleri ve teknoloji eksikliği gibi önemli sorunlar tespit edilmiştir.",
-      "Çevre Sorunları genel başlığı altında İlke ve Politikalar (s.171).",
-      "Enerji yatırımlarında çevre faktörü büyük ölçüde geri planda kalmıştır; çevresel etkiler sistematik biçimde değerlendirilmemiştir. Enerji arz güvenliği ve ekonomik büyüme öncelikli hedef olmuştur. Kömür, petrol ve hidroelektrik gibi kaynakların yoğun kullanımı desteklenmiş; bu kaynakların çevreye olan etkileri plan metinlerinde sınırlı düzeyde yer bulmuştur. Yenilenebilir enerji kavramı henüz politik düzeyde gelişmemiştir; çevresel gerekçelerle enerji tercihi yapılmamış, daha çok ekonomik ve teknik uygunluk gözetilmiştir. Enerji verimliliği ve tasarrufu konuları gündeme gelse de, çevresel etkilerle ilişkilendirilmemiştir. Verimlilik daha çok arz-talep dengesi ve ekonomik rasyonalite çerçevesinde ele alınmıştır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/08/Besinci-Bes-Yillik-Kalkinma-Plani-1985-1989.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "6",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Altıncı Beş Yıllık Kalkınma Planı 1990 - 1994",
-    "enerjiIcerigi": [
-      "Amaç (s.257), Hedefler (s.257-258), İlkeler ve Politiklar (s.258-269).",
-      "Enerji Durumu ve Sorunlar: Türkiye'nin enerji ihtiyacı hızla artarken kaynakların yeterli düzeyde değerlendirilmemesi arz güvenliği sorunlarına neden olmuştur. Enerji üretim altyapısı bölgesel olarak dengesiz dağılmıştır; bazı bölgelerde arz fazlası bazı yerlerde arz yetersizliği gözlenmiştir. Elektirik enerjisinde iletim ve dağıtım sistemlerinde kayıp-kaçak oranı yüksektir; bu durum sistem verimliliğini düşürmektedir.",
-      "Çevre ve Yerleşme ana başlığı altında Çevre Sorunları (s.312- 313).",
-      "Enerji üretim ve tüketim faaliyetlerinin çevresel etkileri henüz sınırlı biçimde ele alınmış olsa da, çevre sorunlarının büyüyen bir risk olarak tanımlandığı ilk planlardan biridir. Kömür ve petrol gibi fosil yakıtların yoğun kullanımı, hava kirliliği ve çevre sağlığı açısından tehdit olarak görülmüş; ancak bu konuda yapısal bir dönüşümden çok, farkındalık aşamasında kalınmıştır. Yenilenebilir enerji kaynaklarına (özellikle hidroelektrik) yönelim çevresel gerekçelerle değil daha çok ekonomik ve yerli kaynak kullanımı amacıyla gündeme gelmiştir; çevresel katkıları dolaylı olarak değerlendirilmiştir. Enerji yatırımlarında çevresel etkilerin gözetilmesi gerektiği ifade edilmiş; ancak Çevresel Etki Değerlendirmesi (ÇED) gibi sistematik yaklaşımlar henüz kurumsallaşmamıştır. Enerji verimliliği, daha çok kaynak tasarrufu amacıyla ele alınmış; çevre ile ilişkilendirilmesi sonraki planlara göre sınırlı düzeyde kalmıştır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Altinci_Bes_Yillik_Kalkinma_Plani-1990-1994.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "7",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Yedinci Beş Yıllık Kalkınma Planı 1996 - 2000",
-    "enerjiIcerigi": [
-      "Mevcut Durum (s.136-137), Amaçlar, İlkeler ve Politikalar (s.138-143), Hukuki ve Kurumsal Düzenlemeler (s.143).",
-      "Enerji Durumu ve Sorunlar: Enerji talebi hızlı artmış arz yetersizlikleri zaman zaman ekonomik faaliyetleri olumsuz etkilemiştir. Yerli kaynakların değerlendirilmesinde verimsizlik ve gecikmeler yaşanmıştır. Elektrik üretimi talebi karşılamakta zorlanmış sık sık enerji darboğazları yaşanmıştır. İletim ve dağıtım sistemleri modernizasyon ihtiyacı içindedir; kayı-kaçak oranları yüksektir.",
-      "Çevre İle İlgili Kurumsal Düzenlemeler ana başlığı altında Mevcut Durum (s.189-191), Amaçlar, İlkeler ve Politikalar (s.191-194), Hukuki ve Kurumsal Düzenlemeler (s. 194).",
-      "Enerji üretiminde çevreye verilen zararların azaltılması gerekliliği dile getirilmiş; özellikle kömür ve petrol gibi fosil yakıtların neden olduğu hava kirliliği ve çevresel bozulmalara dikkat çekilmiştir. Yenilenebilir enerji kaynaklarının kullanımına öncelik verilmesi, hem sürdürülebilir kalkınma hem de çevresel koruma açısından önerilmiş; hidroelektrik potansiyelin değerlendirilmesi öne çıkarılmıştır. Enerji yatırımlarında çevre faktörünün dikkate alınması gerektiği vurgulanmış; çevre koruma ile enerji üretimi arasında denge kurulmasının önemi belirtilmiştir. Çevresel Etki Değerlendirmesi (ÇED) uygulamalarının enerji projelerinde etkin kullanılması gerektiği ifade edilmiştir. Enerji verimliliği ve tasarrufu, çevresel etkilerin azaltılmasıyla doğrudan ilişkilendirilmiş; bu yöndeki tedbirlerin çevreye katkı sağlayacağı belirtilmiştir."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Yedinci_Bes_Yillik_Kalkinma_Plani-1996-2000.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "8",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Uzun Vadeli ve Sekizinci Beş Yıllık Kalkınma Planı 2001-2005",
-    "enerjiIcerigi": [
-      "Mevcut Durum (s.142-145), Amaçlar, İlkeler ve Politikalar (s.145-152), Hukuki ve Kurumsal Düzenlemeler (s.152).",
-      "Enerji Durumu ve Sorunlar: Enerji talebi sürekli artmakta; özellikle elektrik enerjisinde arz-talep dengesini sağlamada güçlükler yaşanmaktadır. Enerji sektöründe yatırım yetersizlikleri ve planlama eksiklikleri nedeniyle kapasite artışı talebi karşılamada yetersiz kalmaktadır. Dışa bağımlılık yüksek olup, özellikle doğalgaz ve petrol ithalatı enerji güvenliğini tehdit etmektedir. Enerji üretim, iletim ve dağıtım altyapısı modernizasyon ihtiyacındadır; kayıp-kaçak oranları önemli sorunlar arasındadır .",
-      "Mevcut Durum (s.187-188), Amaçlar, İlkeler ve Politikalar (s.188-189) ve Hukuki ve Kurumsal Düzenlemeler (s.189).",
-      "Enerji üretiminin çevre üzerindeki olumsuz etkilerinin azaltılması gereği vurgulanmış; özellikle fosil yakıtların neden olduğu hava kirliliği ve sera gazı emisyonları çevresel sorunlar arasında sayılmıştır. Yenilenebilir enerji kaynaklarının kullanımının yaygınlaştırılması, hem dışa bağımlılığı azaltmak hem de çevreye duyarlı enerji üretimini sağlamak açısından stratejik öncelik olarak belirlenmiştir. Enerji verimliliği; kaynakların korunması, üretim maliyetlerinin düşürülmesi ve çevresel etkilerin azaltılması bakımından önemsenmiş, bu yönde mevzuat çalışmaları ve teşvik mekanizmaları öngörülmüştür. Çevresel etki değerlendirme (ÇED) sürecinin güçlendirilmesi, enerji projelerinde çevresel sürdürülebilirliği sağlama amacıyla gündeme gelmiştir. Çevre ile enerji politikalarının entegrasyonu, özellikle sanayi ve ulaşımda çevreye duyarlı enerji kullanımı teşvik edilerek sağlanmaya çalışılmıştır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Uzun_Vadeli_Strateji_ve_Sekizinci_Bes_Yillik_Kalkinma_Plani-2001-2005.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "9",
-    "yayinlayanKurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
-    "baslik": "Dokuzuncu Kalkınma Planı 2007-2013",
-    "enerjiIcerigi": [
-      "Plan Öncesi Dönemde Türkiye'de Ekonomik ve Sosyal Gelişmeler ve Temel Amaçlar: Gelişme Eksenleri ana başlıkları altında Enerji ve Ulaştırma Altyapısının Geliştirilmesi (s.33-34 ve s.76-77).",
-      "Enerji Durumu ve Sorunlar: Enerji talebi ekonomik büyümeye paralel olarak hızla artmakta, arz bu talebi karşılamakta yetersiz kalabilmektedir. Enerji tüketiminde fosil yakıtların ağırlığı sürerken, dışa bağımlılık özellikle doğalgaz ve petrolde oldukça yüksektir. Elektrik arz güvenliği risk altında olup, yatırım eksiklikleri kritik bir sorundur. -Kayıp-kaçak oranları yüksekliğini korumakta, verimlilik düşük seviyededir .",
-      "Plan Öncesi Dönemde Türkiye'de Ekonomik ve Sosyal Gelişmeler ve Temel Amaçlar: Gelişme Eksenleri ana başlıkları altında Çevrenin Korunması ve Kentsel Altyapının Geliştirilmesi (s.36-37 ve s.80-81).",
-      "Enerji üretiminde çevresel etkilerin azaltılması öncelikli hedefler arasında yer almış; özellikle fosil yakıtların neden olduğu hava kirliliği ve sera gazı emisyonlarıyla mücadeleye vurgu yapılmıştır. Yenilenebilir enerji kaynaklarının (hidroelektrik, rüzgar, güneş) kullanımı artırılarak hem dışa bağımlılığın azaltılması hem de çevresel sürdürülebilirliğin güçlendirilmesi amaçlanmıştır. Enerji verimliliği, çevresel etkileri azaltmak açısından stratejik bir unsur olarak görülmüş; sanayi, bina ve ulaşım sektörlerinde tasarruf sağlayacak önlemler desteklenmiştir. Çevresel etkilerin değerlendirilmesi ve izlenmesi, büyük ölçekli enerji projelerinde önem kazanmış; çevresel etki değerlendirme (ÇED) süreçlerinin uygulanmasına dikkat çekilmiştir. Nükleer enerjiye geçiş süreci başlatılırken, bu alandaki yatırımların çevre ve güvenlik boyutlarıyla birlikte ele alınacağı vurgulanmıştır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2025/03/Dokuzuncu_Kalkinma_Plani_2007-2013.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "10",
-    "yayinlayanKurum": "T.C. Kalkınma Bakanlığı",
-    "baslik": "Onuncu Kalkınma Planı 2014-2018",
-    "enerjiIcerigi": [
-      "Yenilikçi Üretim, İstikrarlı Yüksek Büyüme ana başlığının altında durum analizi (s.102-103), Amaç ve Hedefler (s.103-104), Politikalar (s.104).Bunun yanı sıra Öncelikli Dönüşüm Programları ana başlığı altında Yerli Kaynaklara Dayalı Enerji Üretim Programı (s.174-175) ve Enerji Verimliliğinin Geliştirilmesi Programı (s.176-177).",
-      "Enerji Durumu ve Sorunlar: Türkiye’nin enerji talebi artmaya devam etmiş, özellikle elektrik ve doğalgazda arz güvenliği temel sorun olarak öne çıkmıştır. Enerji ithalatı cari açığın önemli bir bileşeni olmaya devam etmiş; dışa bağımlılık yüksek seviyelerde sürmüştür. Enerji üretiminde yerli ve yenilenebilir kaynakların kullanım oranı artırılamamış, kaynak çeşitliliği sınırlı kalmıştır. İletim ve dağıtım sistemlerinde kapasite artırımı ve teknik kayıpların azaltılması ihtiyacı devam etmektedir.",
-      "Yaşanabilir Mekânlar, Sürdürülebilir Çevre ana başlığı altında Çevrenin Korunması (s.136-137) ve Toprak ve Su Kaynakları Yönetimi (s.138-139).",
-      "Enerji üretiminin çevresel etkilerinin azaltılması, planın temel önceliklerinden biri olmuştur; yenilenebilir kaynakların payının artırılması ve çevreye daha az zarar veren üretim yöntemlerinin teşviki hedeflenmiştir. Enerji verimliliği, hem enerji tasarrufu sağlamak hem de çevresel etkileri azaltmak için stratejik bir araç olarak ele alınmış; binalar, sanayi ve ulaştırmada uygulama alanı genişletilmiştir. Sera gazı emisyonlarının kontrol altına alınması, özellikle enerji sektöründeki yatırımların çevreye etkileri açısından değerlendirilmiş; düşük karbon teknolojileri desteklenmiştir. Çevresel etki değerlendirme süreçleri enerji projeleri için daha etkin hale getirilmiş, yatırımların sürdürülebilirlik kriterleri doğrultusunda planlanması vurgulanmıştır. Yerli ve yenilenebilir enerji kaynaklarının kullanımının artırılması, hem dışa bağımlılığı azaltmak hem de çevresel sürdürülebilirliği güçlendirmek için öne çıkarılmıştır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2025/06/Onuncu_Kalkinma_Plani-2014-2018.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "11",
-    "yayinlayanKurum": "T.C. Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
-    "baslik": "On Birinci Kalkınma Planı 2019-2023",
-    "enerjiIcerigi": [
-      "Rekabetçi Üretim ve Verimlilik ana başlığı altında Lojistik ve Enerji Altyapısı (s.70) ve Enerji (s.112).",
-      "Enerji Durumu ve Sorunlar: Enerji talebi artmaya devam etmekte, bu durum arz güvenliğini stratejik bir öncelik haline getirmektedir. Enerjide dışa bağımlılık halen yüksek düzeydedir; özellikle petrol ve doğalgazda ithalat oranı yüksektir. Enerji arzında kaynak çeşitliliği yetersizdir; yerli ve yenilenebilir kaynakların etkin kullanımı sınırlıdır. Elektrik iletim ve dağıtım altyapısında bazı bölgelerde kapasite sorunları ve verimlilik düşüklüğü sürmektedir .",
-      "Yaşanabilir Şehirler, Sürdürülebililir Çevre ana başlığı altında Çevrenin Korunması (s.168-170).",
-      "Enerji üretiminde çevresel sürdürülebilirliğin sağlanması temel hedefler arasında yer almıştır. Bu kapsamda, yerli ve yenilenebilir kaynakların kullanımının artırılması, fosil yakıtlara bağımlılığın azaltılması ve sera gazı emisyonlarının düşürülmesi amaçlanmıştır. Enerji verimliliği, hem ekonomik hem de çevresel etkileri bakımından önceliklendirilmiş; kamu binaları, sanayi tesisleri ve ulaştırma sektörü gibi alanlarda uygulamalar yaygınlaştırılmaya çalışılmıştır. -Düşük karbon ekonomisine geçiş, çevre politikalarıyla enerji politikalarının ortak noktası olmuş; bu doğrultuda çevresel etkisi düşük enerji yatırımları ve temiz teknolojiler teşvik edilmiştir. Nükleer enerji ve doğalgaz gibi kaynakların çevresel etkileri gözetilerek enerji arz güvenliğine katkı sağlanması hedeflenmiş; bu yatırımların çevreyle uyumlu biçimde gerçekleştirilmesi vurgulanmıştır. Türkiye’nin 2023 çevre vizyonu kapsamında, enerji üretim ve tüketim süreçlerinde kaynak verimliliği artırılarak doğal kaynakların korunması ve iklim değişikliğiyle mücadele desteklenmiştir."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/On_Birinci_Kalkinma_Plani-2019-2023.pdf",
-    "category": "Kalkınma Planları"
-  },
-  {
-    "id": "12",
-    "yayinlayanKurum": "T.C. Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
-    "baslik": "On İkinci Kalkınma Planı 2024-2028",
-    "enerjiIcerigi": [
-      "Yeşil ve Dijital Dönüşümle Rekabetçi Üretim ana başlığı altında Öncelikli Gelişme Alanları alt başlığı altında yer almıştır. Konu; Amaç (s.105) ve Politika ve Tedbirler (s.105-108).",
-      "Enerji Durumu ve Sorunlar: Enerji talebindeki artış sürmektedir; iklim değişikliği ve dışa bağımlılık enerji güvenliği açısından önemli riskler oluşturmaktadır. Yenilenebilir kaynakların kullanımı artmakla birlikte, enerji arzında fosil yakıtların payı hâlen yüksektir. Elektrik iletim ve dağıtım altyapısında modernizasyon ihtiyacı devam etmektedir. Enerji sektöründe teknoloji bağımlılığı ve yerli üretim oranının düşüklüğü dikkat çekmektedir .",
-      "Afetlere Dirençli Yaşam Alanları, Sürdürülebilir Çevre ana başlığı altında Çevrenin Korunması (s.210-212). Ayrıca Sürdürülebilir Kalkınma Amaçları da Amaç ve Politika ve Hedefler (s.240-241).",
-      "Enerji üretiminde çevresel sürdürülebilirlik hedeflenmiş; yenilenebilir kaynakların (güneş, rüzgar, hidroelektrik) üretimdeki payının artırılmasıyla sera gazı emisyonlarının azaltılması amaçlanmıştır. Enerji verimliliği, hem çevreye olan olumsuz etkileri azaltmak hem de enerji kaynaklarının etkin kullanımı için temel politika aracı olarak konumlandırılmıştır; binalarda, sanayide ve ulaştırmada verimlilik artırıcı uygulamalara ağırlık verilecektir. Yeşil dönüşüm ve karbon emisyonlarının azaltılması hedefleri doğrultusunda, enerji sektöründe düşük karbonlu teknolojilere geçiş desteklenmekte, sınırda karbon düzenlemesi ve emisyon ticaret sistemi gibi çevresel araçlara uyum çalışmaları sürdürülmektedir. Enerji yatırımlarında çevresel etki değerlendirme süreçlerinin güçlendirilmesi ve çevreyle uyumlu teknolojilerin kullanımının yaygınlaştırılması hedeflenmiştir. Yerli ve temiz enerji teknolojilerinin geliştirilmesi ve bu alanda AR-GE'nin desteklenmesi ile hem enerji güvenliği sağlanacak hem de çevre üzerindeki baskılar azaltılacaktır."
-    ],
-    "link": "https://www.sbb.gov.tr/wp-content/uploads/2023/12/On-Ikinci-Kalkinma-Plani_2024-2028_11122023.pdf",
-    "category": "Kalkınma Planları"
-  }
-];
-</script>
     
+    
+    
+
+    
+
+    
+
+    
+
+    
+
     <script>
+        const embeddedData = [
+    {
+        "id": "1",
+        "kurum": "T.C. Başbakanlık Devlet Plânlama Teşkilâtı",
+        "baslik": "Kalkınma Plânı (Birinci Beş Yıl) 1963-1967",
+        "enerji": "Genel Enerji Durumu (s. 372-376), Kok Kömürü- Havagazı (s. 377-378), Elektrik (s. 379-383).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Kalkinma_Plani_Birinci_Bes_Yillik_1963-1967.pdf"
+    },
+    {
+        "id": "2",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı Müsteşarlığı",
+        "baslik": "İkinci Beş Yıllık Kalkınma Planı 1968 - 1972",
+        "enerji": "Genel Enerji (s. 553-555), Kok Havagazı (s. 556-557), Elektrik Sektörü (s. 558-560).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Ikinci_Bes_Kalkinma_Plani-1968-1972.pdf"
+    },
+    {
+        "id": "3",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Üçüncü Beş Yıllık Kalkınma Planı 1973 - 1977",
+        "enerji": "Planlı Dönemde Gelişmeler (s. 565- 569), Uzun Dönemde Gelişme Hedefleri (s. 570-571), Üçüncü Plan Hedefleri (s.571- 578), İlkeler ve Tedbirler (s. 578).",
+        "cevre": "Çevre Sorunları genel başlığı altığında Tanım ve Kapsam (s. 866) ve İlkeler ve Tedbirler (s.866-867).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/08/Yeni-Strateji-ve-Kalkinma-Plani_Ucuncu-Bes-Yil_1973_1977.pdf"
+    },
+    {
+        "id": "4",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Dördüncü Beş Yıllık Kalkınma Planı 1979 - 1983",
+        "enerji": "Planlı Dönemde Gelişmeler (s.394-399), Hedefler (s.399-406), İlkeler ve Tedbirler (s.406-408).",
+        "cevre": "Çevre Sorunları genel başlığı altında Su Kirlenmesi (s.83), Hava Kirlenmesi (s.84), Toprak Erozyonu ve Kirlenmesi (s.84-85), Gürültü (s.85), Dinlenme Yerleri (s.85).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/08/Dorduncu-Bes-Yillik-Kalkinma-Plani_1979_1983.pdf"
+    },
+    {
+        "id": "5",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Beşinci Beş Yıllık Kalkınma Planı  1985 - 1989",
+        "enerji": "Hedefler (s.103-104), İlkeler ve Politikalar (s.104-111).",
+        "cevre": "Çevre Sorunları genel başlığı altında İlke ve Politikalar (s.171).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/08/Besinci-Bes-Yillik-Kalkinma-Plani-1985-1989.pdf"
+    },
+    {
+        "id": "6",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Altıncı Beş Yıllık Kalkınma Planı 1990 - 1994",
+        "enerji": "Amaç (s.257), Hedefler (s.257-258), İlkeler ve Politiklar (s.258-269).",
+        "cevre": "Çevre ve Yerleşme ana başlığı altında Çevre Sorunları (s.312- 313).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Altinci_Bes_Yillik_Kalkinma_Plani-1990-1994.pdf"
+    },
+    {
+        "id": "7",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Yedinci Beş Yıllık Kalkınma Planı 1996 - 2000",
+        "enerji": "Mevcut Durum (s.136-137), Amaçlar, İlkeler ve Politikalar (s.138-143), Hukuki ve Kurumsal Düzenlemeler (s.143).",
+        "cevre": "Çevre İle İlgili Kurumsal Düzenlemeler ana başlığı altında Mevcut Durum (s.189-191), Amaçlar, İlkeler ve Politikalar (s.191-194), Hukuki ve Kurumsal Düzenlemeler (s. 194).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Yedinci_Bes_Yillik_Kalkinma_Plani-1996-2000.pdf"
+    },
+    {
+        "id": "8",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Uzun Vadeli ve Sekizinci Beş Yıllık Kalkınma Planı 2001-2005",
+        "enerji": "Mevcut Durum (s.142-145), Amaçlar, İlkeler ve Politikalar (s.145-152), Hukuki ve Kurumsal Düzenlemeler (s.152).",
+        "cevre": "Mevcut Durum (s.187-188), Amaçlar, İlkeler ve Politikalar (s.188-189) ve Hukuki ve Kurumsal Düzenlemeler (s.189).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/Uzun_Vadeli_Strateji_ve_Sekizinci_Bes_Yillik_Kalkinma_Plani-2001-2005.pdf"
+    },
+    {
+        "id": "9",
+        "kurum": "T.C. Başbakanlık Devlet Planlama Teşkilatı",
+        "baslik": "Dokuzuncu Kalkınma Planı 2007-2013",
+        "enerji": "Plan Öncesi Dönemde Türkiye'de Ekonomik ve Sosyal Gelişmeler ve Temel Amaçlar: Gelişme Eksenleri ana başlıkları altında Enerji ve Ulaştırma Altyapısının Geliştirilmesi (s.33-34 ve s.76-77).",
+        "cevre": "Plan Öncesi Dönemde Türkiye'de Ekonomik ve Sosyal Gelişmeler ve Temel Amaçlar: Gelişme Eksenleri ana başlıkları altında Çevrenin Korunması ve Kentsel Altyapının Geliştirilmesi (s.36-37 ve s.80-81).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2025/03/Dokuzuncu_Kalkinma_Plani_2007-2013.pdf"
+    },
+    {
+        "id": "10",
+        "kurum": "T.C. Kalkınma Bakanlığı",
+        "baslik": "Onuncu Kalkınma Planı 2014-2018",
+        "enerji": "Yenilikçi Üretim, İstikrarlı Yüksek Büyüme ana başlığının altında durum analizi (s.102-103), Amaç ve Hedefler (s.103-104), Politikalar (s.104).Bunun yanı sıra Öncelikli Dönüşüm Programları ana başlığı altında Yerli Kaynaklara Dayalı Enerji Üretim Programı (s.174-175) ve Enerji Verimliliğinin Geliştirilmesi Programı (s.176-177).",
+        "cevre": "Yaşanabilir Mekânlar, Sürdürülebilir Çevre ana başlığı altında Çevrenin Korunması (s.136-137) ve Toprak ve Su Kaynakları Yönetimi (s.138-139).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2025/06/Onuncu_Kalkinma_Plani-2014-2018.pdf"
+    },
+    {
+        "id": "11",
+        "kurum": "T.C. Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
+        "baslik": "On Birinci Kalkınma Planı 2019-2023",
+        "enerji": "Rekabetçi Üretim ve Verimlilik ana başlığı altında Lojistik ve Enerji Altyapısı (s.70) ve Enerji (s.112).",
+        "cevre": "Yaşanabilir Şehirler, Sürdürülebililir Çevre ana başlığı altında Çevrenin Korunması (s.168-170).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2022/07/On_Birinci_Kalkinma_Plani-2019-2023.pdf"
+    },
+    {
+        "id": "12",
+        "kurum": "T.C. Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı",
+        "baslik": "On İkinci Kalkınma Planı 2024-2028",
+        "enerji": "Yeşil ve Dijital Dönüşümle Rekabetçi Üretim ana başlığı altında Öncelikli Gelişme Alanları alt başlığı altında yer almıştır. Konu; Amaç (s.105) ve Politika ve Tedbirler (s.105-108).",
+        "cevre": "Afetlere Dirençli Yaşam Alanları, Sürdürülebilir Çevre ana başlığı altında Çevrenin Korunması (s.210-212). Ayrıca Sürdürülebilir Kalkınma Amaçları da Amaç ve Politika ve Hedefler (s.240-241).",
+        "erisimLinki": "https://www.sbb.gov.tr/wp-content/uploads/2023/12/On-Ikinci-Kalkinma-Plani_2024-2028_11122023.pdf"
+    }
+];
         let allDocuments = [];
         let filteredDocuments = [];
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Belirtilmemiş';
+            return dateStr.replace(/T.*/, '').replace(/-/g, '.');
+        }
         
         function renderDocuments(documents) {
             const grid = document.getElementById('documentsGrid');
@@ -448,24 +383,42 @@ const embeddedKalkinmaData = [
             
             const html = documents.map(doc => `
                 <div class="document-card">
-                    <div class="document-title">${doc.baslik || 'Başlık belirtilmemiş'}</div>
+                    <div class="document-title">${doc.baslik || doc.Title || doc.title || 'Başlık belirtilmemiş'}</div>
                     <div class="document-meta">
+                        ${doc.kanunNo || doc.id || doc.No ? `
                         <div class="meta-item">
-                            <span class="meta-label">Yayınlayan Kurum:</span>
-                            <span class="meta-value">${doc.yayinlayanKurum || 'Belirtilmemiş'}</span>
+                            <span class="meta-label">Döküman No:</span>
+                            <span class="meta-value">${doc.kanunNo || doc.id || doc.No || 'Belirtilmemiş'}</span>
                         </div>
+                        ` : ''}
+                        ${doc.kabulTarihi || doc.tarih || doc.Date ? `
+                        <div class="meta-item">
+                            <span class="meta-label">Tarih:</span>
+                            <span class="meta-value">${formatDate(doc.kabulTarihi || doc.tarih || doc.Date)}</span>
+                        </div>
+                        ` : ''}
+                        ${doc.yazar || doc.hazirlayan || doc.kurum || doc.Author || doc.Yazar ? `
+                        <div class="meta-item">
+                            <span class="meta-label">Yazar/Kurum:</span>
+                            <span class="meta-value">${doc.yazar || doc.hazirlayan || doc.kurum || doc.Author || doc.Yazar || 'Belirtilmemiş'}</span>
+                        </div>
+                        ` : ''}
+                        ${doc.rgSayi || doc['RG Sayı'] ? `
+                        <div class="meta-item">
+                            <span class="meta-label">RG Sayısı:</span>
+                            <span class="meta-value">${doc.rgSayi || doc['RG Sayı'] || 'Belirtilmemiş'}</span>
+                        </div>
+                        ` : ''}
                     </div>
-                    ${doc.enerjiIcerigi && doc.enerjiIcerigi.length > 0 ? `
-                        <div class="energy-content">
-                            <h4>Enerji İçeriği:</h4>
-                            <div class="energy-items">
-                                ${doc.enerjiIcerigi.map(item => `<span class="energy-item">${item}</span>`).join('')}
-                            </div>
-                        </div>
+                    ${doc.amac || doc.enerji || doc.cevre || doc.Amaç ? `
+                    <div class="document-purpose">
+                        <strong>Amaç ve Kapsam:</strong><br>
+                        ${doc.amac || doc.enerji || doc.cevre || doc.Amaç}
+                    </div>
                     ` : ''}
-                    ${doc.link ? `
-                        <a href="${doc.link}" target="_blank" class="access-link">
-                            🔗 Plana Erişim
+                    ${doc.erisimLinki || doc.Link || doc.link ? `
+                        <a href="${doc.erisimLinki || doc.Link || doc.link}" target="_blank" class="access-link">
+                            📋 Tam Metne Erişim
                         </a>
                     ` : ''}
                 </div>
@@ -475,96 +428,42 @@ const embeddedKalkinmaData = [
         }
         
         function categorizeDocument(doc) {
-            const title = (doc.baslik || '').toLowerCase();
-            const energyContent = (doc.enerjiIcerigi || []).join(' ').toLowerCase();
-            const content = title + ' ' + energyContent;
+            const title = (doc.baslik || doc.Title || doc.title || '').toLowerCase();
+            const purpose = (doc.amac || doc.enerji || doc.cevre || '').toLowerCase();
+            const content = title + ' ' + purpose;
             
-            if (title.includes('birinci') || title.includes('i.') || title.includes('1.')) {
-                return 'Birinci Dönem Planları';
+            if (content.includes('elektrik') || content.includes('enerji') || content.includes('güç')) {
+                return 'Enerji ve Elektrik';
             }
-            if (title.includes('ikinci') || title.includes('ii.') || title.includes('2.')) {
-                return 'İkinci Dönem Planları';  
+            if (content.includes('maden') || content.includes('petrol') || content.includes('gaz')) {
+                return 'Maden ve Petrol';
             }
-            if (title.includes('üçüncü') || title.includes('iii.') || title.includes('3.')) {
-                return 'Üçüncü Dönem Planları';
+            if (content.includes('bank') || content.includes('finans') || content.includes('kredi')) {
+                return 'Finansal Kurumlar';
             }
-            if (title.includes('dördüncü') || title.includes('iv.') || title.includes('4.')) {
-                return 'Dördüncü Dönem Planları';
+            if (content.includes('teşkilat') || content.includes('kurul') || content.includes('müdürlük')) {
+                return 'Kurumsal Yapı';
             }
-            if (title.includes('beşinci') || title.includes('v.') || title.includes('5.')) {
-                return 'Beşinci Dönem Planları';
+            if (content.includes('belediye') || content.includes('şehir') || content.includes('kent')) {
+                return 'Yerel Yönetim';
             }
-            if (title.includes('altıncı') || title.includes('vi.') || title.includes('6.')) {
-                return 'Altıncı Dönem Planları';
+            if (content.includes('vergi') || content.includes('resim') || content.includes('harç')) {
+                return 'Mali Hükümler';
             }
-            if (title.includes('yedinci') || title.includes('vii.') || title.includes('7.')) {
-                return 'Yedinci Dönem Planları';
+            if (content.includes('strateji') || content.includes('plan') || content.includes('kalkınma')) {
+                return 'Planlama ve Strateji';
             }
-            if (title.includes('sekizinci') || title.includes('viii.') || title.includes('8.')) {
-                return 'Sekizinci Dönem Planları';
+            if (content.includes('çevre') || content.includes('environment')) {
+                return 'Çevre';
             }
-            if (title.includes('dokuzuncu') || title.includes('ix.') || title.includes('9.')) {
-                return 'Dokuzuncu Dönem Planları';
-            }
-            if (title.includes('onuncu') || title.includes('x.') || title.includes('10.')) {
-                return 'Onuncu Dönem Planları';
-            }
-            if (title.includes('on birinci') || title.includes('xi.') || title.includes('11.')) {
-                return 'On Birinci Dönem Planları';
-            }
-            return 'Genel Kalkınma Planları';
-        }
-        
-        function populateInstitutionFilter() {
-            const institutions = [...new Set(allDocuments.map(doc => doc.yayinlayanKurum).filter(Boolean))].sort();
-            const select = document.getElementById('institutionFilter');
-            
-            institutions.forEach(institution => {
-                const option = document.createElement('option');
-                option.value = institution;
-                option.textContent = institution;
-                select.appendChild(option);
-            });
+            return 'Genel Mevzuat';
         }
         
         function populateCategoryFilter() {
-            const categories = [...new Set(allDocuments.map(doc => categorizeDocument(doc)))];
-            
-            // Define proper numerical order for development plans
-            const planOrder = [
-                'Birinci Dönem Planları',
-                'İkinci Dönem Planları', 
-                'Üçüncü Dönem Planları',
-                'Dördüncü Dönem Planları',
-                'Beşinci Dönem Planları',
-                'Altıncı Dönem Planları',
-                'Yedinci Dönem Planları',
-                'Sekizinci Dönem Planları',
-                'Dokuzuncu Dönem Planları',
-                'Onuncu Dönem Planları',
-                'On Birinci Dönem Planları',
-                'Genel Kalkınma Planları'
-            ];
-            
-            // Sort categories according to plan order
-            const sortedCategories = categories.sort((a, b) => {
-                const indexA = planOrder.indexOf(a);
-                const indexB = planOrder.indexOf(b);
-                
-                // If both are in planOrder, use their index order
-                if (indexA !== -1 && indexB !== -1) {
-                    return indexA - indexB;
-                }
-                // If only one is in planOrder, prioritize it
-                if (indexA !== -1) return -1;
-                if (indexB !== -1) return 1;
-                // If neither is in planOrder, use alphabetical
-                return a.localeCompare(b, 'tr');
-            });
-            
+            const categories = [...new Set(allDocuments.map(doc => categorizeDocument(doc)))].sort();
             const select = document.getElementById('categoryFilter');
             
-            sortedCategories.forEach(category => {
+            categories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category;
                 option.textContent = category;
@@ -573,83 +472,115 @@ const embeddedKalkinmaData = [
         }
         
         function filterDocuments() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-            const institutionFilter = document.getElementById('institutionFilter').value;
+            const searchQuery = document.getElementById('searchBox').value.toLowerCase();
+            const yearFilter = document.getElementById('yearFilter').value.trim();
             const categoryFilter = document.getElementById('categoryFilter').value;
             
-            let filtered = allDocuments;
+            filteredDocuments = allDocuments.filter(doc => {
+                // Search filter
+                if (searchQuery) {
+                    const searchText = Object.values(doc).join(' ').toLowerCase();
+                    if (!searchText.includes(searchQuery)) return false;
+                }
+                
+                // Year filter
+                if (yearFilter) {
+                    const docYear = extractYear(doc.kabulTarihi || doc.tarih || doc.Date);
+                    if (docYear) {
+                        if (yearFilter.includes('-')) {
+                            const [startYear, endYear] = yearFilter.split('-').map(y => parseInt(y.trim()));
+                            if (!isNaN(startYear) && !isNaN(endYear)) {
+                                if (docYear < startYear || docYear > endYear) return false;
+                            }
+                        } else {
+                            const filterYear = parseInt(yearFilter);
+                            if (!isNaN(filterYear) && docYear !== filterYear) return false;
+                        }
+                    }
+                }
+                
+                // Category filter
+                if (categoryFilter) {
+                    const docCategory = categorizeDocument(doc);
+                    if (docCategory !== categoryFilter) return false;
+                }
+                
+                return true;
+            });
             
-            if (searchTerm) {
-                filtered = filtered.filter(doc => 
-                    (doc.baslik && doc.baslik.toLowerCase().includes(searchTerm)) ||
-                    (doc.yayinlayanKurum && doc.yayinlayanKurum.toLowerCase().includes(searchTerm)) ||
-                    (doc.enerjiIcerigi && doc.enerjiIcerigi.some(item => item.toLowerCase().includes(searchTerm)))
-                );
-            }
-            
-            if (institutionFilter) {
-                filtered = filtered.filter(doc => doc.yayinlayanKurum === institutionFilter);
-            }
-            
-            if (categoryFilter) {
-                filtered = filtered.filter(doc => categorizeDocument(doc) === categoryFilter);
-            }
-            
-            filteredDocuments = filtered;
             renderDocuments(filteredDocuments);
             updateStats();
+        }
+        
+        function extractYear(dateStr) {
+            if (!dateStr) return null;
+            const year = parseInt(dateStr.split('.')[2] || dateStr.split('-')[0] || dateStr.split('/')[2]);
+            return isNaN(year) ? null : year;
         }
         
         function updateStats() {
             const totalCount = document.getElementById('totalCount');
             const filteredCount = document.getElementById('filteredCount');
-            const institutionCount = document.getElementById('institutionCount');
+            const dateRange = document.getElementById('dateRange');
             
-            totalCount.textContent = `Toplam ${allDocuments.length} kalkınma planı`;
+            totalCount.textContent = `Toplam ${allDocuments.length} belge`;
+            filteredCount.textContent = `${filteredDocuments.length} gösteriliyor`;
             
-            if (filteredDocuments.length !== allDocuments.length) {
-                filteredCount.textContent = `Görüntülenen: ${filteredDocuments.length}`;
-            } else {
-                filteredCount.textContent = '';
+            const years = allDocuments.map(doc => extractYear(doc.kabulTarihi || doc.tarih || doc.Date)).filter(y => y);
+            if (years.length > 0) {
+                const minYear = Math.min(...years);
+                const maxYear = Math.max(...years);
+                dateRange.textContent = `${minYear} - ${maxYear}`;
             }
-            
-            const institutions = [...new Set(allDocuments.map(doc => doc.yayinlayanKurum).filter(Boolean))];
-            institutionCount.textContent = `${institutions.length} farklı kurum`;
         }
         
         function exportData() {
+            if (filteredDocuments.length === 0) {
+                alert('İndirilecek veri yok.');
+                return;
+            }
+            
+            const headers = ['Başlık', 'Döküman No', 'Tarih', 'Yazar/Kurum', 'RG Sayısı', 'Amaç', 'Erişim Linki'];
             const csvContent = [
-                ['ID', 'Yayınlayan Kurum', 'Başlık', 'Enerji İçeriği', 'Link'].join(','),
-                ...filteredDocuments.map(doc => [
-                    doc.id || '',
-                    `"${(doc.yayinlayanKurum || '').replace(/"/g, '""')}"`,
-                    `"${(doc.baslik || '').replace(/"/g, '""')}"`,
-                    `"${(doc.enerjiIcerigi ? doc.enerjiIcerigi.join('; ') : '').replace(/"/g, '""')}"`,
-                    doc.link || ''
-                ].join(','))
+                headers.join(','),
+                ...filteredDocuments.map(doc => 
+                    [
+                        `"${(doc.baslik || doc.Title || doc.title || '').replace(/"/g, '""')}"`,
+                        `"${(doc.kanunNo || doc.id || doc.No || '').replace(/"/g, '""')}"`,
+                        `"${formatDate(doc.kabulTarihi || doc.tarih || doc.Date || '').replace(/"/g, '""')}"`,
+                        `"${(doc.yazar || doc.hazirlayan || doc.kurum || doc.Author || doc.Yazar || '').replace(/"/g, '""')}"`,
+                        `"${(doc.rgSayi || doc['RG Sayı'] || '').replace(/"/g, '""')}"`,
+                        `"${(doc.amac || doc.enerji || doc.cevre || doc.Amaç || '').replace(/"/g, '""')}"`,
+                        `"${(doc.erisimLinki || doc.Link || doc.link || '').replace(/"/g, '""')}"`
+                    ].join(',')
+                )
             ].join('\n');
             
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'kalkinma_planlari.csv';
+            link.download = '6. Kalkinma Planlari_documents.csv';
             link.click();
         }
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof embeddedKalkinmaData !== 'undefined') {
-                allDocuments = embeddedKalkinmaData;
-                filteredDocuments = [...allDocuments];
-                populateInstitutionFilter();
-                populateCategoryFilter();
-                renderDocuments(filteredDocuments);
-                updateStats();
-                
-                document.getElementById('searchBox').addEventListener('input', filterDocuments);
-                document.getElementById('institutionFilter').addEventListener('change', filterDocuments);
-                document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
-            } else {
+            try {
+                if (typeof embeddedData !== 'undefined') {
+                    allDocuments = embeddedData;
+                    filteredDocuments = [...allDocuments];
+                    populateCategoryFilter();
+                    renderDocuments(filteredDocuments);
+                    updateStats();
+                    
+                    document.getElementById('searchBox').addEventListener('input', filterDocuments);
+                    document.getElementById('yearFilter').addEventListener('input', filterDocuments);
+                    document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+                } else {
+                    document.getElementById('loading').textContent = 'Veri yüklenirken hata oluştu.';
+                }
+            } catch (error) {
+                console.error('Error during initialization:', error);
                 document.getElementById('loading').textContent = 'Veri yüklenirken hata oluştu.';
             }
         });
