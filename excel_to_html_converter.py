@@ -229,6 +229,9 @@ def convert_document_excel(excel_path):
     try:
         excel_file = pd.ExcelFile(excel_path)
         
+        # Determine file type based on filename for specific mapping
+        filename = str(excel_path).lower()
+        
         for sheet_name in excel_file.sheet_names:
             df = pd.read_excel(excel_path, sheet_name=sheet_name)
             
@@ -260,43 +263,16 @@ def convert_document_excel(excel_path):
                     if header and i < len(row):
                         value = row.iloc[i]
                         if not pd.isna(value):
-                            # Clean and standardize common field names
+                            # Keep original header names exactly as they are in Excel
                             clean_header = header.strip()
                             value_str = clean_text_for_json(str(value).strip())
                             
-                            # More specific field mapping
-                            if 'no' in clean_header.lower() and any(word in clean_header.lower() for word in ['kanun', 'law', 'mevzuat']):
-                                doc['kanunNo'] = value_str
-                            elif 'no' in clean_header.lower() and len(clean_header) < 10:
-                                doc['id'] = value_str
-                            elif any(word in clean_header.lower() for word in ['başlık', 'title', 'baslik']):
-                                doc['baslik'] = value_str
-                            elif any(word in clean_header.lower() for word in ['kabul', 'acceptance']) and 'tarih' in clean_header.lower():
-                                doc['kabulTarihi'] = value_str
-                            elif any(word in clean_header.lower() for word in ['tarih', 'date']):
-                                doc['tarih'] = value_str
-                            elif any(word in clean_header.lower() for word in ['yazar', 'author']):
-                                doc['yazar'] = value_str
-                            elif any(word in clean_header.lower() for word in ['hazırlayan', 'prepared']):
-                                doc['hazirlayan'] = value_str
-                            elif any(word in clean_header.lower() for word in ['kurum', 'institution']):
-                                doc['kurum'] = value_str
-                            elif 'rg' in clean_header.lower() and any(word in clean_header.lower() for word in ['sayı', 'no', 'number']):
-                                doc['rgSayi'] = value_str
-                            elif 'rg' in clean_header.lower() and 'tarih' in clean_header.lower():
-                                doc['rgTarihi'] = value_str
-                            elif any(word in clean_header.lower() for word in ['amaç', 'purpose', 'objective']):
-                                doc['amac'] = value_str
-                            elif any(word in clean_header.lower() for word in ['link', 'url', 'erişim']):
-                                doc['erisimLinki'] = fix_link_format(value_str)
-                            elif any(word in clean_header.lower() for word in ['enerji', 'energy']):
-                                doc['enerji'] = value_str
-                            elif any(word in clean_header.lower() for word in ['çevre', 'environment']):
-                                doc['cevre'] = value_str
-                            elif any(word in clean_header.lower() for word in ['rapor', 'report']):
-                                doc['raporNo'] = value_str
-                            else:
-                                doc[clean_header] = value_str
+                            # Fix link format if it's a link column
+                            if 'link' in clean_header.lower() or 'erişim' in clean_header.lower():
+                                value_str = fix_link_format(value_str)
+                            
+                            # Store with original Excel column name
+                            doc[clean_header] = value_str
                 
                 if doc:  # Only add if document has data
                     all_docs.append(doc)
@@ -382,10 +358,10 @@ def create_document_html(js_data, output_path, title, template_path=None):
     
     try:
         # Use provided template path or fallback to default
-        if template_path and template_path.exists():
+        if template_path and os.path.exists(template_path):
             with open(template_path, 'r', encoding='utf-8') as f:
                 template_content = f.read()
-            print(f"Using {template_path.name} for {output_path}")
+            print(f"Using {os.path.basename(template_path)} for {output_path}")
         else:
             # Fallback to unified template
             try:
