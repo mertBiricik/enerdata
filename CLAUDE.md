@@ -8,10 +8,11 @@ This is a comprehensive data visualization and analysis system for Turkish energ
 
 ### Core Components
 - **Excel Source Files**: Raw data in `.xlsx` format (files 1-7)
-- **Conversion Engine**: `excel_to_html_converter.py` - Python script that processes Excel files
-- **HTML Dashboards**: Interactive web interfaces with Chart.js visualizations
-- **Template System**: Unified template structure for consistent styling
+- **Conversion Engine**: `excel_to_html_converter.py` - Python script with multi-format detection and special processing functions
+- **HTML Dashboards**: Interactive web interfaces with Chart.js visualizations and document catalogs
+- **Template System**: Unified template structure with intelligent field categorization and beautiful labeling
 - **Backup System**: `backup_html/` directory preserves original working versions
+- **WordPress Integration**: Static HTML links to WordPress media files for seamless Excel downloads
 
 ### File Structure
 ```
@@ -21,7 +22,7 @@ enerdata/
 ├── backup_html/                  # Original working HTML files
 ├── [1-7]_*.xlsx                  # Source Excel data files
 ├── [1-7]_*.html                  # Generated dashboard files
-└── CONVERSION_SUMMARY.md         # Technical documentation
+└── CLAUDE.md                     # AI Assistant guidelines and technical documentation
 ```
 
 ## Data Categories
@@ -33,11 +34,12 @@ enerdata/
 - **Features**: Interactive charts, year range sliders, category filtering, data export
 
 ### Document Catalogs (Files 4-7)
-- **File 4**: Legal regulations (282+ documents)
+- **File 4**: Legal regulations (282+ documents) 
 - **File 5**: Strategy and policy documents
-- **File 6**: Development plans
+- **File 6**: Development plans (with multi-row Excel data consolidation)
 - **File 7**: EU progress reports
-- **Features**: Document search, category filtering, year filtering, metadata display
+- **Features**: Document search, category filtering, year filtering, metadata display, comprehensive Excel data inclusion
+- **Special Processing**: File 6 uses `process_kalkinma_planlari_excel()` for multi-row data consolidation
 
 ## Technical Implementation
 
@@ -56,12 +58,36 @@ enerdata/
 
 ### Data Handling
 - **Multi-language Support**: Handles Turkish characters and field names
-- **Flexible Parsing**: Adapts to different Excel structures and naming conventions
+- **Flexible Parsing**: Adapts to different Excel structures and naming conventions (year-based sheets, years as rows/columns, document catalogs)
 - **Link Processing**: Automatically fixes incomplete URLs (www. → https://www.)
 - **Error Handling**: Graceful degradation for missing or malformed data
-- **Text Cleaning**: `clean_text_for_json()` function prevents JSON syntax errors by removing line breaks, carriage returns, and tabs
+- **Text Cleaning**: Enhanced `clean_text_for_json()` function prevents JSON syntax errors by removing all control characters
+- **Multi-row Processing**: Special handling for Excel files with content spanning multiple rows (File 6)
+- **Field Categorization**: Intelligent separation of metadata vs content fields with beautiful labeling
 - **Data Variable Consistency**: All document files (4-7) use `embeddedData` variable for unified template compatibility
 - **Title Standardization**: All files use clean Turkish titles without numbers for professional appearance
+
+## WordPress Integration
+
+### Excel Download Implementation
+- **Static HTML Links**: Direct `<a href="..." download>` tags with WordPress media URLs
+- **No JavaScript Processing**: Pure browser-native download handling to preserve original Excel formatting
+- **Button Text**: "📄 Excel'e Erişim" (Excel Access)
+- **WordPress URLs**: Files hosted at `http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/`
+- **Template Placeholder**: `{{EXCEL_URL}}` replaced during conversion with file-specific URLs
+
+### Template Processing
+- **Automatic URL Assignment**: Converter sets correct WordPress URL based on output filename
+- **File Mapping**:
+  - File 4: `4_yasal_duzenlemeler.xlsx`
+  - File 5: `5_strateji_ve_politika_belgeleri.xlsx`
+  - File 6: `6_kalkinma_planlari.xlsx`
+  - File 7: `7_ab_ilerleme_raporlari.xlsx`
+
+### WordPress Deployment
+- **Copy-Paste Ready**: HTML files can be directly pasted into WordPress custom HTML blocks
+- **No Server Dependencies**: All functionality works client-side
+- **Cross-Browser Compatible**: Standard HTML/CSS/JavaScript with no special requirements
 
 ## Development Guidelines
 
@@ -198,9 +224,17 @@ patterns = [
 
 ### JSON Syntax Error Prevention
 - **ALWAYS use `clean_text_for_json()`**: All text data must be cleaned before JSON serialization
-- **Root cause**: Raw Excel text contains unescaped line breaks, quotes, and special characters
-- **Solution implemented**: The `clean_text_for_json()` function in converter handles text cleaning automatically
+- **Root cause**: Raw Excel text contains unescaped line breaks, quotes, and control characters
+- **Enhanced solution**: The `clean_text_for_json()` function removes all control characters (\\x00-\\x1f\\x7f-\\x9f)
+- **Multi-row processing**: Avoid adding literal line breaks (`\\n\\n`) when consolidating multi-row content
 - **Testing**: After regenerating files, check browser console for "SyntaxError" messages
+
+### File 6 Multi-Row Processing
+- **Special function**: Uses `process_kalkinma_planlari_excel()` for complex Excel structure
+- **Data consolidation**: Combines content from multiple Excel rows into single document entries
+- **Field mapping**: Col_5 → "Detaylar ve Analiz", Col_7 → "Çevresel Boyut"
+- **Space separation**: Multi-row content joined with spaces, not line breaks
+- **Template integration**: Unified template recognizes Col_5 and Col_7 as content fields
 
 ### Template File Requirements
 ```

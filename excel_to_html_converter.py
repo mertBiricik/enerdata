@@ -209,14 +209,20 @@ def clean_text_for_json(text):
         return text
     
     text_str = str(text)
-    # Replace problematic characters that break JSON
-    text_str = text_str.replace('\n', ' ')  # Replace line breaks with spaces
-    text_str = text_str.replace('\r', ' ')  # Replace carriage returns
-    text_str = text_str.replace('\t', ' ')  # Replace tabs
-    # Don't manually escape quotes - json.dumps() will handle this properly
+    # Replace all types of line breaks and control characters
+    text_str = text_str.replace('\n', ' ')  # Line feeds
+    text_str = text_str.replace('\r', ' ')  # Carriage returns
+    text_str = text_str.replace('\t', ' ')  # Tabs
+    text_str = text_str.replace('\v', ' ')  # Vertical tabs
+    text_str = text_str.replace('\f', ' ')  # Form feeds
+    text_str = text_str.replace('\x00', '')  # Null characters
+    
+    # Remove or replace other problematic Unicode characters
+    import re
+    # Replace any remaining control characters (except space)
+    text_str = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', text_str)
     
     # Clean up multiple spaces
-    import re
     text_str = re.sub(r'\s+', ' ', text_str).strip()
     
     return text_str
@@ -252,33 +258,112 @@ def convert_document_excel(excel_path):
             # Use the first non-empty row as column names
             headers = df.iloc[header_row].fillna('').astype(str).tolist()
             
-            # Process data rows
-            for idx in range(header_row + 1, len(df)):
-                row = df.iloc[idx]
-                if row.isnull().all():
-                    continue
+            # Special handling for file 6 (Kalkınma Planları) with multi-row structure
+            if 'kalkinma' in filename:
+                all_docs = process_kalkinma_planlari_excel(df, headers, header_row)
+            else:
+                # Standard processing for other files
+                for idx in range(header_row + 1, len(df)):
+                    row = df.iloc[idx]
+                    if row.isnull().all():
+                        continue
+                        
+                    doc = {}
+                    for i, header in enumerate(headers):
+                        if header and i < len(row):
+                            value = row.iloc[i]
+                            if not pd.isna(value):
+                                # Keep original header names exactly as they are in Excel
+                                clean_header = header.strip()
+                                value_str = clean_text_for_json(str(value).strip())
+                                
+                                # Fix link format if it's a link column
+                                if 'link' in clean_header.lower() or 'erişim' in clean_header.lower():
+                                    value_str = fix_link_format(value_str)
+                                
+                                # Store with original Excel column name
+                                doc[clean_header] = value_str
                     
-                doc = {}
-                for i, header in enumerate(headers):
-                    if header and i < len(row):
-                        value = row.iloc[i]
-                        if not pd.isna(value):
-                            # Keep original header names exactly as they are in Excel
-                            clean_header = header.strip()
-                            value_str = clean_text_for_json(str(value).strip())
-                            
-                            # Fix link format if it's a link column
-                            if 'link' in clean_header.lower() or 'erişim' in clean_header.lower():
-                                value_str = fix_link_format(value_str)
-                            
-                            # Store with original Excel column name
-                            doc[clean_header] = value_str
-                
-                if doc:  # Only add if document has data
-                    all_docs.append(doc)
+                    if doc:  # Only add if document has data
+                        all_docs.append(doc)
     
     except Exception as e:
         print(f"Error processing document Excel {excel_path}: {e}")
+    
+    return all_docs
+
+def process_kalkinma_planlari_excel(df, headers, header_row):
+    """Special processing for Kalkınma Planları with multi-row data structure"""
+    all_docs = []
+    
+    # Get the actual column headers from header_row (row 0)
+    actual_headers = []
+    for i in range(len(df.columns)):
+        header_value = df.iloc[header_row, i]
+        if pd.notna(header_value) and str(header_value).strip():
+            actual_headers.append(str(header_value).strip())
+        else:
+            actual_headers.append(f"Col_{i}")  # Fallback for empty headers
+    
+    print(f"Actual headers: {actual_headers}")
+    
+    # Process each document by looking for rows with document numbers
+    current_doc = None
+    
+    for idx in range(header_row + 1, len(df)):
+        row = df.iloc[idx]
+        
+        # Find first non-empty cell
+        first_data_col = None
+        first_value = None
+        for i in range(len(row)):
+            if not pd.isna(row.iloc[i]):
+                first_data_col = i
+                first_value = row.iloc[i]
+                break
+        
+        if first_data_col is not None:
+            # If this looks like a document number, start new document
+            if str(first_value).strip().isdigit():
+                # Save previous document if it exists
+                if current_doc and any(v for v in current_doc.values() if v):
+                    all_docs.append(current_doc)
+                
+                # Start new document
+                current_doc = {}
+                
+                # Process all columns for this document
+                for i in range(len(row)):
+                    value = row.iloc[i]
+                    if not pd.isna(value):
+                        header = actual_headers[i] if i < len(actual_headers) else f"Col_{i}"
+                        value_str = clean_text_for_json(str(value).strip())
+                        
+                        # Fix link format if it's a link column
+                        if 'link' in header.lower():
+                            value_str = fix_link_format(value_str)
+                        
+                        current_doc[header] = value_str
+            
+            # If current document exists, this might be additional content
+            elif current_doc is not None:
+                # Add additional content to existing fields
+                for i in range(len(row)):
+                    value = row.iloc[i]
+                    if not pd.isna(value):
+                        header = actual_headers[i] if i < len(actual_headers) else f"Col_{i}"
+                        value_str = clean_text_for_json(str(value).strip())
+                        
+                        # Append to existing content or create new
+                        if header in current_doc:
+                            # Add as additional content with space separator
+                            current_doc[header] += " " + value_str
+                        else:
+                            current_doc[header] = value_str
+    
+    # Don't forget to add the last document
+    if current_doc and any(v for v in current_doc.values() if v):
+        all_docs.append(current_doc)
     
     return all_docs
 
@@ -378,6 +463,20 @@ def create_document_html(js_data, output_path, title, template_path=None):
         # Replace placeholders
         html_content = template_content.replace('{{DOCUMENT_TITLE}}', title)
         html_content = html_content.replace('{{DOCUMENT_DESCRIPTION}}', f'Türkiye enerji sektörüne dair {len(js_data)} döküman')
+        
+        # Set Excel URL based on output file
+        excel_url = ''
+        output_filename = os.path.basename(output_path)
+        if '4_yasal' in output_filename:
+            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/4_yasal_duzenlemeler.xlsx'
+        elif '5_strateji' in output_filename:
+            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/5_strateji_ve_politika_belgeleri.xlsx'
+        elif '6_kalkinma' in output_filename:
+            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/6_kalkinma_planlari.xlsx'
+        elif '7_ab' in output_filename:
+            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/7_ab_ilerleme_raporlari.xlsx'
+        
+        html_content = html_content.replace('{{EXCEL_URL}}', excel_url)
         
         # Replace the embedded data - try different patterns
         data_patterns = [

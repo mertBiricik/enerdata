@@ -229,7 +229,7 @@
                 <select id="categoryFilter" class="date-filter">
                     <option value="">Tüm Kategoriler</option>
                 </select>
-                <button class="export-btn" onclick="exportData()">📄 Excel'e Aktar</button>
+                <a href="http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/7_ab_ilerleme_raporlari.xlsx" class="export-btn" target="_blank" download>📄 Excel'e Erişim</a>
             </div>
             <div class="stats">
                 <span id="totalCount">Yükleniyor...</span>
@@ -569,15 +569,19 @@
                     h.toLowerCase().includes('amaç') || 
                     h.toLowerCase().includes('enerji') || 
                     h.toLowerCase().includes('çevre') ||
+                    h.toLowerCase().includes('sürdürülebilirlik') ||
                     h.toLowerCase().includes('purpose') ||
-                    h.toLowerCase().includes('kararname amacı')
+                    h.toLowerCase().includes('kararname amacı') ||
+                    h.toLowerCase().includes('iklim değişikliğ') ||
+                    h.toLowerCase().includes('col_5') ||
+                    h.toLowerCase().includes('col_7')
                 );
                 
                 // Separate metadata fields from content fields
                 const metadataFields = headers.filter(h => 
                     h !== titleField && h !== linkField && 
                     !purposeFields.includes(h) && 
-                    doc[h] && doc[h].toString().length < 200 // Short fields are metadata
+                    doc[h] && doc[h].toString().length < 150 // Short fields are metadata
                 );
                 
                 const contentFields = purposeFields.filter(h => doc[h]);
@@ -642,7 +646,9 @@
                 'Mevzuat No': 'Mevzuat No',
                 'Mevzuat Adı': 'Mevzuat Adı',
                 'Kararname No': 'Kararname No',
-                'Yayın Bilgisi': 'Yayın Bilgisi'
+                'Yayın Bilgisi': 'Yayın Bilgisi',
+                'Col_5': 'Detaylar ve Analiz',
+                'Col_7': 'Çevresel Boyut'
             };
             
             return labelMap[header] || header;
@@ -783,31 +789,6 @@
             }
         }
         
-        function exportData() {
-            // Get the original Excel filename based on current page
-            const currentPage = window.location.pathname;
-            let excelFileName = '';
-            
-            if (currentPage.includes('4_yasal')) {
-                excelFileName = '4_yasal_duzenlemeler.xlsx';
-            } else if (currentPage.includes('5_strateji')) {
-                excelFileName = '5_strateji_ve_politika_belgeleri.xlsx';
-            } else if (currentPage.includes('6_kalkinma')) {
-                excelFileName = '6_kalkinma_planlari.xlsx';
-            } else if (currentPage.includes('7_ab')) {
-                excelFileName = '7_ab_ilerleme_raporlari.xlsx';
-            } else {
-                // Fallback to CSV export if Excel file not determined
-                exportCSV();
-                return;
-            }
-            
-            // Create download link for original Excel file
-            const link = document.createElement('a');
-            link.href = excelFileName;
-            link.download = excelFileName;
-            link.click();
-        }
         
         function exportCSV() {
             if (filteredDocuments.length === 0) {
