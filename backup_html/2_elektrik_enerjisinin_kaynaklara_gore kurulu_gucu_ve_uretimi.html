@@ -4272,6 +4272,10 @@ const embeddedDataB = [
 
         function parseRedValue(value) {
             if (value === null || value === undefined) return null;
+            if (typeof value === 'object' && value.is_red && typeof value.value === 'number') {
+                // Handle new red formatting format
+                return value.value;
+            }
             if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
                 const numStr = value.slice(1, -1);
                 return parseFloat(numStr) || 0;
@@ -4501,10 +4505,8 @@ const embeddedDataB = [
                 checkbox.value = item.Kategori;
                 checkbox.addEventListener('change', applyFiltersAndRender);
                 
-                // Check first few items by default
-                if (index < 3) {
-                    checkbox.checked = true;
-                }
+                // Check all items by default
+                checkbox.checked = true;
                 
                 const label = document.createElement('label');
                 label.htmlFor = `series-${index}`;
@@ -4605,7 +4607,12 @@ const embeddedDataB = [
                     let className = '';
                     
                     if (value !== null && value !== undefined) {
-                        if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                        if (typeof value === 'object' && value.is_red && typeof value.value === 'number') {
+                            // Handle new red formatting format
+                            displayValue = formatTableNumber(value.value);
+                            className = 'red-value';
+                        } else if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                            // Legacy red formatting
                             displayValue = value;
                             className = 'red-value';
                         } else {
@@ -5010,7 +5017,8 @@ const embeddedDataB = [
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1,
                     plugins: {
                         legend: { 
                             display: false
@@ -5383,13 +5391,27 @@ const embeddedDataB = [
                 // Calculate chart area
                 const chartAreaTop = 200;
                 let chartAreaHeight = height - chartAreaTop - 150;
-                const chartAreaWidth = width - 120;
+                let chartAreaWidth = width - 120;
                 
                 // Adjust chart height if we have external legends
                 let legendAreaTop = chartAreaTop + chartAreaHeight + 20;
                 if (hasLineLegend || hasPieLegend) {
                     chartAreaHeight -= (legendHeight + 40); // Reduce chart height to make room for legend
                     legendAreaTop = chartAreaTop + chartAreaHeight + 20;
+                }
+                
+                // Special handling for pie charts - ensure square aspect ratio
+                const isPieChart = chartType === 'pieChart';
+                if (isPieChart) {
+                    // Make chart area square using the smaller dimension
+                    const minDimension = Math.min(chartAreaWidth, chartAreaHeight);
+                    chartAreaWidth = minDimension;
+                    chartAreaHeight = minDimension;
+                    
+                    // Center the pie chart horizontally if it's now smaller than the available width
+                    const chartAreaLeft = 60 + Math.max(0, ((width - 120) - chartAreaWidth) / 2);
+                } else {
+                    const chartAreaLeft = 60;
                 }
                 
                 // Create a temporary high-resolution canvas to scale the original chart
@@ -5418,7 +5440,8 @@ const embeddedDataB = [
                 // Draw the scaled chart onto main canvas with high quality
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(tempCanvas, 60, chartAreaTop, chartAreaWidth, chartAreaHeight);
+                const finalChartAreaLeft = isPieChart ? (60 + Math.max(0, ((width - 120) - chartAreaWidth) / 2)) : 60;
+                ctx.drawImage(tempCanvas, finalChartAreaLeft, chartAreaTop, chartAreaWidth, chartAreaHeight);
                 
                 // Draw external legend if present
                 if (legendData) {
@@ -5434,7 +5457,7 @@ const embeddedDataB = [
                 // Add border around chart area with better styling
                 ctx.strokeStyle = '#d0d0d0';
                 ctx.lineWidth = 2;
-                ctx.strokeRect(60, chartAreaTop, chartAreaWidth, chartAreaHeight);
+                ctx.strokeRect(finalChartAreaLeft, chartAreaTop, chartAreaWidth, chartAreaHeight);
                 
                 // Download the final image with high quality
                 exportCanvas.toBlob(function(blob) {

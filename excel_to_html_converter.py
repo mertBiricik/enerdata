@@ -10,6 +10,40 @@ import os
 import sys
 from pathlib import Path
 import re
+import openpyxl
+
+
+def is_red_color(color_obj):
+    """Check if a color object represents red formatting"""
+    if not color_obj:
+        return False
+    
+    # Check RGB values
+    if hasattr(color_obj, 'rgb') and color_obj.rgb:
+        rgb = str(color_obj.rgb)
+        red_patterns = ['FFFF0000', 'FF0000', 'FFCC0000', 'FFC00000']
+        return any(pattern in rgb.upper() for pattern in red_patterns)
+    
+    # Check indexed colors (10 and 2 are common red variants)
+    if hasattr(color_obj, 'indexed') and color_obj.indexed in [10, 2]:
+        return True
+    
+    return False
+
+
+def get_cell_formatting(wb, sheet_name, row, col):
+    """Get formatting information for a specific cell"""
+    try:
+        ws = wb[sheet_name]
+        cell = ws.cell(row=row+1, column=col+1)  # openpyxl uses 1-based indexing
+        
+        formatting = {}
+        if cell.font and cell.font.color and is_red_color(cell.font.color):
+            formatting['is_red'] = True
+        
+        return formatting
+    except Exception as e:
+        return {}
 
 
 def excel_to_js_data(excel_path):
@@ -48,6 +82,9 @@ def convert_year_sheets(excel_file, excel_path):
     """Convert Excel with year-based sheets"""
     category_data = {}
     
+    # Load workbook for formatting detection
+    wb = openpyxl.load_workbook(excel_path)
+    
     # Process each sheet (year)
     for sheet_name in excel_file.sheet_names:
         year = sheet_name.strip()
@@ -73,22 +110,33 @@ def convert_year_sheets(excel_file, excel_path):
                 
                 # Find the "Toplam" (Total) column for this row
                 total_value = None
-                for col_name in df.columns:
+                total_col_idx = None
+                for col_idx, col_name in enumerate(df.columns):
                     col_name_lower = str(col_name).lower()
                     if 'toplam' in col_name_lower or col_name == 'Toplam':
                         total_value = row[col_name]
+                        total_col_idx = col_idx
                         break
                 
                 # If no total column found, use the last column
                 if total_value is None:
                     total_value = row.iloc[-1]
+                    total_col_idx = len(row) - 1
                 
-                # Store the value for this year
+                # Check formatting for the total value cell
+                formatting = get_cell_formatting(wb, sheet_name, index, total_col_idx)
+                
+                # Store the value for this year with formatting
                 if pd.isna(total_value):
                     category_data[category][year] = None
                 else:
                     try:
-                        category_data[category][year] = float(total_value)
+                        value = float(total_value)
+                        if formatting.get('is_red', False):
+                            # Store as object with red formatting info
+                            category_data[category][year] = {'value': value, 'is_red': True}
+                        else:
+                            category_data[category][year] = value
                     except (ValueError, TypeError):
                         category_data[category][year] = None
                         
@@ -102,6 +150,9 @@ def convert_year_sheets(excel_file, excel_path):
 def convert_years_as_columns(excel_file, excel_path):
     """Convert Excel where years are columns and categories are rows"""
     category_data = {}
+    
+    # Load workbook for formatting detection
+    wb = openpyxl.load_workbook(excel_path)
     
     for sheet_name in excel_file.sheet_names:
         if 'tüketim' in sheet_name.lower():
@@ -130,11 +181,20 @@ def convert_years_as_columns(excel_file, excel_path):
                     year = str(int(year_col))
                     value = row[year_col]
                     
+                    # Get column index for formatting check
+                    col_idx = df.columns.get_loc(year_col)
+                    formatting = get_cell_formatting(wb, sheet_name, index, col_idx)
+                    
                     if pd.isna(value):
                         category_data[category][year] = None
                     else:
                         try:
-                            category_data[category][year] = float(value)
+                            float_value = float(value)
+                            if formatting.get('is_red', False):
+                                # Store as object with red formatting info
+                                category_data[category][year] = {'value': float_value, 'is_red': True}
+                            else:
+                                category_data[category][year] = float_value
                         except (ValueError, TypeError):
                             category_data[category][year] = None
                             
@@ -150,6 +210,9 @@ def convert_years_as_rows(excel_file, excel_path):
     # For each sheet, transpose the data
     all_data = []
     
+    # Load workbook for formatting detection
+    wb = openpyxl.load_workbook(excel_path)
+    
     for sheet_name in excel_file.sheet_names:
         try:
             df = pd.read_excel(excel_path, sheet_name=sheet_name)
@@ -157,6 +220,9 @@ def convert_years_as_rows(excel_file, excel_path):
             if 'Yıllar' not in df.columns:
                 continue
                 
+            # Get original dataframe to track row/col positions
+            original_df = df.copy()
+            
             # Set years as index
             df = df.set_index('Yıllar')
             
@@ -168,18 +234,34 @@ def convert_years_as_rows(excel_file, excel_path):
                 category = f"{sheet_name} - {col_name}".strip()
                 category_data = {'Kategori': category}
                 
+                # Get column index for formatting check
+                col_idx = original_df.columns.get_loc(col_name)
+                
                 # Add data for each year
-                for year in df.index:
+                for year_idx, year in enumerate(df.index):
                     if pd.isna(year):
                         continue
                     year_str = str(int(year))
                     value = df.loc[year, col_name]
                     
+                    # Get formatting for this cell
+                    # Find the row in the original dataframe
+                    year_row_idx = original_df[original_df['Yıllar'] == year].index[0] if not original_df[original_df['Yıllar'] == year].empty else None
+                    
+                    formatting = {}
+                    if year_row_idx is not None:
+                        formatting = get_cell_formatting(wb, sheet_name, year_row_idx, col_idx)
+                    
                     if pd.isna(value):
                         category_data[year_str] = None
                     else:
                         try:
-                            category_data[year_str] = float(value)
+                            float_value = float(value)
+                            if formatting.get('is_red', False):
+                                # Store as object with red formatting info
+                                category_data[year_str] = {'value': float_value, 'is_red': True}
+                            else:
+                                category_data[year_str] = float_value
                         except (ValueError, TypeError):
                             category_data[year_str] = None
                 

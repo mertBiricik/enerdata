@@ -3797,6 +3797,10 @@ const embeddedRawData = [
 
         function parseRedValue(value) {
             if (value === null || value === undefined) return null;
+            if (typeof value === 'object' && value.is_red && typeof value.value === 'number') {
+                // Handle new red formatting format
+                return value.value;
+            }
             if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
                 const numStr = value.slice(1, -1);
                 return parseFloat(numStr) || 0;
@@ -4279,7 +4283,12 @@ const embeddedRawData = [
                         let className = '';
                         
                         if (value !== null && value !== undefined) {
-                            if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                            if (typeof value === 'object' && value.is_red && typeof value.value === 'number') {
+                                // Handle new red formatting format
+                                displayValue = formatTableNumber(value.value);
+                                className = 'red-value';
+                            } else if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
+                                // Legacy red formatting
                                 displayValue = value;
                                 className = 'red-value';
                             } else {
