@@ -5938,7 +5938,8 @@ const embeddedDataB = [
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1,
                     plugins: {
                         legend: { 
                             display: false
@@ -6481,10 +6482,10 @@ const embeddedDataB = [
 
         function getChartTitle(chartType) {
             const dataType = document.querySelector('input[name="dataType"]:checked').value;
-            const baseTitle = ` Elektrik Enerjisinin Kaynaklara Göre Kurulu Gücü ve Üretimi ${dataType === 'capacity' ? 'Kurulu Güç' : 'Üretim'}`;
+            const baseTitle = `Türkiye Elektrik ${dataType === 'capacity' ? 'Kurulu Güç' : 'Üretim'}`;
             switch(chartType) {
                 case 'lineChart':
-                    return `${baseTitle}`;
+                    return `${baseTitle} - Zaman Serisi Analizi`;
                 case 'barChart':
                     const barMode = document.querySelector('input[name="barChartMode"]:checked').value;
                     return `${baseTitle} - ${barMode === 'sum' ? 'Toplam' : 'Ortalama'} Değerler`;

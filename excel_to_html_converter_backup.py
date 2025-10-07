@@ -79,7 +79,7 @@ def excel_to_js_data(excel_path):
 
 
 def convert_year_sheets(excel_file, excel_path):
-    """Convert Excel with year-based sheets - CAPTURING ALL ENERGY SOURCES"""
+    """Convert Excel with year-based sheets"""
     category_data = {}
     
     # Load workbook for formatting detection
@@ -104,45 +104,46 @@ def convert_year_sheets(excel_file, excel_path):
                     
                 category = str(category).strip()
                 
-                # Process ALL energy source columns (not just totals)
+                # Initialize category if not exists
+                if category not in category_data:
+                    category_data[category] = {'Kategori': category}
+                
+                # Find the "Toplam" (Total) column for this row
+                total_value = None
+                total_col_idx = None
                 for col_idx, col_name in enumerate(df.columns):
-                    if col_idx == 0:  # Skip the category column itself
-                        continue
-                        
-                    # Create unique identifier: Category - Energy Source
-                    if col_name and str(col_name).strip():
-                        energy_source = str(col_name).strip()
-                        full_category = f"{category} - {energy_source}"
-                        
-                        # Initialize category if not exists
-                        if full_category not in category_data:
-                            category_data[full_category] = {'Kategori': full_category}
-                        
-                        # Get the value for this energy source
-                        value = row.iloc[col_idx]
-                        
-                        # Check formatting for this cell
-                        formatting = get_cell_formatting(wb, sheet_name, index, col_idx)
-                        
-                        # Store the value for this year with formatting
-                        if pd.isna(value):
-                            category_data[full_category][year] = None
+                    col_name_lower = str(col_name).lower()
+                    if 'toplam' in col_name_lower or col_name == 'Toplam':
+                        total_value = row[col_name]
+                        total_col_idx = col_idx
+                        break
+                
+                # If no total column found, use the last column
+                if total_value is None:
+                    total_value = row.iloc[-1]
+                    total_col_idx = len(row) - 1
+                
+                # Check formatting for the total value cell
+                formatting = get_cell_formatting(wb, sheet_name, index, total_col_idx)
+                
+                # Store the value for this year with formatting
+                if pd.isna(total_value):
+                    category_data[category][year] = None
+                else:
+                    try:
+                        value = float(total_value)
+                        if formatting.get('is_red', False):
+                            # Store as object with red formatting info
+                            category_data[category][year] = {'value': value, 'is_red': True}
                         else:
-                            try:
-                                float_value = float(value)
-                                if formatting.get('is_red', False):
-                                    # Store as object with red formatting info
-                                    category_data[full_category][year] = {'value': float_value, 'is_red': True}
-                                else:
-                                    category_data[full_category][year] = float_value
-                            except (ValueError, TypeError):
-                                category_data[full_category][year] = None
+                            category_data[category][year] = value
+                    except (ValueError, TypeError):
+                        category_data[category][year] = None
                         
         except Exception as e:
             print(f"Error processing sheet {sheet_name}: {e}")
             continue
     
-    print(f"Extracted {len(category_data)} detailed energy source categories (was 42, now includes all breakdowns)")
     return list(category_data.values())
 
 

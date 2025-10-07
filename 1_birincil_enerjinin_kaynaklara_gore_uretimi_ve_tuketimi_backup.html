@@ -610,11 +610,7 @@
                 flex-direction: column;
             }
         }
-    
-.type-filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
-.type-chip{padding:6px 10px;border:1px solid #cfd8dc;border-radius:16px;background:#fff;color:#333;cursor:pointer;font-size:12px}
-.type-chip.active{background:#2e7d32;color:#fff;border-color:#2e7d32}
-</style>
+    </style>
 </head>
 <body>
     <div class="main-container">
@@ -638,16 +634,7 @@
                 
                 <div class="filter-group">
                     <label>Veri Serileri</label>
-                    <div id="typeFilterBar" class="type-filter-bar">
-  <button class="type-chip" data-type="all">Tümü</button>
-  <button class="type-chip" data-type="coal">Kömür</button>
-  <button class="type-chip" data-type="oil">Petrol</button>
-  <button class="type-chip" data-type="gas">Doğal Gaz</button>
-  <button class="type-chip" data-type="renew">Yenilenebilir</button>
-  <button class="type-chip" data-type="electricity">Elektrik/Isı</button>
-  <button class="type-chip" data-type="totals">Toplamlar</button>
-</div>
-<input type="text" id="seriesSearch" class="search-input" placeholder="Kategori ara...">
+                    <input type="text" id="seriesSearch" class="search-input" placeholder="Kategori ara...">
                     <div class="filter-buttons">
                         <button id="selectAllBtn">Hepsini Seç</button>
                         <button id="deselectAllBtn">Hiçbirini Seçme</button>
@@ -147234,7 +147221,6 @@ const embeddedDataA = [
         let colorIndex = 0;
         let startYear = 1972;
         let endYear = 2023;
-        let hasAppliedDefault = false;
 
         // Diverse color palette for primary energy
         const materialColors = [
@@ -147278,7 +147264,7 @@ const embeddedDataA = [
             }
 
             console.log('Loaded', data.length, 'data series for Primary Energy');
-
+            
             // Extract all years from data
             allYears = [];
             data.forEach(item => {
@@ -147299,27 +147285,10 @@ const embeddedDataA = [
             }
 
             initializeFilters();
-            if (typeof initializeEventListeners === "function") { initializeEventListeners(); }
+            initializeEventListeners();
             populateSeriesFilter();
-            initTypeFilters();
             applyFiltersAndRender();
-
-            // Apply default selection once after full initialization
-            if (!hasAppliedDefault && currentFilteredData.length === 0) {
-                const defaultCategories = data.filter(item =>
-                    item.Kategori.endsWith(" - Toplam") ||
-                    item.Kategori === "Yerli Üretim (+) - Doğal Gaz" ||
-                    item.Kategori === "Yerli Üretim (+) - Hidrolik"
-                );
-                if (defaultCategories.length > 0) {
-                    currentFilteredData = defaultCategories.slice(0, 6);
-                    hasAppliedDefault = true;
-                    console.log("Applied default selection:", currentFilteredData.length, "categories");
-                    renderTable();
-                    renderLineChart();
-                }
-            }
-            });
+        });
 
         function showNoDataMessage() {
             document.querySelector('.content-panel').innerHTML = `
@@ -147333,7 +147302,7 @@ const embeddedDataA = [
         function initializeFilters() {
             // Initialize year range slider
             const yearRangeSlider = document.getElementById('yearRangeSlider');
-
+            
             noUiSlider.create(yearRangeSlider, {
                 start: [startYear, endYear],
                 connect: true,
@@ -147367,7 +147336,8 @@ const embeddedDataA = [
 
             yearSlider = yearRangeSlider;
         }
- {
+
+        function initializeEventListeners() {
             // Year input changes
             document.getElementById('yearInputStart').addEventListener('change', handleYearInputChange);
             document.getElementById('yearInputEnd').addEventListener('change', handleYearInputChange);
@@ -147382,21 +147352,18 @@ const embeddedDataA = [
 
             // Filter buttons
             document.getElementById('selectAllBtn').addEventListener('click', function() {
-                const bar=document.getElementById('typeFilterBar');
-                const active=bar? (bar.querySelector('.type-chip.active')?.getAttribute('data-type')||'all'):'all';
-                const boxes = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]')).filter(cb=> active==='all' || cb.getAttribute('data-type')===active);
-                boxes.forEach(cb=> cb.checked=true);
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                });
                 applyFiltersAndRender();
             });
 
             document.getElementById('deselectAllBtn').addEventListener('click', function() {
-                const bar=document.getElementById('typeFilterBar');
-                const active=bar? (bar.querySelector('.type-chip.active')?.getAttribute('data-type')||'all'):'all';
-                const boxes = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]')).filter(cb=> active==='all' || cb.getAttribute('data-type')===active);
-                boxes.forEach(cb=> cb.checked=false);
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
                 applyFiltersAndRender();
             });
-
 
             // Series search
             document.getElementById('seriesSearch').addEventListener('input', function() {
@@ -147453,22 +147420,6 @@ const embeddedDataA = [
                 startYear = start;
                 endYear = end;
                 applyFiltersAndRender();
-
-            // Apply default selection if no data is currently filtered
-            if (currentFilteredData.length === 0) {
-                const defaultCategories = data.filter(item => 
-                    item.Kategori.endsWith(" - Toplam") ||
-                    item.Kategori === "Yerli Üretim (+) - Doğal Gaz" ||
-                    item.Kategori === "Yerli Üretim (+) - Hidrolik"
-                );
-                
-                if (defaultCategories.length > 0) {
-                    currentFilteredData = defaultCategories.slice(0, 6);
-                    console.log("Applied default selection:", currentFilteredData.length, "categories");
-                    renderTable();
-                    renderLineChart();
-                }
-            }
             }
         }
 
@@ -147491,14 +147442,13 @@ const embeddedDataA = [
             }
         }
 
-        
         function populateSeriesFilter() {
             const container = document.getElementById('seriesCheckboxes');
             container.innerHTML = '';
             
             const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
             
-            // Define hierarchical structure with Turkish names (base categories)
+            // Define hierarchical structure with Turkish names
             const categoryHierarchy = {
                 'Enerji Arzı': {
                     title: 'Enerji Arzı',
@@ -147552,11 +147502,17 @@ const embeddedDataA = [
                     total: null
                 }
             };
-            
+
+            // Get available categories from data
             const availableCategories = data.map(item => item.Kategori);
             
             Object.keys(categoryHierarchy).forEach(groupKey => {
                 const group = categoryHierarchy[groupKey];
+                const groupCategories = group.categories.filter(cat => 
+                    availableCategories.includes(cat)
+                );
+                
+                if (groupCategories.length === 0 && !group.total) return;
                 
                 // Create group container
                 const groupDiv = document.createElement('div');
@@ -147574,17 +147530,10 @@ const embeddedDataA = [
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'category-group-content';
                 
-                // Add sub-categories for each base category using prefix match
-                group.categories.forEach(baseCategory => {
-                    const subItems = availableCategories.filter(k => k.startsWith(baseCategory + ' -'));
-                    if (subItems.length === 0) return;
-                    
-                    const baseHeader = document.createElement('div');
-                    baseHeader.className = 'checkbox-item base-category';
-                    baseHeader.textContent = baseCategory;
-                    contentDiv.appendChild(baseHeader);
-                    
-                    subItems.forEach(category => {
+                // Add individual categories
+                groupCategories.forEach(category => {
+                    const item = data.find(d => d.Kategori === category);
+                    if (item) {
                         const categoryDiv = document.createElement('div');
                         categoryDiv.className = 'checkbox-item sub-category';
                         
@@ -147592,9 +147541,8 @@ const embeddedDataA = [
                         checkbox.type = 'checkbox';
                         checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = category;
-                        checkbox.setAttribute('data-type', getSeriesType(category));
-                        checkbox.addEventListener('change', debouncedRender);
-                        checkbox.checked = false;
+                        checkbox.addEventListener('change', applyFiltersAndRender);
+                        checkbox.checked = true;
                         
                         const label = document.createElement('label');
                         label.htmlFor = checkbox.id;
@@ -147603,35 +147551,34 @@ const embeddedDataA = [
                         categoryDiv.appendChild(checkbox);
                         categoryDiv.appendChild(label);
                         contentDiv.appendChild(categoryDiv);
-                    });
+                    }
                 });
                 
-                // Add total category if exists (plain or " - Toplam")
-                if (group.total) {
-                    [group.total, group.total + ' - Toplam'].forEach(totalName => {
-                        if (!totalName) return;
-                        if (availableCategories.includes(totalName)) {
-                            const totalDiv = document.createElement('div');
-                            totalDiv.className = 'checkbox-item category-total';
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `series-${totalName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                            checkbox.value = totalName;
-                            checkbox.setAttribute('data-type', getSeriesType(totalName));
-                            checkbox.addEventListener('change', debouncedRender);
-                            checkbox.checked = false;
-                            const label = document.createElement('label');
-                            label.htmlFor = checkbox.id;
-                            label.textContent = totalName;
-                            totalDiv.appendChild(checkbox);
-                            totalDiv.appendChild(label);
-                            contentDiv.appendChild(totalDiv);
-                        }
-                    });
+                // Add total category if exists
+                if (group.total && availableCategories.includes(group.total)) {
+                    const totalItem = data.find(d => d.Kategori === group.total);
+                    if (totalItem) {
+                        const totalDiv = document.createElement('div');
+                        totalDiv.className = 'checkbox-item category-total';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `series-${group.total.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        checkbox.value = group.total;
+                        checkbox.addEventListener('change', applyFiltersAndRender);
+                        checkbox.checked = true;
+                        
+                        const label = document.createElement('label');
+                        label.htmlFor = checkbox.id;
+                        label.textContent = group.total;
+                        
+                        totalDiv.appendChild(checkbox);
+                        totalDiv.appendChild(label);
+                        contentDiv.appendChild(totalDiv);
+                    }
                 }
                 
-                if (contentDiv.children.length === 0) return;
-                
+                // Add toggle functionality
                 headerDiv.addEventListener('click', () => {
                     const isCollapsed = contentDiv.classList.contains('collapsed');
                     contentDiv.classList.toggle('collapsed');
@@ -147643,30 +147590,6 @@ const embeddedDataA = [
                 groupDiv.appendChild(contentDiv);
                 container.appendChild(groupDiv);
             });
-            /* FALLBACK_BEGIN */
-            // Fallback: if nothing rendered (e.g., structure assumptions not met), list first 120 series flat
-            if (container.children.length === 0) {
-                const flat = data.map(d => d.Kategori).slice(0, 120);
-                flat.forEach(category => {
-                    const categoryDiv = document.createElement('div');
-                    categoryDiv.className = 'checkbox-item sub-category';
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                    checkbox.value = category;
-                        checkbox.setAttribute('data-type', getSeriesType(category));
-                    checkbox.addEventListener('change', debouncedRender);
-                    checkbox.checked = false;
-                    const label = document.createElement('label');
-                    label.htmlFor = checkbox.id;
-                    label.textContent = category;
-                    categoryDiv.appendChild(checkbox);
-                    categoryDiv.appendChild(label);
-                    container.appendChild(categoryDiv);
-                });
-            }
-            /* FALLBACK_END */
-        
         }
 
         function setupTopScrollbar() {
@@ -147692,51 +147615,7 @@ const embeddedDataA = [
             });
         }
 
-        
-
-        function getSeriesType(label){
-            const l = label.toLowerCase();
-            if (/- toplam$/.test(l) || l.endsWith(' toplamı') || l.includes('toplam')) return 'totals';
-            if (l.includes('doğal gaz')) return 'gas';
-            if (l.includes('elektrik') || l.includes('ısı')) return 'electricity';
-            if (l.includes('hidrolik') || l.includes('rüzgar') || l.includes('güneş') || l.includes('jeotermal')) return 'renew';
-            if (l.includes('ham petrol') || l.includes('benzin') || l.includes('motorin') || l.includes('lpg') || l.includes('fuel oil') || l.includes('petrol') || l.includes('rafineri')) return 'oil';
-            if (l.includes('kömür') || l.includes('linyit') || l.includes('taş kömürü') || l.includes('asfaltit')) return 'coal';
-            return 'other';
-        }
-
-        function filterSeriesByType(type){
-            const items = document.querySelectorAll('#seriesCheckboxes .checkbox-item');
-            items.forEach(el=>{
-                const label = el.querySelector('label');
-                if(!label){ el.style.display='none'; return; }
-                const t = getSeriesType(label.textContent || '');
-                el.style.display = (type==='all'|| t===type)? 'flex':'none';
-            });
-        }
-
-        function initTypeFilters(){
-            const bar = document.getElementById('typeFilterBar');
-            if(!bar) return;
-            let active='all';
-            const updateActive=(btn)=>{
-                Array.from(bar.querySelectorAll('.type-chip')).forEach(b=>b.classList.remove('active'));
-                btn.classList.add('active');
-            };
-            bar.querySelectorAll('.type-chip').forEach(btn=>{
-                btn.addEventListener('click', ()=>{
-                    const t = btn.getAttribute('data-type');
-                    active = t; updateActive(btn); filterSeriesByType(t);
-                });
-            });
-            const first = bar.querySelector('.type-chip[data-type="all"]');
-            if(first){ first.classList.add('active'); }
-        }
-
-
-        const debounce = (fn, wait=120) => { let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); }; };
-        const debouncedRender = debounce(applyFiltersAndRender, 120);
-function applyFiltersAndRender() {
+        function applyFiltersAndRender() {
             const selectedSeries = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
 
@@ -147875,8 +147754,7 @@ function applyFiltersAndRender() {
                         checkbox.type = 'checkbox';
                         checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = category;
-                        checkbox.setAttribute('data-type', getSeriesType(category));
-                        checkbox.addEventListener('change', debouncedRender);
+                        checkbox.addEventListener('change', applyFiltersAndRender);
                         checkbox.checked = true;
                         
                         const label = document.createElement('label');
@@ -147900,7 +147778,7 @@ function applyFiltersAndRender() {
                         checkbox.type = 'checkbox';
                         checkbox.id = `series-${group.total.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = group.total;
-                        checkbox.addEventListener('change', debouncedRender);
+                        checkbox.addEventListener('change', applyFiltersAndRender);
                         checkbox.checked = true;
                         
                         const label = document.createElement('label');
@@ -147977,7 +147855,7 @@ function applyFiltersAndRender() {
             Object.keys(tableGroups).forEach(groupKey => {
                 const group = tableGroups[groupKey];
                 const groupData = currentFilteredData.filter(item => 
-                    group.categories.some(category => item.Kategori.startsWith(category + " -") || item.Kategori === category)
+                    group.categories.includes(item.Kategori)
                 );
                 
                 if (groupData.length === 0) return;

@@ -9207,10 +9207,10 @@ const embeddedRawData = [
         }
 
         function getChartTitle(chartType) {
-            const baseTitle = 'Elektrik Enerjisinin Brüt Üretimi ve Sektörel Tüketimi';
+            const baseTitle = 'Türkiye Sektörel Enerji Tüketimi';
             switch(chartType) {
                 case 'lineChart':
-                    return `${baseTitle}`;
+                    return `${baseTitle} - Zaman Serisi Analizi`;
                 case 'barChart':
                     const barMode = document.querySelector('input[name="barChartMode"]:checked').value;
                     return `${baseTitle} - ${barMode === 'sum' ? 'Toplam' : 'Ortalama'} Değerler`;
