@@ -5400,18 +5400,29 @@ const embeddedDataB = [
                     legendAreaTop = chartAreaTop + chartAreaHeight + 20;
                 }
                 
-                // Special handling for pie charts - ensure square aspect ratio
+                // Smart aspect ratio handling for pie charts
                 const isPieChart = chartType === 'pieChart';
+                let chartAreaLeft = 60;
+                
                 if (isPieChart) {
-                    // Make chart area square using the smaller dimension
-                    const minDimension = Math.min(chartAreaWidth, chartAreaHeight);
-                    chartAreaWidth = minDimension;
-                    chartAreaHeight = minDimension;
+                    // Get the original chart canvas dimensions
+                    const originalWidth = chartCanvas.width;
+                    const originalHeight = chartCanvas.height;
+                    const originalAspectRatio = originalWidth / originalHeight;
                     
-                    // Center the pie chart horizontally if it's now smaller than the available width
-                    const chartAreaLeft = 60 + Math.max(0, ((width - 120) - chartAreaWidth) / 2);
-                } else {
-                    const chartAreaLeft = 60;
+                    // Calculate optimal dimensions maintaining aspect ratio
+                    const availableAspectRatio = chartAreaWidth / chartAreaHeight;
+                    
+                    if (originalAspectRatio > availableAspectRatio) {
+                        // Chart is wider - fit to available width
+                        chartAreaHeight = chartAreaWidth / originalAspectRatio;
+                    } else {
+                        // Chart is taller - fit to available height  
+                        chartAreaWidth = chartAreaHeight * originalAspectRatio;
+                    }
+                    
+                    // Center the chart horizontally if it's smaller than available width
+                    chartAreaLeft = 60 + Math.max(0, ((width - 120) - chartAreaWidth) / 2);
                 }
                 
                 // Create a temporary high-resolution canvas to scale the original chart
@@ -5440,7 +5451,7 @@ const embeddedDataB = [
                 // Draw the scaled chart onto main canvas with high quality
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                const finalChartAreaLeft = isPieChart ? (60 + Math.max(0, ((width - 120) - chartAreaWidth) / 2)) : 60;
+                const finalChartAreaLeft = chartAreaLeft;
                 ctx.drawImage(tempCanvas, finalChartAreaLeft, chartAreaTop, chartAreaWidth, chartAreaHeight);
                 
                 // Draw external legend if present
