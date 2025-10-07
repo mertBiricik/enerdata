@@ -614,6 +614,12 @@
 .type-filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
 .type-chip{padding:6px 10px;border:1px solid #cfd8dc;border-radius:16px;background:#fff;color:#333;cursor:pointer;font-size:12px}
 .type-chip.active{background:#2e7d32;color:#fff;border-color:#2e7d32}
+
+.count-badge{display:inline-block;margin-left:6px;padding:2px 6px;background:#2e7d32;color:#fff;border-radius:10px;font-size:11px;vertical-align:middle}
+.filter-buttons button#selectVisibleBtn,.filter-buttons button#clearVisibleBtn{background:#f5f5f5;color:#333;border:1px solid #cfd8dc}
+
+.filter-buttons{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;margin-top:6px}
+.filter-buttons button{width:100%;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -637,7 +643,7 @@
                 </div>
                 
                 <div class="filter-group">
-                    <label>Veri Serileri</label>
+                    <label>Veri Serileri <span id="selectedCountBadge" class="count-badge">0</span></label>
                     <div id="typeFilterBar" class="type-filter-bar">
   <button class="type-chip" data-type="all">Tümü</button>
   <button class="type-chip" data-type="coal">Kömür</button>
@@ -651,7 +657,7 @@
                     <div class="filter-buttons">
                         <button id="selectAllBtn">Hepsini Seç</button>
                         <button id="deselectAllBtn">Hiçbirini Seçme</button>
-                    </div>
+                        </div>
                     <div id="seriesCheckboxes" class="series-checkboxes"></div>
                     
                     <div class="download-buttons">
@@ -147302,7 +147308,10 @@ const embeddedDataA = [
             if (typeof initializeEventListeners === "function") { initializeEventListeners(); }
             populateSeriesFilter();
             initTypeFilters();
+            restoreSelectedSelection();
+            updateSelectedCount();
             applyFiltersAndRender();
+            updateSelectedCount();
 
             // Apply default selection once after full initialization
             if (!hasAppliedDefault && currentFilteredData.length === 0) {
@@ -147430,6 +147439,7 @@ const embeddedDataA = [
                 radio.addEventListener('change', function() {
                     if (this.checked) {
                         renderPieChart();
+            if (typeof updateSelectedCount === "function") updateSelectedCount();
                     }
                 });
             });
@@ -147488,6 +147498,7 @@ const embeddedDataA = [
                 renderBarChart();
             } else if (tabName === 'pie') {
                 renderPieChart();
+            if (typeof updateSelectedCount === "function") updateSelectedCount();
             }
         }
 
@@ -147593,7 +147604,7 @@ const embeddedDataA = [
                         checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = category;
                         checkbox.setAttribute('data-type', getSeriesType(category));
-                        checkbox.addEventListener('change', debouncedRender);
+                        checkbox.addEventListener('change', ()=>{ updateSelectedCount(); saveSelectedSelectionDebounced(); debouncedRender(); });
                         checkbox.checked = false;
                         
                         const label = document.createElement('label');
@@ -147618,7 +147629,7 @@ const embeddedDataA = [
                             checkbox.id = `series-${totalName.replace(/[^a-zA-Z0-9]/g, '_')}`;
                             checkbox.value = totalName;
                             checkbox.setAttribute('data-type', getSeriesType(totalName));
-                            checkbox.addEventListener('change', debouncedRender);
+                            checkbox.addEventListener('change', ()=>{ updateSelectedCount(); saveSelectedSelectionDebounced(); debouncedRender(); });
                             checkbox.checked = false;
                             const label = document.createElement('label');
                             label.htmlFor = checkbox.id;
@@ -147655,7 +147666,7 @@ const embeddedDataA = [
                     checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
                     checkbox.value = category;
                         checkbox.setAttribute('data-type', getSeriesType(category));
-                    checkbox.addEventListener('change', debouncedRender);
+                    checkbox.addEventListener('change', ()=>{ updateSelectedCount(); saveSelectedSelectionDebounced(); debouncedRender(); });
                     checkbox.checked = false;
                     const label = document.createElement('label');
                     label.htmlFor = checkbox.id;
@@ -147736,6 +147747,26 @@ const embeddedDataA = [
 
         const debounce = (fn, wait=120) => { let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); }; };
         const debouncedRender = debounce(applyFiltersAndRender, 120);
+
+        function getAllSeriesCheckboxes(){
+            return Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]'));
+        }
+        function updateSelectedCount(){
+            const n = getAllSeriesCheckboxes().filter(cb=>cb.checked).length;
+            const b = document.getElementById('selectedCountBadge');
+            if(b) b.textContent = n;
+        }
+        function saveSelectedSelection(){
+            const sel = getAllSeriesCheckboxes().filter(cb=>cb.checked).map(cb=>cb.value);
+            try{ localStorage.setItem('dataset1_selected', JSON.stringify(sel)); }catch(e){}
+        }
+        const saveSelectedSelectionDebounced = debounce ? debounce(saveSelectedSelection,150) : (fn=>fn);
+        function restoreSelectedSelection(){
+            let sel=[]; try{ sel = JSON.parse(localStorage.getItem('dataset1_selected')||'[]'); }catch(e){ sel=[]; }
+            if(!Array.isArray(sel)) sel=[];
+            getAllSeriesCheckboxes().forEach(cb=>{ cb.checked = sel.includes(cb.value); });
+            updateSelectedCount();
+        }
 function applyFiltersAndRender() {
             const selectedSeries = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
@@ -147765,6 +147796,7 @@ function applyFiltersAndRender() {
             renderLineChart();
             renderBarChart();
             renderPieChart();
+            if (typeof updateSelectedCount === "function") updateSelectedCount();
         }
         
         // Turkish number formatting functions
@@ -147876,7 +147908,7 @@ function applyFiltersAndRender() {
                         checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = category;
                         checkbox.setAttribute('data-type', getSeriesType(category));
-                        checkbox.addEventListener('change', debouncedRender);
+                        checkbox.addEventListener('change', ()=>{ updateSelectedCount(); saveSelectedSelectionDebounced(); debouncedRender(); });
                         checkbox.checked = true;
                         
                         const label = document.createElement('label');
@@ -147900,7 +147932,7 @@ function applyFiltersAndRender() {
                         checkbox.type = 'checkbox';
                         checkbox.id = `series-${group.total.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = group.total;
-                        checkbox.addEventListener('change', debouncedRender);
+                        checkbox.addEventListener('change', ()=>{ updateSelectedCount(); saveSelectedSelectionDebounced(); debouncedRender(); });
                         checkbox.checked = true;
                         
                         const label = document.createElement('label');
