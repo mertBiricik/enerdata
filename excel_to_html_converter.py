@@ -12,6 +12,12 @@ from pathlib import Path
 import re
 import openpyxl
 
+# Configurable WordPress base URL for Excel downloads
+# Override by setting environment variable: EXCEL_URL_BASE='http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/12/'
+EXCEL_URL_BASE = os.environ.get('EXCEL_URL_BASE', 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/12/')
+if EXCEL_URL_BASE and not EXCEL_URL_BASE.endswith('/'):
+    EXCEL_URL_BASE = EXCEL_URL_BASE + '/'
+
 
 def is_red_color(color_obj):
     """Check if a color object represents red formatting"""
@@ -79,7 +85,7 @@ def excel_to_js_data(excel_path):
 
 
 def convert_year_sheets(excel_file, excel_path):
-    """Convert Excel with year-based sheets - CAPTURING ALL ENERGY SOURCES"""
+    """Convert Excel with year-based sheets"""
     category_data = {}
     
     # Load workbook for formatting detection
@@ -104,45 +110,46 @@ def convert_year_sheets(excel_file, excel_path):
                     
                 category = str(category).strip()
                 
-                # Process ALL energy source columns (not just totals)
+                # Initialize category if not exists
+                if category not in category_data:
+                    category_data[category] = {'Kategori': category}
+                
+                # Find the "Toplam" (Total) column for this row
+                total_value = None
+                total_col_idx = None
                 for col_idx, col_name in enumerate(df.columns):
-                    if col_idx == 0:  # Skip the category column itself
-                        continue
-                        
-                    # Create unique identifier: Category - Energy Source
-                    if col_name and str(col_name).strip():
-                        energy_source = str(col_name).strip()
-                        full_category = f"{category} - {energy_source}"
-                        
-                        # Initialize category if not exists
-                        if full_category not in category_data:
-                            category_data[full_category] = {'Kategori': full_category}
-                        
-                        # Get the value for this energy source
-                        value = row.iloc[col_idx]
-                        
-                        # Check formatting for this cell
-                        formatting = get_cell_formatting(wb, sheet_name, index, col_idx)
-                        
-                        # Store the value for this year with formatting
-                        if pd.isna(value):
-                            category_data[full_category][year] = None
+                    col_name_lower = str(col_name).lower()
+                    if 'toplam' in col_name_lower or col_name == 'Toplam':
+                        total_value = row[col_name]
+                        total_col_idx = col_idx
+                        break
+                
+                # If no total column found, use the last column
+                if total_value is None:
+                    total_value = row.iloc[-1]
+                    total_col_idx = len(row) - 1
+                
+                # Check formatting for the total value cell
+                formatting = get_cell_formatting(wb, sheet_name, index, total_col_idx)
+                
+                # Store the value for this year with formatting
+                if pd.isna(total_value):
+                    category_data[category][year] = None
+                else:
+                    try:
+                        value = float(total_value)
+                        if formatting.get('is_red', False):
+                            # Store as object with red formatting info
+                            category_data[category][year] = {'value': value, 'is_red': True}
                         else:
-                            try:
-                                float_value = float(value)
-                                if formatting.get('is_red', False):
-                                    # Store as object with red formatting info
-                                    category_data[full_category][year] = {'value': float_value, 'is_red': True}
-                                else:
-                                    category_data[full_category][year] = float_value
-                            except (ValueError, TypeError):
-                                category_data[full_category][year] = None
+                            category_data[category][year] = value
+                    except (ValueError, TypeError):
+                        category_data[category][year] = None
                         
         except Exception as e:
             print(f"Error processing sheet {sheet_name}: {e}")
             continue
     
-    print(f"Extracted {len(category_data)} detailed energy source categories (was 42, now includes all breakdowns)")
     return list(category_data.values())
 
 
@@ -464,7 +471,14 @@ def create_html_from_template(template_path, js_data, output_path, title):
             html_content = f.read()
         
         # Convert data to JavaScript format
-        js_data_str = json.dumps(js_data, indent=2, ensure_ascii=False, default=str)
+        js_data_actual = json.dumps(js_data, indent=2, ensure_ascii=False, default=str)
+        js_data_str = js_data_actual
+        
+        # Special case: for file 1 HTML, move data into external JS file for smaller HTML
+        output_basename = os.path.basename(output_path)
+        is_file1 = output_basename.startswith('1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi')
+        if is_file1:
+            js_data_str = '[]'
         
         # Replace the embedded data - check for different variable names
         patterns = [
@@ -496,6 +510,49 @@ def create_html_from_template(template_path, js_data, output_path, title):
         if not data_replaced:
             print(f"Error: Could not embed data in {output_path}")
             return False
+        
+        # Inject external data script for file 1 after the embedded data block
+        if is_file1:
+            try:
+                # Ensure output directory for data exists
+                data_dir = Path(output_path).parent / 'data' / 'a'
+                data_dir.mkdir(parents=True, exist_ok=True)
+                external_js_path = data_dir / 'data_a_embedded.js'
+                
+                # Write actual data to external file
+                with open(external_js_path, 'w', encoding='utf-8') as ef:
+                    ef.write(f'embeddedDataA = {js_data_actual};\n')
+                
+                # Try replace based on const pattern
+                replaced_once = False
+                new_content_try = re.sub(
+                    r'const embeddedDataA = \[[\s\S]*?\];\s*</script>',
+                    'const embeddedDataA = [];\n</script>\n<script src="data/a/data_a_embedded.js"></script>',
+                    new_html_content,
+                    count=1
+                )
+                if new_content_try != new_html_content:
+                    new_html_content = new_content_try
+                    replaced_once = True
+                # Fallbacks: insert after embedded block marker or before closing body
+                if not replaced_once:
+                    inserted = re.sub(
+                        r'(<!-- Embedded data -->[\s\S]*?</script>)',
+                        r'\1\n<script src="data/a/data_a_embedded.js"></script>',
+                        new_html_content,
+                        count=1
+                    )
+                    if inserted == new_html_content:
+                        new_html_content = re.sub(
+                            r'</body>',
+                            r'<script src="data/a/data_a_embedded.js"></script>\n</body>',
+                            new_html_content,
+                            count=1
+                        )
+                    else:
+                        new_html_content = inserted
+            except Exception as e:
+                print(f"Warning: Failed to externalize data for file 1: {e}")
         
         # Update the title if different
         title_pattern = r'<title>.*?</title>'
@@ -545,17 +602,10 @@ def create_document_html(js_data, output_path, title, template_path=None):
         html_content = template_content.replace('{{DOCUMENT_TITLE}}', title)
         html_content = html_content.replace('{{DOCUMENT_DESCRIPTION}}', f'Türkiye enerji sektörüne dair {len(js_data)} döküman')
         
-        # Set Excel URL based on output file
-        excel_url = ''
+        # Set Excel URL dynamically from output file name and configurable base
         output_filename = os.path.basename(output_path)
-        if '4_yasal' in output_filename:
-            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/4_yasal_duzenlemeler.xlsx'
-        elif '5_strateji' in output_filename:
-            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/5_strateji_ve_politika_belgeleri.xlsx'
-        elif '6_kalkinma' in output_filename:
-            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/6_kalkinma_planlari.xlsx'
-        elif '7_ab' in output_filename:
-            excel_url = 'http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/7_ab_ilerleme_raporlari.xlsx'
+        base_excel_name = output_filename.replace('.html', '.xlsx')
+        excel_url = (EXCEL_URL_BASE + base_excel_name) if EXCEL_URL_BASE else base_excel_name
         
         html_content = html_content.replace('{{EXCEL_URL}}', excel_url)
         

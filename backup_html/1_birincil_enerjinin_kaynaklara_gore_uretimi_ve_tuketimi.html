@@ -5046,7 +5046,7 @@ const embeddedDataA = [
                 return;
             }
 
-            console.log('Loaded', data.length, 'data series for Primary Energy');
+            // console.log('Loaded', data.length, 'data series for Primary Energy'); // silenced
             
             // Extract all years from data
             allYears = [];
@@ -5070,6 +5070,12 @@ const embeddedDataA = [
             initializeFilters();
             initializeEventListeners();
             populateSeriesFilter();
+            // Auto-select all series by default so the table is not empty on load
+            try {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                });
+            } catch (e) {}
             applyFiltersAndRender();
         });
 

@@ -73,7 +73,7 @@ enerdata/
 - **Static HTML Links**: Direct `<a href="..." download>` tags with WordPress media URLs
 - **No JavaScript Processing**: Pure browser-native download handling to preserve original Excel formatting
 - **Button Text**: "📄 Excel'e Erişim" (Excel Access)
-- **WordPress URLs**: Files hosted at `http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/08/`
+- **Configurable WordPress URLs**: Set via environment variable `EXCEL_URL_BASE` (e.g., `http://enerjiveri.khas.edu.tr/wp-content/uploads/2025/12/`). Defaults to December 2025 if not provided.
 - **Template Placeholder**: `{{EXCEL_URL}}` replaced during conversion with file-specific URLs
 
 ### Template Processing
@@ -250,6 +250,19 @@ enerdata/
 ### Disaster Recovery
 If file 4 breaks again:
 1. Verify `unified_document_template.html` exists and is not corrupted
-2. Check converter includes `embeddedData` pattern (line ~332 in excel_to_html_converter.py)
+2. Check converter includes `embeddedData` pattern (see replacement patterns in `create_html_from_template`)
 3. Regenerate with: `python excel_to_html_converter.py 4_yasal_duzenlemeler.xlsx`
 4. Verify file 4 uses `embeddedData` variable: `grep embeddedData 4_yasal_duzenlemeler.html`
+
+## Operational Update Steps (New Datasets)
+
+1. Place the updated `.xlsx` files into the project root with canonical names (1–7).
+2. Set the WordPress upload base (if changed):
+   - Linux: `export EXCEL_URL_BASE='http://enerjiveri.khas.edu.tr/wp-content/uploads/YYYY/MM/'`
+3. Regenerate all outputs:
+   - `python3 excel_to_html_converter.py`
+4. Validate:
+   - For files 4–7, ensure `embeddedData` is present in HTML.
+   - Load locally with: `python3 -m http.server 8000` and open each HTML.
+5. Optional QA:
+   - `python3 screenshot_analyzer.py` to capture headless screenshots.
