@@ -1,0 +1,8 @@
+
+--- Checking File 1 (Primary Energy) ---
+Excel (1971): Category='Yerli Üretim (+)', Value=14394.0
+HTML (1971): Category='Yerli Üretim (+)', Value=4707.0
+❌ MISMATCH
+
+--- Checking File 4 (Laws) ---
+Error: 'Başlık'

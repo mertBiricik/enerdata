@@ -1,0 +1,27 @@
+
+Verifying 1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi (Chart)...
+HTML Categories: 42
+PASS: Data structure exists
+
+Verifying 2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi (Chart)...
+FAIL: No HTML data found
+
+Verifying 3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi (Chart)...
+HTML Categories: 29
+PASS: Data structure exists
+
+Verifying 4_yasal_duzenlemeler (Document)...
+HTML Document Count: 282
+PASS: Basic structural validation successful
+
+Verifying 5_strateji_ve_politika_belgeleri (Document)...
+HTML Document Count: 45
+PASS: Basic structural validation successful
+
+Verifying 6_kalkinma_planlari (Document)...
+HTML Document Count: 12
+PASS: Basic structural validation successful
+
+Verifying 7_ab_ilerleme_raporlari (Document)...
+HTML Document Count: 26
+PASS: Basic structural validation successful

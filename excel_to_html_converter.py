@@ -117,13 +117,23 @@ def convert_year_sheets(excel_file, excel_path):
                 # Find the "Toplam" (Total) column for this row
                 total_value = None
                 total_col_idx = None
+                
+                # Priority 1: Exact match for "Toplam"
                 for col_idx, col_name in enumerate(df.columns):
-                    col_name_lower = str(col_name).lower()
-                    if 'toplam' in col_name_lower or col_name == 'Toplam':
+                    if str(col_name).strip() == 'Toplam':
                         total_value = row[col_name]
                         total_col_idx = col_idx
                         break
                 
+                # Priority 2: Partial match if exact not found
+                if total_value is None:
+                    for col_idx, col_name in enumerate(df.columns):
+                        col_name_lower = str(col_name).lower()
+                        if 'toplam' in col_name_lower:
+                            total_value = row[col_name]
+                            total_col_idx = col_idx
+                            break
+                            
                 # If no total column found, use the last column
                 if total_value is None:
                     total_value = row.iloc[-1]
@@ -527,7 +537,7 @@ def create_html_from_template(template_path, js_data, output_path, title):
                 replaced_once = False
                 new_content_try = re.sub(
                     r'const embeddedDataA = \[[\s\S]*?\];\s*</script>',
-                    'const embeddedDataA = [];\n</script>\n<script src="data/a/data_a_embedded.js"></script>',
+                    'let embeddedDataA = [];\n</script>\n<script src="data/a/data_a_embedded.js"></script>',
                     new_html_content,
                     count=1
                 )

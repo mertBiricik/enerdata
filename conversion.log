@@ -1,0 +1,55 @@
+
+--- Processing 5_strateji_ve_politika_belgeleri.xlsx ---
+Processing 5_strateji_ve_politika_belgeleri.xlsx
+Found 1 sheets
+Using unified_document_template.html as template
+Using unified_document_template.html for 5_strateji_ve_politika_belgeleri.html
+Created document HTML 5_strateji_ve_politika_belgeleri.html
+✓ Successfully created 5_strateji_ve_politika_belgeleri.html
+
+--- Processing 6_kalkinma_planlari.xlsx ---
+Processing 6_kalkinma_planlari.xlsx
+Found 1 sheets
+Actual headers: ['Col_0', 'No', 'Yayınlayan Kurum', 'Başlık', 'Enerji', 'Col_5', 'Çevre ve Sürdürülebilirlik', 'Col_7', 'Link']
+Using unified_document_template.html as template
+Using unified_document_template.html for 6_kalkinma_planlari.html
+Created document HTML 6_kalkinma_planlari.html
+✓ Successfully created 6_kalkinma_planlari.html
+
+--- Processing 7_ab_ilerleme_raporlari.xlsx ---
+Processing 7_ab_ilerleme_raporlari.xlsx
+Found 1 sheets
+Using unified_document_template.html as template
+Using unified_document_template.html for 7_ab_ilerleme_raporlari.html
+Created document HTML 7_ab_ilerleme_raporlari.html
+✓ Successfully created 7_ab_ilerleme_raporlari.html
+
+--- Processing 4_yasal_duzenlemeler.xlsx ---
+Processing 4_yasal_duzenlemeler.xlsx
+Found 4 sheets
+Using unified_document_template.html as template
+Using unified_document_template.html for 4_yasal_duzenlemeler.html
+Created document HTML 4_yasal_duzenlemeler.html
+✓ Successfully created 4_yasal_duzenlemeler.html
+
+--- Processing 1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi.xlsx ---
+Processing 1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi.xlsx
+Found 101 sheets
+Using backup_html/1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi.html as template
+Created 1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi.html
+✓ Successfully created 1_birincil_enerjinin_kaynaklara_gore_uretimi_ve_tuketimi.html
+
+--- Processing 2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi.xlsx ---
+Processing 2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi.xlsx
+Found 2 sheets
+Using backup_html/2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi.html as template
+Created 2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi.html
+✓ Successfully created 2_elektrik_enerjisinin_kaynaklara_gore kurulu_gucu_ve_uretimi.html
+
+--- Processing 3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi.xlsx ---
+Processing 3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi.xlsx
+Found 4 sheets
+Using backup_html/3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi.html as template
+Warning: No embedded data pattern found in template for 3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi.html
+Created 3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi.html
+✓ Successfully created 3_elektrik_enerjisinin_brut_uretimi_ve_sektorel_tuketimi.html
