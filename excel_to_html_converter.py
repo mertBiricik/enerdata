@@ -85,8 +85,9 @@ def excel_to_js_data(excel_path):
 
 
 def convert_year_sheets(excel_file, excel_path):
-    """Convert Excel with year-based sheets"""
-    category_data = {}
+    """Convert Excel with year-based sheets into a full matrix structure"""
+    # Structure: { "1970": { columns: [...], rows: [...] }, "1971": ... }
+    year_data = {}
     
     # Load workbook for formatting detection
     wb = openpyxl.load_workbook(excel_path)
@@ -101,6 +102,11 @@ def convert_year_sheets(excel_file, excel_path):
         try:
             df = pd.read_excel(excel_path, sheet_name=sheet_name)
             
+            # Identify columns (skip the first 'Kategori' column)
+            columns = [str(col).strip() for col in df.columns[1:] if not pd.isna(col) and 'Unnamed' not in str(col)]
+            
+            rows_data = []
+            
             # Process each row (category)
             for index, row in df.iterrows():
                 category = row.iloc[0]  # First column is the category
@@ -109,58 +115,59 @@ def convert_year_sheets(excel_file, excel_path):
                     continue
                     
                 category = str(category).strip()
+                row_values = []
                 
-                # Initialize category if not exists
-                if category not in category_data:
-                    category_data[category] = {'Kategori': category}
+                # Iterate through identified data columns
+                # We assume columns match df.columns[1:] order, but safe to map by name if possible
+                # However, duplicate column names might exist in messy Excels, so index-based is safer after offset
                 
-                # Find the "Toplam" (Total) column for this row
-                total_value = None
-                total_col_idx = None
+                # Let's map by index to be safe, skipping col 0
+                for col_idx, col_name in enumerate(df.columns[1:], start=1):
+                    # Only include if it's in our valid columns list
+                    clean_col_name = str(col_name).strip()
+                    if clean_col_name not in columns:
+                         continue
+
+                    val = row.iloc[col_idx]
+                    
+                    # Check formatting
+                    formatting = get_cell_formatting(wb, sheet_name, index, col_idx)
+                    
+                    if pd.isna(val):
+                        row_values.append(None)
+                    else:
+                        try:
+                            value = float(val)
+                            if formatting.get('is_red', False):
+                                row_values.append({'value': value, 'is_red': True})
+                            else:
+                                row_values.append(value)
+                        except (ValueError, TypeError):
+                             row_values.append(None)
                 
-                # Priority 1: Exact match for "Toplam"
-                for col_idx, col_name in enumerate(df.columns):
-                    if str(col_name).strip() == 'Toplam':
-                        total_value = row[col_name]
-                        total_col_idx = col_idx
-                        break
-                
-                # Priority 2: Partial match if exact not found
-                if total_value is None:
-                    for col_idx, col_name in enumerate(df.columns):
-                        col_name_lower = str(col_name).lower()
-                        if 'toplam' in col_name_lower:
-                            total_value = row[col_name]
-                            total_col_idx = col_idx
-                            break
-                            
-                # If no total column found, use the last column
-                if total_value is None:
-                    total_value = row.iloc[-1]
-                    total_col_idx = len(row) - 1
-                
-                # Check formatting for the total value cell
-                formatting = get_cell_formatting(wb, sheet_name, index, total_col_idx)
-                
-                # Store the value for this year with formatting
-                if pd.isna(total_value):
-                    category_data[category][year] = None
-                else:
-                    try:
-                        value = float(total_value)
-                        if formatting.get('is_red', False):
-                            # Store as object with red formatting info
-                            category_data[category][year] = {'value': value, 'is_red': True}
-                        else:
-                            category_data[category][year] = value
-                    except (ValueError, TypeError):
-                        category_data[category][year] = None
+                rows_data.append({
+                    'Kategori': category,
+                    'values': row_values
+                })
+            
+            year_data[year] = {
+                'columns': columns,
+                'rows': rows_data
+            }
                         
         except Exception as e:
             print(f"Error processing sheet {sheet_name}: {e}")
             continue
     
-    return list(category_data.values())
+    # Convert to list for JS sorting if needed, or keep as dict
+    # Re-packing into list of objects for backwards compatibility? 
+    # No, we need a fundamentally different structure for the new UI.
+    # But to avoid breaking the calling code immediately, we should consider how it's saved.
+    # The caller expects a list of dicts. We will return a wrapper list or just this dict?
+    # extract_data expects a list to serialize. 
+    # Let's return the dict directly and assuming we update the template to handle it.
+    
+    return year_data
 
 
 def convert_years_as_columns(excel_file, excel_path):

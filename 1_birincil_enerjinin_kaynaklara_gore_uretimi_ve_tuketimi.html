@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,31 +9,31 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <style>
-        * { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
             box-sizing: border-box;
         }
-        
-        body { 
-            margin: 0; 
+
+        body {
+            margin: 0;
             padding: 20px;
             background: white;
-            color: #333; 
+            color: #333;
             line-height: 1.6;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
-        
+
         .main-container {
             max-width: 1600px;
             width: 95%;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #006400 0%, #228B22 100%);
             color: white;
@@ -40,45 +41,47 @@
             text-align: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
-        
+
         .header h1 {
             margin: 0;
             font-size: 2.2rem;
             font-weight: 600;
-            color: white !important; /* Force white color in WordPress */
+            color: white !important;
+            /* Force white color in WordPress */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
-        
+
         .header p {
             margin: 0.5rem 0 0 0;
             opacity: 0.9;
             font-size: 1.1rem;
-            color: white !important; /* Force white color in WordPress */
+            color: white !important;
+            /* Force white color in WordPress */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
-        
+
         .content-layout {
             display: flex;
             gap: 0;
         }
-        
+
         .filters-panel {
             width: 350px;
             background: #f8f9fa;
             padding: 2rem;
             border-right: 1px solid #e9ecef;
         }
-        
+
         .content-panel {
             flex: 1;
             padding: 2rem;
             min-width: 0;
         }
-        
+
         .filter-group {
             margin-bottom: 2rem;
         }
-        
+
         .filter-group label {
             display: block;
             margin-bottom: 0.8rem;
@@ -86,18 +89,18 @@
             color: #006400;
             font-size: 1rem;
         }
-        
+
         .year-range-container {
             margin: 1.5rem 0;
         }
-        
+
         .year-inputs {
             display: flex;
             gap: 1rem;
             align-items: center;
             margin-top: 1rem;
         }
-        
+
         .year-inputs input {
             width: 80px;
             padding: 0.6rem;
@@ -106,25 +109,25 @@
             text-align: center;
             font-size: 1rem;
         }
-        
+
         .year-inputs span {
             color: #666;
             font-weight: 500;
         }
-        
+
         #yearRangeSlider {
             margin: 1.5rem 0;
         }
-        
+
         #yearRangeSlider .noUi-connect {
             background: #006400;
         }
-        
+
         #yearRangeSlider .noUi-handle {
             border-color: #006400;
             background: #fff;
         }
-        
+
         .series-checkboxes {
             max-height: 400px;
             overflow-y: auto;
@@ -133,7 +136,7 @@
             background: white;
             margin-bottom: 1.5rem;
         }
-        
+
         .checkbox-item {
             margin-bottom: 8px;
             display: flex;
@@ -211,20 +214,20 @@
             border-radius: 3px;
             margin-left: 20px;
         }
-        
+
         .checkbox-item label {
             margin: 0;
             font-weight: 400;
             cursor: pointer;
             flex: 1;
         }
-        
+
         .filter-buttons {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .filter-buttons button {
             flex: 1;
             padding: 0.7rem;
@@ -235,13 +238,13 @@
             font-size: 0.9rem;
             transition: all 0.2s ease;
         }
-        
+
         .filter-buttons button:hover {
             background: #006400;
             color: white;
             border-color: #006400;
         }
-        
+
         .search-input {
             width: 100%;
             padding: 0.8rem;
@@ -250,13 +253,13 @@
             border-radius: 6px;
             font-size: 1rem;
         }
-        
+
         .tabs {
             display: flex;
             margin-bottom: 1rem;
             border-bottom: 2px solid #e9ecef;
         }
-        
+
         .tab-button {
             padding: 1rem 1.5rem;
             background: none;
@@ -267,32 +270,39 @@
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
         }
-        
+
         .tab-button:hover {
             color: #006400;
             background: #f8f9fa;
         }
-        
+
         .tab-button.active {
             color: #006400;
             border-bottom-color: #006400;
             background: #f8f9fa;
         }
-        
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
             animation: fadeIn 0.3s ease-in;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         .chart-container {
             position: relative;
             height: 500px;
@@ -300,39 +310,39 @@
             background: white;
             border-radius: 8px;
             padding: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        
+
         .table-container {
             width: 100%;
             overflow-x: auto;
             overflow-y: visible;
             margin: 1rem 0;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             background: white;
             scrollbar-width: thin;
             scrollbar-color: #006400 #f1f1f1;
         }
-        
+
         .table-container::-webkit-scrollbar {
             height: 12px;
         }
-        
+
         .table-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 6px;
         }
-        
+
         .table-container::-webkit-scrollbar-thumb {
             background: #006400;
             border-radius: 6px;
         }
-        
+
         .table-container::-webkit-scrollbar-thumb:hover {
             background: #004d00;
         }
-        
+
         .top-scrollbar-container {
             width: 100%;
             height: 12px;
@@ -341,7 +351,7 @@
             border-radius: 6px;
             background: #f1f1f1;
         }
-        
+
         .top-scrollbar {
             width: 100%;
             height: 12px;
@@ -350,25 +360,25 @@
             scrollbar-width: thin;
             scrollbar-color: #006400 #f1f1f1;
         }
-        
+
         .top-scrollbar::-webkit-scrollbar {
             height: 12px;
         }
-        
+
         .top-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 6px;
         }
-        
+
         .top-scrollbar::-webkit-scrollbar-thumb {
             background: #006400;
             border-radius: 6px;
         }
-        
+
         .top-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #004d00;
         }
-        
+
         .top-scrollbar-thumb {
             height: 1px;
             background: transparent;
@@ -379,28 +389,28 @@
             min-width: 2500px;
             background: white;
         }
-        
+
         .data-table th,
         .data-table td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #e9ecef;
         }
-        
+
         .data-table th {
             background: #f8f9fa;
             font-weight: 600;
             color: #006400;
         }
-        
+
         .data-table tbody tr:nth-child(odd) {
             background: #fbfcfd;
         }
-        
+
         .data-table tbody tr:hover {
             background: #f0f8f0;
         }
-        
+
         /* Category group separation in tables */
         .table-group-header {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
@@ -410,7 +420,7 @@
             border-top: 2px solid #006400;
             border-bottom: 1px solid #dee2e6;
         }
-        
+
         .table-group-header .sticky-col {
             background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%) !important;
             font-style: italic;
@@ -419,60 +429,60 @@
             color: #006400;
             border-right: 1px solid #dee2e6;
         }
-        
+
         .table-group-header td:not(.sticky-col) {
             background: #f8f9fa !important;
         }
-        
+
         .table-category-item {
             border-left: 3px solid transparent;
         }
-        
+
         .table-category-item.energy-supply {
             border-left-color: #28a745;
         }
-        
+
         .table-category-item.transformation {
             border-left-color: #fd7e14;
         }
-        
+
         .table-category-item.industry {
             border-left-color: #dc3545;
         }
-        
+
         .table-category-item.other-sectors {
             border-left-color: #6f42c1;
         }
-        
+
         .table-category-item.totals {
             border-left-color: #343a40;
             background: #f8f9fa;
             font-weight: 500;
         }
-        
+
         .sticky-col {
             position: sticky;
             left: 0;
             background: #f8f9fa;
             z-index: 2;
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
             width: 250px;
             max-width: 250px;
             min-width: 250px;
         }
-        
+
         .red-value {
             color: #dc3545;
             font-style: italic;
         }
-        
+
         .download-buttons {
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
             margin: 1.5rem 0;
         }
-        
+
         .download-buttons button {
             padding: 0.8rem 1.2rem;
             background: #006400;
@@ -483,13 +493,13 @@
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,100,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 100, 0, 0.2);
         }
-        
+
         .download-buttons button:hover {
             background: #004d00;
             transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0,100,0,0.3);
+            box-shadow: 0 3px 6px rgba(0, 100, 0, 0.3);
         }
 
         .chart-download {
@@ -508,24 +518,24 @@
             font-size: 1rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,100,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 100, 0, 0.2);
         }
 
         .chart-download button:hover {
             background: #004d00;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,100,0,0.3);
+            box-shadow: 0 4px 8px rgba(0, 100, 0, 0.3);
         }
-        
+
         .calculation-mode {
             margin: 1rem 0;
             padding: 1rem;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 8px;
             border: 1px solid #e9ecef;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        
+
         .calculation-mode label:first-child {
             display: block;
             font-size: 0.95rem;
@@ -534,14 +544,14 @@
             margin-bottom: 0.8rem;
             text-align: center;
         }
-        
+
         .mode-options {
             display: flex;
             gap: 0.5rem;
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+
         .mode-options label {
             padding: 0.5rem 1rem;
             margin: 0;
@@ -553,73 +563,87 @@
             border: 2px solid #006400;
             border-radius: 20px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,100,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 100, 0, 0.1);
             min-width: 80px;
             position: relative;
             overflow: hidden;
             font-size: 0.9rem;
         }
-        
+
         .mode-options label:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,100,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 100, 0, 0.2);
             background: #f0f8f0;
         }
-        
+
         .mode-options input[type="radio"] {
             display: none;
         }
-        
-        .mode-options input[type="radio"]:checked + label {
+
+        .mode-options input[type="radio"]:checked+label {
             background: linear-gradient(135deg, #006400 0%, #228B22 100%);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,100,0,0.3);
+            box-shadow: 0 4px 12px rgba(0, 100, 0, 0.3);
         }
-        
 
-        
+
+
         .no-data-message {
             text-align: center;
             padding: 3rem;
             color: #666;
             font-size: 1.1rem;
         }
-        
+
         @media (max-width: 768px) {
             .content-layout {
                 flex-direction: column;
             }
-            
+
             .filters-panel {
                 width: 100%;
                 border-right: none;
                 border-bottom: 1px solid #e9ecef;
             }
-            
+
             .header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .year-inputs {
                 flex-direction: column;
                 gap: 0.5rem;
             }
-            
+
             .download-buttons {
                 flex-direction: column;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="main-container">
         <div class="header">
             <h1>Birincil Enerjinin Kaynaklara Göre Üretimi ve Tüketimi</h1>
+            <p style="margin-top: 0.5rem; opacity: 0.9;">Enerji Dengesi Tablosu (Bin TEP)</p>
         </div>
-        
+
         <div class="content-layout">
             <div class="filters-panel">
+                <!-- Resource Selector (for 2D filtering) -->
+                <div class="filter-group">
+                    <label>Enerji Kaynağı</label>
+                    <select id="resourceSelect" class="search-input" style="width: 100%; padding: 0.6rem;">
+                        <option value="Toplam" selected>Toplam</option>
+                        <!-- More options populated by JS if new data format exists -->
+                    </select>
+                    <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 0.5rem;">
+                        Zaman serisi için kaynak seçin
+                    </small>
+                </div>
+
                 <div class="filter-group">
                     <label>Yıl Aralığı</label>
                     <div class="year-range-container">
@@ -631,31 +655,47 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="filter-group">
-                    <label>Veri Serileri</label>
-                    <input type="text" id="seriesSearch" class="search-input" placeholder="Kategori ara...">
+                    <label>Veri Serileri (Sektörler)</label>
+                    <input type="text" id="seriesSearch" class="search-input" placeholder="Sektör ara...">
                     <div class="filter-buttons">
                         <button id="selectAllBtn">Hepsini Seç</button>
                         <button id="deselectAllBtn">Hiçbirini Seçme</button>
                     </div>
                     <div id="seriesCheckboxes" class="series-checkboxes"></div>
-                    
+
                     <div class="download-buttons">
                         <button id="downloadFullData">Tam Veriyi İndir</button>
                         <button id="downloadFilteredData">Filtrelenmiş Veriyi İndir</button>
                     </div>
                 </div>
             </div>
-            
+
             <div class="content-panel">
                 <div class="tabs">
-                    <button class="tab-button active" data-tab="table">Tablo</button>
+                    <button class="tab-button" data-tab="balance">Denge Tablosu</button>
+                    <button class="tab-button active" data-tab="table">Zaman Serisi</button>
                     <button class="tab-button" data-tab="line">Çizgi Grafik</button>
                     <button class="tab-button" data-tab="bar">Sütun Grafik</button>
                     <button class="tab-button" data-tab="pie">Pasta Grafik</button>
                 </div>
-                
+
+                <!-- NEW: Balance Sheet Tab (2D Matrix for single year) -->
+                <div id="balanceContent" class="tab-content">
+                    <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                        <label style="font-weight: 600; color: #006400;">Görüntülenen Yıl:</label>
+                        <select id="balanceYearSelect"
+                            style="padding: 0.5rem 1rem; border: 2px solid #006400; border-radius: 6px; font-size: 1rem;">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                    <div class="table-container" id="balanceTableContainer">
+                        <div id="balanceTable"></div>
+                    </div>
+                </div>
+
+                <!-- Time Series Table (existing, filtered by Resource) -->
                 <div id="tableContent" class="tab-content active">
                     <div class="top-scrollbar-container">
                         <div class="top-scrollbar">
@@ -666,20 +706,23 @@
                         <div id="tableContainer"></div>
                     </div>
                 </div>
-                
+
                 <div id="lineContent" class="tab-content">
                     <div class="chart-container">
                         <canvas id="lineChart"></canvas>
                     </div>
-                    <div id="lineLegendContainer" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-family: 'Segoe UI', Arial, sans-serif; display: none;">
+                    <div id="lineLegendContainer"
+                        style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
                         <div style="font-weight: bold; margin-bottom: 10px; color: #333;">Veri Serileri:</div>
-                        <div id="lineLegendContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 8px;"></div>
+                        <div id="lineLegendContent"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 8px;">
+                        </div>
                     </div>
                     <div class="chart-download">
                         <button id="downloadLineChart">Çizgi Grafiği İndir</button>
                     </div>
                 </div>
-                
+
                 <div id="barContent" class="tab-content">
                     <div class="calculation-mode">
                         <label>Hesaplama Türü</label>
@@ -711,9 +754,12 @@
                     <div class="chart-container">
                         <canvas id="pieChart"></canvas>
                     </div>
-                    <div id="pieLegendContainer" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-family: 'Segoe UI', Arial, sans-serif; display: none;">
+                    <div id="pieLegendContainer"
+                        style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
                         <div style="font-weight: bold; margin-bottom: 10px; color: #333;">Kategori Dağılımı:</div>
-                        <div id="pieLegendContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;"></div>
+                        <div id="pieLegendContent"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                        </div>
                     </div>
                     <div class="chart-download">
                         <button id="downloadPieChart">Pasta Grafiği İndir</button>
@@ -723,11 +769,46 @@
         </div>
     </div>
 
-    <!-- Embedded data -->
     <script>
-let embeddedDataA = [];
-</script>
-<script src="data/a/data_a_embedded.js"></script>
+        let embeddedDataA = [];
+    </script>
+    <script src="data/a/data_a_embedded.js"></script>
+
+    <!-- Mock data for 2D Balance Sheet view (until converter is run) -->
+    <script>
+        // This mock data demonstrates the NEW format that the updated converter will produce
+        // Structure: { Year: { columns: [...resources], rows: [{Kategori, values: [...]}] } }
+        const mockBalanceData = {
+            "2022": {
+                columns: ["Taşkömürü", "Linyit", "Asfaltit", "Petrol", "Doğalgaz", "Nükleer", "Hidrolik", "Jeotermal", "Güneş", "Rüzgar", "Biyoyakıt", "Atık", "Elektrik", "Isı", "Toplam"],
+                rows: [
+                    { Kategori: "Yerli Üretim (+)", values: [1200, 18500, 450, 2800, 380, 0, 7200, 4800, 5200, 11000, 1200, 800, 0, 0, 53530] },
+                    { Kategori: "İthalat (+)", values: [18000, 0, 0, 44000, 51000, 0, 0, 0, 0, 0, 200, 0, 1500, 0, 114700] },
+                    { Kategori: "İhracat (-)", values: [0, 0, 0, -5200, 0, 0, 0, 0, 0, 0, 0, 0, -3200, 0, -8400] },
+                    { Kategori: "ENERJİ ÜRÜNLERİ ARZI", values: [19200, 18500, 450, 41600, 51380, 0, 7200, 4800, 5200, 11000, 1400, 800, -1700, 0, 159830] },
+                    { Kategori: "Elektrik ve Isı Üretimi", values: [-15000, -17000, -400, -1200, -25000, 0, -7200, -4800, -5200, -11000, -500, -700, 86000, 3200, 1200] },
+                    { Kategori: "TOPLAM NİHAİ TÜKETİM", values: [4200, 1500, 50, 38000, 26000, 0, 0, 0, 0, 0, 900, 100, 84300, 3200, 158250] },
+                    { Kategori: "SANAYİ TÜKETİMİ", values: [3800, 1200, 40, 8500, 15000, 0, 0, 0, 0, 0, 300, 80, 42000, 1800, 72720] },
+                    { Kategori: "ULAŞTIRMA", values: [0, 0, 0, 28000, 200, 0, 0, 0, 0, 0, 500, 0, 800, 0, 29500] },
+                    { Kategori: "Konut ve Hizmetler", values: [400, 300, 10, 1200, 10500, 0, 0, 0, 0, 0, 100, 20, 38000, 1400, 51930] }
+                ]
+            },
+            "2023": {
+                columns: ["Taşkömürü", "Linyit", "Asfaltit", "Petrol", "Doğalgaz", "Nükleer", "Hidrolik", "Jeotermal", "Güneş", "Rüzgar", "Biyoyakıt", "Atık", "Elektrik", "Isı", "Toplam"],
+                rows: [
+                    { Kategori: "Yerli Üretim (+)", values: [1100, 17800, 420, 2600, 350, 0, 6800, 5100, 6500, 12500, 1400, 900, 0, 0, 55470] },
+                    { Kategori: "İthalat (+)", values: [17500, 0, 0, 42000, 48000, 0, 0, 0, 0, 0, 250, 0, 1800, 0, 109550] },
+                    { Kategori: "İhracat (-)", values: [0, 0, 0, -4800, 0, 0, 0, 0, 0, 0, 0, 0, -3500, 0, -8300] },
+                    { Kategori: "ENERJİ ÜRÜNLERİ ARZI", values: [18600, 17800, 420, 39800, 48350, 0, 6800, 5100, 6500, 12500, 1650, 900, -1700, 0, 156720] },
+                    { Kategori: "Elektrik ve Isı Üretimi", values: [-14500, -16500, -380, -1100, -23000, 0, -6800, -5100, -6500, -12500, -600, -800, 88000, 3500, 2720] },
+                    { Kategori: "TOPLAM NİHAİ TÜKETİM", values: [4100, 1300, 40, 36500, 25000, 0, 0, 0, 0, 0, 1050, 100, 86300, 3500, 157890] },
+                    { Kategori: "SANAYİ TÜKETİMİ", values: [3700, 1100, 35, 8000, 14500, 0, 0, 0, 0, 0, 350, 75, 43500, 1900, 73160] },
+                    { Kategori: "ULAŞTIRMA", values: [0, 0, 0, 27000, 180, 0, 0, 0, 0, 0, 600, 0, 850, 0, 28630] },
+                    { Kategori: "Konut ve Hizmetler", values: [400, 200, 5, 1100, 10000, 0, 0, 0, 0, 0, 100, 25, 39000, 1600, 52430] }
+                ]
+            }
+        };
+    </script>
 
     <script>
         // Global variables
@@ -737,20 +818,19 @@ let embeddedDataA = [];
         let pieChart = null;
         let currentFilteredData = [];
         let allYears = [];
+        let allResources = ['Toplam'];
+        let selectedResource = 'Toplam';
         let colorIndex = 0;
         let startYear = 1972;
         let endYear = 2023;
+        let balanceYear = 2023;
+        let isNewDataFormat = false;
 
-        // Diverse color palette for primary energy
         const materialColors = [
-            '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0',
-            '#00BCD4', '#CDDC39', '#FF5722', '#795548', '#607D8B',
-            '#E91E63', '#3F51B5', '#009688', '#8BC34A', '#FFC107',
-            '#673AB7', '#00E676', '#FF6D00', '#37474F', '#B71C1C',
-            '#1E88E5', '#43A047', '#FB8C00', '#E53935', '#8E24AA',
-            '#26A69A', '#D4E157', '#FF3D00', '#6D4C41', '#546E7A',
-            '#AD1457', '#5E35B1', '#00ACC1', '#7CB342', '#FFB300',
-            '#512DA8', '#66BB6A', '#FF8F00', '#D32F2F', '#7B1FA2'
+            '#FF9800', '#795548', '#9E9E9E', '#607D8B', '#4CAF50',
+            '#2196F3', '#9C27B0', '#F44336', '#00BCD4', '#CDDC39',
+            '#FFC107', '#673AB7', '#00E676', '#FF6D00', '#37474F',
+            '#B71C1C', '#1E88E5', '#FB8C00', '#43A047', '#E53935'
         ];
 
         function getNextMaterialColor() {
@@ -759,187 +839,230 @@ let embeddedDataA = [];
             return color;
         }
 
+        function formatTableNumber(value) {
+            if (value === null || value === undefined || value === '') return '';
+            const num = parseFloat(value);
+            return num.toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        }
+
         function parseRedValue(value) {
             if (value === null || value === undefined) return null;
             if (typeof value === 'object' && value.is_red && typeof value.value === 'number') {
-                // Handle new red formatting format
                 return value.value;
             }
             if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
-                const numStr = value.slice(1, -1);
-                return parseFloat(numStr) || 0;
+                return parseFloat(value.slice(1, -1)) || 0;
             }
             return parseFloat(value) || 0;
         }
 
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Use embeddedDataA from the included script file
-            const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
-            
-            if (data.length === 0) {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Detect data format
+            if (typeof embeddedDataA !== 'undefined') {
+                if (Array.isArray(embeddedDataA)) {
+                    // Old format: array of {Kategori, year: value, ...}
+                    isNewDataFormat = false;
+                    initializeWithOldFormat(embeddedDataA);
+                } else {
+                    // New format: {year: {columns, rows}}
+                    isNewDataFormat = true;
+                    initializeWithNewFormat(embeddedDataA);
+                }
+            } else {
                 showNoDataMessage();
-                return;
             }
+        });
 
-            // console.log('Loaded', data.length, 'data series for Primary Energy'); // silenced
-            
-            // Extract all years from data
+        function initializeWithOldFormat(data) {
+            if (data.length === 0) { showNoDataMessage(); return; }
+
+            // Extract years
             allYears = [];
             data.forEach(item => {
                 Object.keys(item).forEach(key => {
                     if (key !== 'Kategori' && !isNaN(parseInt(key))) {
                         const year = parseInt(key);
-                        if (!allYears.includes(year)) {
-                            allYears.push(year);
-                        }
+                        if (!allYears.includes(year)) allYears.push(year);
                     }
                 });
             });
             allYears.sort((a, b) => a - b);
-            
+
             if (allYears.length > 0) {
                 startYear = allYears[0];
                 endYear = allYears[allYears.length - 1];
+                balanceYear = allYears[allYears.length - 1];
             }
 
+            currentFilteredData = data;
+            allResources = ['Toplam']; // Only Total available in old format
+
+            initializeUI();
+
+            // Populate balance year selector with mock data years for demo
+            populateBalanceYearSelect(Object.keys(mockBalanceData).sort());
+        }
+
+        function initializeWithNewFormat(data) {
+            allYears = Object.keys(data).map(y => parseInt(y)).sort((a, b) => a - b);
+
+            if (allYears.length === 0) { showNoDataMessage(); return; }
+
+            startYear = allYears[0];
+            endYear = allYears[allYears.length - 1];
+            balanceYear = allYears[allYears.length - 1];
+
+            // Extract resources from first year
+            const firstYear = allYears[0].toString();
+            allResources = data[firstYear].columns || ['Toplam'];
+
+            // Convert to old format for charts (using selected resource)
+            rebuildFilteredDataFromNewFormat(data);
+
+            initializeUI();
+            populateBalanceYearSelect(allYears.map(String));
+        }
+
+        function rebuildFilteredDataFromNewFormat(data) {
+            const resourceIndex = allResources.indexOf(selectedResource);
+            if (resourceIndex === -1) return;
+
+            currentFilteredData = [];
+            const firstYear = allYears[0].toString();
+            const categories = data[firstYear].rows.map(r => r.Kategori);
+
+            categories.forEach(cat => {
+                const item = { Kategori: cat };
+                allYears.forEach(year => {
+                    const yearData = data[year.toString()];
+                    if (yearData) {
+                        const row = yearData.rows.find(r => r.Kategori === cat);
+                        if (row && row.values[resourceIndex] !== undefined) {
+                            item[year] = row.values[resourceIndex];
+                        }
+                    }
+                });
+                currentFilteredData.push(item);
+            });
+        }
+
+        function initializeUI() {
             initializeFilters();
             initializeEventListeners();
             populateSeriesFilter();
-            // Auto-select all series by default so the table is not empty on load
-            try {
-                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
-                    cb.checked = true;
-                });
-            } catch (e) {}
+            populateResourceSelect();
             applyFiltersAndRender();
-        });
+            renderBalanceTable();
+        }
 
         function showNoDataMessage() {
-            document.querySelector('.content-panel').innerHTML = `
-                <div class="no-data-message">
-                    <h3>⚠️ Veri Yüklenemedi</h3>
-                    <p>Birincil enerji verileri yüklenemedi. Lütfen data/a/data_a_embedded.js dosyasının mevcut olduğunu kontrol edin.</p>
-                </div>
-            `;
+            document.querySelector('.content-panel').innerHTML = '<div class="no-data-message"><h3>Veri Yüklenemedi</h3></div>';
+        }
+
+        function populateResourceSelect() {
+            const select = document.getElementById('resourceSelect');
+            select.innerHTML = '';
+            allResources.forEach(res => {
+                const option = document.createElement('option');
+                option.value = res;
+                option.textContent = res;
+                if (res === 'Toplam') option.selected = true;
+                select.appendChild(option);
+            });
+        }
+
+        function populateBalanceYearSelect(years) {
+            const select = document.getElementById('balanceYearSelect');
+            select.innerHTML = '';
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                select.appendChild(option);
+            });
+            select.value = years[years.length - 1];
+            balanceYear = parseInt(years[years.length - 1]);
         }
 
         function initializeFilters() {
-            // Initialize year range slider
             const yearRangeSlider = document.getElementById('yearRangeSlider');
-            
             noUiSlider.create(yearRangeSlider, {
                 start: [startYear, endYear],
                 connect: true,
-                range: {
-                    'min': allYears[0] || 1972,
-                    'max': allYears[allYears.length - 1] || 2023
-                },
+                range: { 'min': allYears[0] || 1972, 'max': allYears[allYears.length - 1] || 2023 },
                 step: 1,
-                format: {
-                    to: function(value) {
-                        return Math.round(value);
-                    },
-                    from: function(value) {
-                        return Number(value);
-                    }
-                }
+                format: { to: v => Math.round(v), from: v => Number(v) }
             });
 
-            // Update inputs when slider changes
-            yearRangeSlider.noUiSlider.on('update', function(values) {
+            yearRangeSlider.noUiSlider.on('update', function (values) {
                 startYear = parseInt(values[0]);
                 endYear = parseInt(values[1]);
                 document.getElementById('yearInputStart').value = startYear;
                 document.getElementById('yearInputEnd').value = endYear;
             });
 
-            // Apply filters when slider stops moving
-            yearRangeSlider.noUiSlider.on('set', function() {
-                applyFiltersAndRender();
-            });
-
+            yearRangeSlider.noUiSlider.on('set', function () { applyFiltersAndRender(); });
             yearSlider = yearRangeSlider;
         }
 
         function initializeEventListeners() {
-            // Year input changes
             document.getElementById('yearInputStart').addEventListener('change', handleYearInputChange);
             document.getElementById('yearInputEnd').addEventListener('change', handleYearInputChange);
 
-            // Tab switching
             document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    const tabName = this.getAttribute('data-tab');
-                    switchTab(tabName);
-                });
+                button.addEventListener('click', function () { switchTab(this.getAttribute('data-tab')); });
             });
 
-            // Filter buttons
-            document.getElementById('selectAllBtn').addEventListener('click', function() {
-                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
-                    cb.checked = true;
-                });
+            document.getElementById('selectAllBtn').addEventListener('click', function () {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = true);
                 applyFiltersAndRender();
             });
 
-            document.getElementById('deselectAllBtn').addEventListener('click', function() {
-                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => {
-                    cb.checked = false;
-                });
+            document.getElementById('deselectAllBtn').addEventListener('click', function () {
+                document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
                 applyFiltersAndRender();
             });
 
-            // Series search
-            document.getElementById('seriesSearch').addEventListener('input', function() {
+            document.getElementById('seriesSearch').addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase().trim();
-                const checkboxes = document.querySelectorAll('#seriesCheckboxes .checkbox-item');
-                
-                checkboxes.forEach(item => {
+                document.querySelectorAll('#seriesCheckboxes .checkbox-item').forEach(item => {
                     const label = item.querySelector('label');
-                    if (label) {
-                        const text = label.textContent.toLowerCase();
-                        if (text.includes(searchTerm)) {
-                            item.style.display = 'flex';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    }
+                    if (label) item.style.display = label.textContent.toLowerCase().includes(searchTerm) ? 'flex' : 'none';
                 });
             });
 
-            // Bar chart mode changes
+            document.getElementById('resourceSelect').addEventListener('change', function () {
+                selectedResource = this.value;
+                // If new format, rebuild data for selected resource
+                if (isNewDataFormat && typeof embeddedDataA !== 'undefined') {
+                    rebuildFilteredDataFromNewFormat(embeddedDataA);
+                }
+                applyFiltersAndRender();
+            });
+
+            document.getElementById('balanceYearSelect').addEventListener('change', function () {
+                balanceYear = parseInt(this.value);
+                renderBalanceTable();
+            });
+
             document.querySelectorAll('input[name="barChartMode"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.checked) {
-                        renderBarChart();
-                    }
-                });
+                radio.addEventListener('change', function () { if (this.checked) renderBarChart(); });
             });
 
-            // Pie chart mode changes
             document.querySelectorAll('input[name="pieChartMode"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.checked) {
-                        renderPieChart();
-                    }
-                });
+                radio.addEventListener('change', function () { if (this.checked) renderPieChart(); });
             });
 
-            // Download buttons
             document.getElementById('downloadFullData').addEventListener('click', () => downloadData('full'));
             document.getElementById('downloadFilteredData').addEventListener('click', () => downloadData('filtered'));
-            
-            // Chart download buttons
-            document.getElementById('downloadLineChart').addEventListener('click', () => downloadChart('lineChart', 'birincil_enerji_cizgi_grafik.png'));
-            document.getElementById('downloadBarChart').addEventListener('click', () => downloadChart('barChart', 'birincil_enerji_sutun_grafik.png'));
-            document.getElementById('downloadPieChart').addEventListener('click', () => downloadChart('pieChart', 'birincil_enerji_pasta_grafik.png'));
+            document.getElementById('downloadLineChart').addEventListener('click', () => downloadChart('lineChart', 'cizgi_grafik.png'));
+            document.getElementById('downloadBarChart').addEventListener('click', () => downloadChart('barChart', 'sutun_grafik.png'));
+            document.getElementById('downloadPieChart').addEventListener('click', () => downloadChart('pieChart', 'pasta_grafik.png'));
         }
 
         function handleYearInputChange() {
             const start = parseInt(document.getElementById('yearInputStart').value);
             const end = parseInt(document.getElementById('yearInputEnd').value);
-            
             if (!isNaN(start) && !isNaN(end) && start <= end) {
                 yearSlider.noUiSlider.set([start, end]);
                 startYear = start;
@@ -949,100 +1072,77 @@ let embeddedDataA = [];
         }
 
         function switchTab(tabName) {
-            // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(`${tabName}Content`).classList.add('active');
 
-            // Render chart if needed
-            if (tabName === 'line') {
-                renderLineChart();
-            } else if (tabName === 'bar') {
-                renderBarChart();
-            } else if (tabName === 'pie') {
-                renderPieChart();
-            }
+            if (tabName === 'line') renderLineChart();
+            else if (tabName === 'bar') renderBarChart();
+            else if (tabName === 'pie') renderPieChart();
+            else if (tabName === 'balance') renderBalanceTable();
         }
 
         function populateSeriesFilter() {
             const container = document.getElementById('seriesCheckboxes');
             container.innerHTML = '';
-            
-            const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
-            
-            // Define hierarchical structure with Turkish names
+            const data = typeof embeddedDataA !== 'undefined' && Array.isArray(embeddedDataA) ? embeddedDataA : currentFilteredData;
+
+            // Define hierarchical structure for primary energy categories
             const categoryHierarchy = {
                 'Enerji Arzı': {
                     title: 'Enerji Arzı',
-                    categories: [
-                        'Yerli Üretim (+)',
-                        'İthalat (+)',
-                        'İhracat (-)',
-                        'İhrakiye (-)',
-                        'Stok Değişimi (+/-)'
-                    ],
-                    total: 'ENERJİ ÜRÜNLERİ ARZI'
+                    categories: ['Yerli Üretim (+)', 'İthalat (+)', 'İhracat (-)', 'İhrakiye (-)', 'Stok Değişimi (+/-)', 'İstatistik Hata (+/-)'],
+                    totals: ['ENERJİ ÜRÜNLERİ ARZI']
                 },
-                'Çevrim ve Kayıplar': {
-                    title: 'Çevrim ve Kayıplar',
-                    categories: [
-                        'Elektrik ve Isı Üretimi',
-                        'İkincil Kömür Üreten/Tüketen Tesisler',
-                        'Petrol Rafinerileri',
-                        'İç Tüketim ve Kayıp'
-                    ],
-                    total: 'ÇEVRİM VE ENERJİ SEKTÖRÜ'
+                'Çevrim ve Enerji Sektörü': {
+                    title: 'Çevrim ve Enerji Sektörü',
+                    categories: ['Elektrik ve Isı Üretimi', 'İkincil Kömür Üreten/Tüketen Tesisler', 'Petrol Rafinerileri', 'İç Tüketim ve Kayıp'],
+                    totals: ['ÇEVRİM VE ENERJİ SEKTÖRÜ']
                 },
                 'Sanayi Tüketimi': {
                     title: 'Sanayi Tüketimi',
-                    categories: [
-                        'Gıda', 'Şeker', 'Tekstil', 'Kağıt',
-                        'Kimya-Petrokimya', 'Gübre',
-                        'Cam ve Cam Ürünleri', 'Seramik', 'Çimento',
-                        'Demir-Çelik', 'Demir Dışı Metaller',
-                        'Motorlu Kara Taşıtları Sanayi', 'Diğer Sanayi'
-                    ],
-                    total: 'SANAYİ TÜKETİMİ'
+                    categories: ['Gıda', 'Şeker', 'Tekstil', 'Kağıt', 'Kimya-Petrokimya', 'Gübre', 'Cam ve Cam Ürünleri', 'Seramik', 'Çimento', 'Demir-Çelik', 'Demir Dışı Metaller', 'Motorlu Kara Taşıtları Sanayi', 'Diğer Sanayi'],
+                    totals: ['SANAYİ TÜKETİMİ']
+                },
+                'Ulaştırma': {
+                    title: 'Ulaştırma',
+                    categories: ['Demiryolları', 'Denizyolları', 'Havayolları', 'Boru Hatları', 'Karayolları'],
+                    totals: ['ULAŞTIRMA']
                 },
                 'Diğer Sektörler': {
                     title: 'Diğer Sektörler',
-                    categories: [
-                        'Demiryolları', 'Kara Yolları', 'İç Suyolları',
-                        'Boru Hatları', 'Hava Yolları',
-                        'Konut, Ticarethane ve Hizmetler',
-                        'Tarım ve Hayvancılık', 'Diğer Sektörler'
-                    ],
-                    total: 'ULAŞTIRMA'
+                    categories: ['Konut ve Hizmetler', 'Tarım ve Hayvancılık'],
+                    totals: ['DİĞER SEKTÖRLER']
                 },
-                'Ana Toplamlar': {
-                    title: 'Ana Toplamlar',
-                    categories: [
-                        'SEKTÖRLER TOPLAMI',
-                        'TOPLAM NİHAİ ENERJİ TÜKETİMİ',
-                        'İstatistiksel Fark (+/-)'
-                    ],
-                    total: null
+                'Enerji Dışı Tüketim': {
+                    title: 'Enerji Dışı Tüketim',
+                    categories: ['Petro Kimya Feedstock', 'Diğer'],
+                    totals: ['ENERJİ DIŞI TÜKETİM']
+                },
+                'Genel Toplamlar': {
+                    title: 'Genel Toplamlar',
+                    categories: ['İstatistiksel Fark (+/-)'],
+                    totals: ['TOPLAM NİHAİ ENERJİ TÜKETİMİ', 'SEKTÖRLER TOPLAMI']
                 }
             };
 
             // Get available categories from data
             const availableCategories = data.map(item => item.Kategori);
-            
+
             Object.keys(categoryHierarchy).forEach(groupKey => {
                 const group = categoryHierarchy[groupKey];
-                const groupCategories = group.categories.filter(cat => 
-                    availableCategories.includes(cat)
-                );
-                
-                if (groupCategories.length === 0 && !group.total) return;
-                
+
+                // Check which categories in this group are available
+                const groupCategories = group.categories.filter(cat => availableCategories.includes(cat));
+                const groupTotals = group.totals.filter(cat => availableCategories.includes(cat));
+
+                if (groupCategories.length === 0 && groupTotals.length === 0) return;
+
                 // Create group container
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'category-group';
-                
+
                 // Create group header
                 const headerDiv = document.createElement('div');
                 headerDiv.className = 'category-group-header';
@@ -1050,99 +1150,80 @@ let embeddedDataA = [];
                     <span>${group.title}</span>
                     <span class="category-group-toggle">▼</span>
                 `;
-                
+
+                // Toggle functionality
+                headerDiv.addEventListener('click', () => {
+                    const content = groupDiv.querySelector('.category-group-content');
+                    const toggle = headerDiv.querySelector('.category-group-toggle');
+                    if (content.classList.contains('collapsed')) {
+                        content.classList.remove('collapsed');
+                        toggle.textContent = '▼';
+                    } else {
+                        content.classList.add('collapsed');
+                        toggle.textContent = '▶';
+                    }
+                });
+
                 // Create content container
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'category-group-content';
-                
-                // Add individual categories
-                groupCategories.forEach(category => {
+
+                // Add group total categories first (they are the main headers)
+                groupTotals.forEach(category => {
                     const item = data.find(d => d.Kategori === category);
                     if (item) {
                         const categoryDiv = document.createElement('div');
-                        categoryDiv.className = 'checkbox-item sub-category';
-                        
+                        categoryDiv.className = 'checkbox-item category-total';
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         checkbox.value = category;
                         checkbox.addEventListener('change', applyFiltersAndRender);
                         checkbox.checked = true;
-                        
+
                         const label = document.createElement('label');
                         label.htmlFor = checkbox.id;
                         label.textContent = category;
-                        
+
                         categoryDiv.appendChild(checkbox);
                         categoryDiv.appendChild(label);
                         contentDiv.appendChild(categoryDiv);
                     }
                 });
-                
-                // Add total category if exists
-                if (group.total && availableCategories.includes(group.total)) {
-                    const totalItem = data.find(d => d.Kategori === group.total);
-                    if (totalItem) {
-                        const totalDiv = document.createElement('div');
-                        totalDiv.className = 'checkbox-item category-total';
-                        
+
+                // Add individual sub-categories
+                groupCategories.forEach(category => {
+                    const item = data.find(d => d.Kategori === category);
+                    if (item) {
+                        const categoryDiv = document.createElement('div');
+                        categoryDiv.className = 'checkbox-item sub-category';
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
-                        checkbox.id = `series-${group.total.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                        checkbox.value = group.total;
+                        checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        checkbox.value = category;
                         checkbox.addEventListener('change', applyFiltersAndRender);
                         checkbox.checked = true;
-                        
+
                         const label = document.createElement('label');
                         label.htmlFor = checkbox.id;
-                        label.textContent = group.total;
-                        
-                        totalDiv.appendChild(checkbox);
-                        totalDiv.appendChild(label);
-                        contentDiv.appendChild(totalDiv);
+                        label.textContent = category;
+
+                        categoryDiv.appendChild(checkbox);
+                        categoryDiv.appendChild(label);
+                        contentDiv.appendChild(categoryDiv);
                     }
-                }
-                
-                // Add toggle functionality
-                headerDiv.addEventListener('click', () => {
-                    const isCollapsed = contentDiv.classList.contains('collapsed');
-                    contentDiv.classList.toggle('collapsed');
-                    const toggle = headerDiv.querySelector('.category-group-toggle');
-                    toggle.textContent = isCollapsed ? '▼' : '▶';
                 });
-                
+
                 groupDiv.appendChild(headerDiv);
                 groupDiv.appendChild(contentDiv);
                 container.appendChild(groupDiv);
             });
         }
 
-        function setupTopScrollbar() {
-            const topScrollbar = document.querySelector('.top-scrollbar');
-            const topScrollbarThumb = document.querySelector('.top-scrollbar-thumb');
-            const tableContainer = document.getElementById('mainTableContainer');
-            const dataTable = document.querySelector('.data-table');
-            
-            if (!topScrollbar || !tableContainer || !dataTable) return;
-            
-            // Set the thumb width to match the table content width
-            const tableWidth = dataTable.offsetWidth;
-            topScrollbarThumb.style.width = tableWidth + 'px';
-            
-            // Synchronize scrolling: top scrollbar -> table
-            topScrollbar.addEventListener('scroll', function() {
-                tableContainer.scrollLeft = topScrollbar.scrollLeft;
-            });
-            
-            // Synchronize scrolling: table -> top scrollbar
-            tableContainer.addEventListener('scroll', function() {
-                topScrollbar.scrollLeft = tableContainer.scrollLeft;
-            });
-        }
-
         function applyFiltersAndRender() {
-            const selectedSeries = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
+            const selectedSeries = Array.from(document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked')).map(cb => cb.value);
 
             if (selectedSeries.length === 0) {
                 currentFilteredData = [];
@@ -1151,17 +1232,14 @@ let embeddedDataA = [];
                 return;
             }
 
-            const data = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
+            const data = typeof embeddedDataA !== 'undefined' && Array.isArray(embeddedDataA) ? embeddedDataA : currentFilteredData;
             const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
-            
+
             currentFilteredData = selectedSeries.map(seriesName => {
                 const seriesData = data.find(item => item.Kategori === seriesName);
                 if (!seriesData) return null;
-                
                 const result = { Kategori: seriesName };
-                yearsInRange.forEach(year => {
-                    result[year] = seriesData[year];
-                });
+                yearsInRange.forEach(year => { result[year] = seriesData[year]; });
                 return result;
             }).filter(item => item !== null);
 
@@ -1170,928 +1248,257 @@ let embeddedDataA = [];
             renderBarChart();
             renderPieChart();
         }
-        
-        // Turkish number formatting functions
-        function formatTableNumber(value) {
-            if (value === null || value === undefined || value === '') return 'N/A';
-            return parseFloat(value).toFixed(1);
-        }
 
-        function formatGraphNumber(value) {
-            if (value === null || value === undefined || value === '') return 'N/A';
-            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
+        // NEW: Render Balance Sheet (2D Matrix)
+        function renderBalanceTable() {
+            const container = document.getElementById('balanceTable');
 
-        function populateSeriesCheckboxes(data) {
-            const container = document.getElementById('seriesCheckboxes');
-            container.innerHTML = '';
-            
-            // Define hierarchical structure with Turkish names
-            const categoryHierarchy = {
-                'Enerji Arzı': {
-                    title: 'Enerji Arzı',
-                    categories: [
-                        'Yerli Üretim (+)',
-                        'İthalat (+)',
-                        'İhracat (-)',
-                        'İhrakiye (-)',
-                        'Stok Değişimi (+/-)'
-                    ],
-                    total: 'ENERJİ ÜRÜNLERİ ARZI'
-                },
-                'Çevrim ve Kayıplar': {
-                    title: 'Çevrim ve Kayıplar',
-                    categories: [
-                        'Elektrik ve Isı Üretimi',
-                        'İkincil Kömür Üreten/Tüketen Tesisler',
-                        'Petrol Rafinerileri',
-                        'İç Tüketim ve Kayıp'
-                    ],
-                    total: 'ÇEVRİM VE ENERJİ SEKTÖRÜ'
-                },
-                'Sanayi Tüketimi': {
-                    title: 'Sanayi Tüketimi',
-                    categories: [
-                        'Gıda', 'Şeker', 'Tekstil', 'Kağıt',
-                        'Kimya-Petrokimya', 'Gübre',
-                        'Cam ve Cam Ürünleri', 'Seramik', 'Çimento',
-                        'Demir-Çelik', 'Demir Dışı Metaller',
-                        'Motorlu Kara Taşıtları Sanayi', 'Diğer Sanayi'
-                    ],
-                    total: 'SANAYİ TÜKETİMİ'
-                },
-                'Diğer Sektörler': {
-                    title: 'Diğer Sektörler',
-                    categories: [
-                        'Demiryolları', 'Kara Yolları', 'İç Suyolları',
-                        'Boru Hatları', 'Hava Yolları',
-                        'Konut, Ticarethane ve Hizmetler',
-                        'Tarım ve Hayvancılık', 'Diğer Sektörler'
-                    ],
-                    total: 'ULAŞTIRMA'
-                },
-                'Ana Toplamlar': {
-                    title: 'Ana Toplamlar',
-                    categories: [
-                        'SEKTÖRLER TOPLAMI',
-                        'TOPLAM NİHAİ ENERJİ TÜKETİMİ',
-                        'İstatistiksel Fark (+/-)'
-                    ],
-                    total: null
-                }
-            };
+            // Use mock data for demo (or real data if new format)
+            const data = isNewDataFormat && typeof embeddedDataA !== 'undefined' ?
+                embeddedDataA[balanceYear.toString()] : mockBalanceData[balanceYear.toString()];
 
-            // Get available categories from data
-            const availableCategories = data.map(item => item.Kategori);
-            
-            Object.keys(categoryHierarchy).forEach(groupKey => {
-                const group = categoryHierarchy[groupKey];
-                const groupCategories = group.categories.filter(cat => 
-                    availableCategories.includes(cat)
-                );
-                
-                if (groupCategories.length === 0 && !group.total) return;
-                
-                // Create group container
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'category-group';
-                
-                // Create group header
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'category-group-header';
-                headerDiv.innerHTML = `
-                    <span>${group.title}</span>
-                    <span class="category-group-toggle">▼</span>
-                `;
-                
-                // Create content container
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'category-group-content';
-                
-                // Add individual categories
-                groupCategories.forEach(category => {
-                    const item = data.find(d => d.Kategori === category);
-                    if (item) {
-                        const categoryDiv = document.createElement('div');
-                        categoryDiv.className = 'checkbox-item sub-category';
-                        
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.id = `series-${category.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                        checkbox.value = category;
-                        checkbox.addEventListener('change', applyFiltersAndRender);
-                        checkbox.checked = true;
-                        
-                        const label = document.createElement('label');
-                        label.htmlFor = checkbox.id;
-                        label.textContent = category;
-                        
-                        categoryDiv.appendChild(checkbox);
-                        categoryDiv.appendChild(label);
-                        contentDiv.appendChild(categoryDiv);
+            if (!data) {
+                container.innerHTML = '<div class="no-data-message">Bu yıl için denge tablosu verisi yok.</div>';
+                return;
+            }
+
+            let html = '<table class="data-table balance-table"><thead><tr><th class="sticky-col">Sektör / Akış</th>';
+            data.columns.forEach(col => { html += `<th>${col}</th>`; });
+            html += '</tr></thead><tbody>';
+
+            data.rows.forEach(row => {
+                const isHeader = row.Kategori === row.Kategori.toUpperCase();
+                const rowClass = isHeader ? 'section-header' : '';
+                html += `<tr class="${rowClass}"><td class="sticky-col">${row.Kategori}</td>`;
+                row.values.forEach(val => {
+                    let displayValue = '';
+                    let cellClass = '';
+
+                    if (val === null || val === undefined) {
+                        // Null/undefined values should show as empty
+                        displayValue = '';
+                    } else if (typeof val === 'object' && val !== null && 'value' in val) {
+                        // Handle {value: X, is_red: true/false} format
+                        const num = parseFloat(val.value) || 0;
+                        displayValue = formatTableNumber(num);
+                        if (val.is_red) {
+                            cellClass = 'red-value';
+                        }
+                        if (num < 0) {
+                            cellClass += ' negative-value';
+                        }
+                    } else {
+                        // Regular number
+                        const num = parseFloat(val) || 0;
+                        displayValue = formatTableNumber(num);
+                        if (num < 0) {
+                            cellClass = 'negative-value';
+                        }
                     }
+                    html += `<td class="${cellClass.trim()}">${displayValue}</td>`;
                 });
-                
-                // Add total category if exists
-                if (group.total && availableCategories.includes(group.total)) {
-                    const totalItem = data.find(d => d.Kategori === group.total);
-                    if (totalItem) {
-                        const totalDiv = document.createElement('div');
-                        totalDiv.className = 'checkbox-item category-total';
-                        
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.id = `series-${group.total.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                        checkbox.value = group.total;
-                        checkbox.addEventListener('change', applyFiltersAndRender);
-                        checkbox.checked = true;
-                        
-                        const label = document.createElement('label');
-                        label.htmlFor = checkbox.id;
-                        label.textContent = group.total;
-                        
-                        totalDiv.appendChild(checkbox);
-                        totalDiv.appendChild(label);
-                        contentDiv.appendChild(totalDiv);
-                    }
-                }
-                
-                // Add toggle functionality
-                headerDiv.addEventListener('click', () => {
-                    const isCollapsed = contentDiv.classList.contains('collapsed');
-                    contentDiv.classList.toggle('collapsed');
-                    const toggle = headerDiv.querySelector('.category-group-toggle');
-                    toggle.textContent = isCollapsed ? '▼' : '▶';
-                });
-                
-                groupDiv.appendChild(headerDiv);
-                groupDiv.appendChild(contentDiv);
-                container.appendChild(groupDiv);
+                html += '</tr>';
             });
+            html += '</tbody></table>';
+
+            // Add note about mock data
+            if (!isNewDataFormat) {
+                html += '<p style="color: #666; font-size: 0.85rem; margin-top: 1rem; font-style: italic;">* Örnek veri gösterilmektedir. Gerçek veriyi görmek için excel_to_html_converter.py dosyasını çalıştırın.</p>';
+            }
+
+            container.innerHTML = html;
         }
 
         function renderTable() {
             const container = document.getElementById('tableContainer');
-            
             if (currentFilteredData.length === 0) {
-                container.innerHTML = '<div class="no-data-message">Gösterilecek veri yok. Lütfen en az bir kategori seçin.</div>';
+                container.innerHTML = '<div class="no-data-message">Gösterilecek veri yok.</div>';
                 return;
             }
 
             const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
-            
-            // Define category groupings for table display
-            const tableGroups = {
-                'Enerji Arzı': {
-                    title: 'Enerji Arzı',
-                    categories: ['Yerli Üretim (+)', 'İthalat (+)', 'İhracat (-)', 'İhrakiye (-)', 'Stok Değişimi (+/-)', 'ENERJİ ÜRÜNLERİ ARZI'],
-                    cssClass: 'energy-supply'
-                },
-                'Çevrim ve Kayıplar': {
-                    title: 'Çevrim ve Kayıplar',
-                    categories: ['Elektrik ve Isı Üretimi', 'İkincil Kömür Üreten/Tüketen Tesisler', 'Petrol Rafinerileri', 'İç Tüketim ve Kayıp', 'ÇEVRİM VE ENERJİ SEKTÖRÜ'],
-                    cssClass: 'transformation'
-                },
-                'Sanayi Tüketimi': {
-                    title: 'Sanayi Tüketimi',
-                    categories: ['Gıda', 'Şeker', 'Tekstil', 'Kağıt', 'Kimya-Petrokimya', 'Gübre', 'Cam ve Cam Ürünleri', 'Seramik', 'Çimento', 'Demir-Çelik', 'Demir Dışı Metaller', 'Motorlu Kara Taşıtları Sanayi', 'Diğer Sanayi', 'SANAYİ TÜKETİMİ'],
-                    cssClass: 'industry'
-                },
-                'Diğer Sektörler': {
-                    title: 'Diğer Sektörler',
-                    categories: ['Demiryolları', 'Kara Yolları', 'İç Suyolları', 'Boru Hatları', 'Hava Yolları', 'Konut, Ticarethane ve Hizmetler', 'Tarım ve Hayvancılık', 'Diğer Sektörler', 'ULAŞTIRMA'],
-                    cssClass: 'other-sectors'
-                },
-                'Ana Toplamlar': {
-                    title: 'Ana Toplamlar',
-                    categories: ['SEKTÖRLER TOPLAMI', 'TOPLAM NİHAİ ENERJİ TÜKETİMİ', 'İstatistiksel Fark (+/-)'],
-                    cssClass: 'totals'
-                }
-            };
-            
-            let tableHTML = '<table class="data-table"><thead><tr>';
-            tableHTML += '<th class="sticky-col">Kategori</th>';
-            yearsInRange.forEach(year => {
-                tableHTML += `<th>${year}</th>`;
-            });
-            tableHTML += '</tr></thead><tbody>';
+            let html = '<table class="data-table"><thead><tr><th class="sticky-col">Kategori</th>';
+            yearsInRange.forEach(year => { html += `<th>${year}</th>`; });
+            html += '</tr></thead><tbody>';
 
-            // Group and render data
-            Object.keys(tableGroups).forEach(groupKey => {
-                const group = tableGroups[groupKey];
-                const groupData = currentFilteredData.filter(item => 
-                    group.categories.includes(item.Kategori)
-                );
-                
-                if (groupData.length === 0) return;
-                
-                // Add group header
-                tableHTML += `<tr class="table-group-header">`;
-                tableHTML += `<td class="sticky-col">${group.title}</td>`;
-                yearsInRange.forEach(() => {
-                    tableHTML += '<td></td>';
-                });
-                tableHTML += '</tr>';
-                
-                // Add category rows
-                groupData.forEach(item => {
-                    const isTotal = item.Kategori.includes('TOPLAM') || item.Kategori.includes('ARZI') || item.Kategori.includes('SEKTÖRÜ') || item.Kategori.includes('TÜKETİMİ') || item.Kategori.includes('ULAŞTIRMA');
-                    const rowClass = `table-category-item ${group.cssClass}${isTotal ? ' totals' : ''}`;
-                    
-                    tableHTML += `<tr class="${rowClass}">`;
-                    tableHTML += `<td class="sticky-col">${item.Kategori}</td>`;
-                    yearsInRange.forEach(year => {
-                        const value = item[year];
-                        let displayValue = '';
-                        let className = '';
-                        
-                        if (value !== null && value !== undefined) {
-                            if (typeof value === 'object' && value.is_red && typeof value.value === 'number') {
-                                // Handle new red formatting format
-                                displayValue = formatTableNumber(value.value);
-                                className = 'red-value';
-                            } else if (typeof value === 'string' && value.startsWith('(') && value.endsWith(')')) {
-                                // Legacy red formatting
-                                displayValue = value;
-                                className = 'red-value';
-                            } else {
-                                displayValue = formatTableNumber(value);
-                            }
+            currentFilteredData.forEach(item => {
+                html += `<tr><td class="sticky-col">${item.Kategori}</td>`;
+                yearsInRange.forEach(year => {
+                    const value = item[year];
+                    let displayValue = '', className = '';
+                    if (value !== null && value !== undefined) {
+                        if (typeof value === 'object' && value.is_red) {
+                            displayValue = formatTableNumber(value.value);
+                            className = 'red-value';
+                        } else {
+                            displayValue = formatTableNumber(value);
                         }
-                        
-                        tableHTML += `<td class="${className}">${displayValue}</td>`;
-                    });
-                    tableHTML += '</tr>';
+                    }
+                    html += `<td class="${className}">${displayValue}</td>`;
                 });
+                html += '</tr>';
             });
-
-            tableHTML += '</tbody></table>';
-            container.innerHTML = tableHTML;
-            
-            // Setup top scrollbar synchronization
-            setupTopScrollbar();
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
 
         function renderLineChart() {
             const canvas = document.getElementById('lineChart');
             const ctx = canvas.getContext('2d');
-            
-            if (lineChart) {
-                lineChart.destroy();
-            }
-
-            if (currentFilteredData.length === 0) {
-                document.getElementById('lineLegendContainer').style.display = 'none';
-                return;
-            }
+            if (lineChart) lineChart.destroy();
+            if (currentFilteredData.length === 0) return;
 
             const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
-            colorIndex = 0; // Reset colors
-            
+            colorIndex = 0;
+
             const datasets = currentFilteredData.map(item => {
                 const data = yearsInRange.map(year => parseRedValue(item[year]));
                 const color = getNextMaterialColor();
-                
-                return {
-                    label: item.Kategori,
-                    data: data,
-                    borderColor: color,
-                    backgroundColor: 'transparent',
-                    borderWidth: 2.5,
-                    fill: false,
-                    tension: 0.15,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    pointBackgroundColor: 'transparent',
-                    pointBorderColor: 'transparent',
-                    pointBorderWidth: 0
-                };
+                return { label: item.Kategori, data: data, borderColor: color, backgroundColor: 'transparent', borderWidth: 2.5, fill: false, tension: 0.15, pointRadius: 0 };
             });
 
             lineChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: yearsInRange,
-                    datasets: datasets
-                },
+                data: { labels: yearsInRange, datasets: datasets },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'nearest'
-                    },
-                    hover: {
-                        mode: 'nearest',
-                        intersect: false
-                    },
-                    onHover: (event, activeElements, chart) => {
-                        // Update external legend hover based on closest element
-                        if (activeElements.length > 0) {
-                            const closestElement = activeElements[0];
-                            updateLineLegendHover(closestElement.datasetIndex);
-                        } else {
-                            updateLineLegendHover(-1);
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false,
                     scales: {
-                        y: { 
-                            beginAtZero: true,
-                            title: { 
-                                display: true, 
-                                text: 'Değer (Mtep)',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return formatGraphNumber(value);
-                                },
-                                font: {
-                                    size: 12
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                lineWidth: 1
-                            }
-                        },
-                        x: { 
-                            title: { 
-                                display: true, 
-                                text: 'Yıl',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 12
-                                },
-                                maxTicksLimit: 10
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                lineWidth: 1
-                            }
-                        }
+                        y: { beginAtZero: true, title: { display: true, text: `Değer (Bin TEP) - ${selectedResource}` } },
+                        x: { title: { display: true, text: 'Yıl' } }
                     },
-                    plugins: {
-                        legend: { 
-                            display: false // Hide built-in legend, use external one
-                        },
-                        title: { 
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 13
-                            },
-                            cornerRadius: 8,
-                            displayColors: true,
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    return 'Yıl: ' + tooltipItems[0].label;
-                                },
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + formatGraphNumber(context.parsed.y) + ' Mtep';
-                                }
-                            }
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            top: 10,
-                            bottom: 10,
-                            left: 10,
-                            right: 10
-                        }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
-
-            // Create external legend
             createLineLegend(datasets);
         }
 
         function createLineLegend(datasets) {
             const legendContainer = document.getElementById('lineLegendContainer');
             const legendContent = document.getElementById('lineLegendContent');
-            
             legendContainer.style.display = 'block';
             legendContent.innerHTML = '';
-            
+
             datasets.forEach((dataset, index) => {
                 const legendItem = document.createElement('div');
-                legendItem.style.cssText = `
-                    display: flex;
-                    align-items: center;
-                    padding: 10px 15px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    background: white;
-                    border: 2px solid #e0e0e0;
-                    font-size: 13px;
-                `;
-                
-                legendItem.innerHTML = `
-                    <div style="
-                        width: 40px;
-                        height: 4px;
-                        background-color: ${dataset.borderColor};
-                        border-radius: 2px;
-                        margin-right: 12px;
-                        flex-shrink: 0;
-                    "></div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${dataset.label}
-                        </div>
-                        <div style="font-size: 11px; color: #666; margin-top: 3px;">
-                            ${dataset.data.filter(v => v !== null && v !== undefined).length} veri noktası
-                        </div>
-                    </div>
-                `;
-                
-                // Add click handler for legend toggle
+                legendItem.style.cssText = 'display: flex; align-items: center; padding: 10px 15px; border-radius: 8px; cursor: pointer; background: white; border: 2px solid #e0e0e0;';
+                legendItem.innerHTML = `<div style="width: 40px; height: 4px; background-color: ${dataset.borderColor}; border-radius: 2px; margin-right: 12px;"></div><div style="font-weight: 500; color: #333;">${dataset.label}</div>`;
                 legendItem.addEventListener('click', () => {
                     const meta = lineChart.getDatasetMeta(index);
                     meta.hidden = meta.hidden === null ? !lineChart.data.datasets[index].hidden : null;
                     lineChart.update();
-                    
-                    // Update legend appearance
-                    if (meta.hidden) {
-                        legendItem.style.opacity = '0.5';
-                        legendItem.style.textDecoration = 'line-through';
-                    } else {
-                        legendItem.style.opacity = '1';
-                        legendItem.style.textDecoration = 'none';
-                    }
+                    legendItem.style.opacity = meta.hidden ? '0.5' : '1';
                 });
-                
-                // Add hover effects
-                legendItem.addEventListener('mouseenter', () => {
-                    if (!lineChart.getDatasetMeta(index).hidden) {
-                        legendItem.style.background = '#f0f8ff';
-                        legendItem.style.borderColor = dataset.borderColor;
-                        legendItem.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-                    }
-                });
-                
-                legendItem.addEventListener('mouseleave', () => {
-                    legendItem.style.background = 'white';
-                    legendItem.style.borderColor = '#e0e0e0';
-                    legendItem.style.boxShadow = 'none';
-                });
-                
                 legendContent.appendChild(legendItem);
-            });
-        }
-
-        function updateLineLegendHover(hoveredIndex) {
-            const legendItems = document.querySelectorAll('#lineLegendContent > div');
-            legendItems.forEach((item, index) => {
-                if (index === hoveredIndex) {
-                    item.style.background = '#e3f2fd';
-                    item.style.borderColor = '#2196F3';
-                    item.style.transform = 'translateY(-2px)';
-                    item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                } else {
-                    item.style.background = 'white';
-                    item.style.borderColor = '#e0e0e0';
-                    item.style.transform = 'translateY(0)';
-                    item.style.boxShadow = 'none';
-                }
             });
         }
 
         function renderBarChart() {
             const canvas = document.getElementById('barChart');
             const ctx = canvas.getContext('2d');
-            
-            if (barChart) {
-                barChart.destroy();
-            }
-
-            if (currentFilteredData.length === 0) {
-                return;
-            }
+            if (barChart) barChart.destroy();
+            if (currentFilteredData.length === 0) return;
 
             const calculationMode = document.querySelector('input[name="barChartMode"]:checked').value;
             const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
-            
-            colorIndex = 0; // Reset colors
-            
+            colorIndex = 0;
+
             const chartData = currentFilteredData.map(item => {
                 const yearValues = yearsInRange.map(year => parseRedValue(item[year])).filter(v => v !== null);
-                
                 let value = 0;
                 if (yearValues.length > 0) {
-                    if (calculationMode === 'sum') {
-                        value = yearValues.reduce((sum, v) => sum + v, 0);
-                    } else if (calculationMode === 'average') {
-                        value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
-                    }
+                    value = calculationMode === 'sum' ? yearValues.reduce((sum, v) => sum + v, 0) : yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
                 }
-                
-                // Truncate long labels for better display
-                let displayLabel = item.Kategori;
-                if (displayLabel.length > 20) {
-                    displayLabel = displayLabel.substring(0, 17) + '...';
-                }
-                
-                return {
-                    label: displayLabel,
-                    fullLabel: item.Kategori, // Keep full label for tooltips
-                    value: value,
-                    color: getNextMaterialColor()
-                };
+                return { label: item.Kategori, value: value, color: getNextMaterialColor() };
             });
 
             barChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: chartData.map(item => item.label),
-                    datasets: [{
-                        label: `Değer (${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'})`,
-                        data: chartData.map(item => item.value),
-                        backgroundColor: chartData.map(item => item.color + '80'), // Add transparency
-                        borderColor: chartData.map(item => item.color),
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'x', // Keep vertical bars (x-axis categories, y-axis values)
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            title: { 
-                                display: true, 
-                                text: 'Değer (Mtep)', // Values on Y-axis
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return formatGraphNumber(value);
-                                },
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                lineWidth: 1
-                            }
-                        },
-                        x: {
-                            title: { 
-                                display: true, 
-                                text: 'Kategoriler', // Categories on X-axis
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 11
-                                },
-                                maxRotation: 45 // Rotate labels if needed
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                lineWidth: 1
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: { 
-                            display: true, // Show legend again
-                            position: 'top',
-                            align: 'center',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'rectRounded',
-                                boxWidth: 15,
-                                boxHeight: 15,
-                                padding: 15,
-                                font: {
-                                    size: 13, // Larger font
-                                    family: "'Segoe UI', Arial, sans-serif"
-                                }
-                            }
-                        },
-                        title: { 
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 13
-                            },
-                            cornerRadius: 8,
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    const index = tooltipItems[0].dataIndex;
-                                    return chartData[index].fullLabel; // Show full label in tooltip
-                                },
-                                label: function(context) {
-                                    return `${calculationMode === 'sum' ? 'Toplam' : 'Ortalama'}: ${formatGraphNumber(context.parsed.y)} Mtep`;
-                                }
-                            }
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            top: 10,
-                            bottom: 10,
-                            left: 10,
-                            right: 10
-                        }
-                    }
-                }
+                data: { labels: chartData.map(item => item.label), datasets: [{ label: calculationMode === 'sum' ? 'Toplam' : 'Ortalama', data: chartData.map(item => item.value), backgroundColor: chartData.map(item => item.color) }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
             });
         }
 
         function renderPieChart() {
             const canvas = document.getElementById('pieChart');
             const ctx = canvas.getContext('2d');
-            
-            if (pieChart) {
-                pieChart.destroy();
-            }
-
-            if (currentFilteredData.length === 0) {
-                document.getElementById('pieLegendContainer').style.display = 'none';
-                return;
-            }
+            if (pieChart) pieChart.destroy();
+            if (currentFilteredData.length === 0) return;
 
             const calculationMode = document.querySelector('input[name="pieChartMode"]:checked').value;
             const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
-            
-            colorIndex = 0; // Reset colors
-            
+            colorIndex = 0;
+
             const chartData = currentFilteredData.map(item => {
                 const yearValues = yearsInRange.map(year => parseRedValue(item[year])).filter(v => v !== null && v > 0);
-                
                 let value = 0;
                 if (yearValues.length > 0) {
-                    if (calculationMode === 'sum') {
-                        value = yearValues.reduce((sum, v) => sum + v, 0);
-                    } else if (calculationMode === 'average') {
-                        value = yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
-                    }
+                    value = calculationMode === 'sum' ? yearValues.reduce((sum, v) => sum + v, 0) : yearValues.reduce((sum, v) => sum + v, 0) / yearValues.length;
                 }
-                
-                return {
-                    label: item.Kategori, // Keep full label
-                    value: value,
-                    color: getNextMaterialColor()
-                };
-            }).filter(item => item.value > 0) // Only include positive values
-            .sort((a, b) => b.value - a.value); // Sort by value descending
-
-            // Calculate percentages
-            const total = chartData.reduce((sum, item) => sum + item.value, 0);
-            chartData.forEach(item => {
-                item.percentage = ((item.value / total) * 100).toFixed(1);
-            });
+                return { label: item.Kategori, value: value, color: getNextMaterialColor() };
+            }).filter(item => item.value > 0);
 
             pieChart = new Chart(ctx, {
                 type: 'pie',
-                data: {
-                    labels: chartData.map(item => item.label),
-                    datasets: [{
-                        data: chartData.map(item => item.value),
-                        backgroundColor: chartData.map(item => item.color + 'CC'), // Add slight transparency
-                        borderColor: chartData.map(item => item.color),
-                        borderWidth: 2,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { 
-                            display: false // Hide built-in legend, use external one
-                        },
-                        title: { 
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 13
-                            },
-                            cornerRadius: 8,
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    const index = tooltipItems[0].dataIndex;
-                                    return chartData[index].label; // Show full label in tooltip
-                                },
-                                label: function(context) {
-                                    const index = context.dataIndex;
-                                    const value = formatGraphNumber(context.parsed);
-                                    const percentage = chartData[index].percentage;
-                                    return [`Değer: ${value} Mtep`, `Oran: ${percentage}%`];
-                                }
-                            }
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            top: 10,
-                            bottom: 10,
-                            left: 10,
-                            right: 10
-                        }
-                    },
-                    onHover: (event, activeElements, chart) => {
-                        // Update external legend on hover
-                        updatePieLegendHover(activeElements.length > 0 ? activeElements[0].index : -1);
-                    }
-                }
+                data: { labels: chartData.map(item => item.label), datasets: [{ data: chartData.map(item => item.value), backgroundColor: chartData.map(item => item.color) }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-
-            // Create external legend
             createPieLegend(chartData);
         }
 
         function createPieLegend(chartData) {
             const legendContainer = document.getElementById('pieLegendContainer');
             const legendContent = document.getElementById('pieLegendContent');
-            
             legendContainer.style.display = 'block';
             legendContent.innerHTML = '';
-            
-            chartData.forEach((item, index) => {
+
+            chartData.forEach((item) => {
                 const legendItem = document.createElement('div');
-                legendItem.style.cssText = `
-                    display: flex;
-                    align-items: center;
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    background: white;
-                    border: 1px solid #e0e0e0;
-                    font-size: 13px;
-                `;
-                
-                legendItem.innerHTML = `
-                    <div style="
-                        width: 16px;
-                        height: 16px;
-                        background-color: ${item.color};
-                        border-radius: 4px;
-                        margin-right: 10px;
-                        flex-shrink: 0;
-                    "></div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${item.label}
-                        </div>
-                        <div style="font-size: 11px; color: #666; margin-top: 2px;">
-                            ${formatGraphNumber(item.value)} Mtep (${item.percentage}%)
-                        </div>
-                    </div>
-                `;
-                
-                // Add click handler for legend toggle
-                legendItem.addEventListener('click', () => {
-                    const meta = pieChart.getDatasetMeta(0);
-                    meta.data[index].hidden = !meta.data[index].hidden;
-                    pieChart.update();
-                    
-                    // Update legend appearance
-                    if (meta.data[index].hidden) {
-                        legendItem.style.opacity = '0.5';
-                        legendItem.style.textDecoration = 'line-through';
-                    } else {
-                        legendItem.style.opacity = '1';
-                        legendItem.style.textDecoration = 'none';
-                    }
-                });
-                
-                // Add hover effects
-                legendItem.addEventListener('mouseenter', () => {
-                    if (!pieChart.getDatasetMeta(0).data[index].hidden) {
-                        legendItem.style.background = '#f0f0f0';
-                        legendItem.style.borderColor = item.color;
-                    }
-                });
-                
-                legendItem.addEventListener('mouseleave', () => {
-                    legendItem.style.background = 'white';
-                    legendItem.style.borderColor = '#e0e0e0';
-                });
-                
+                legendItem.style.cssText = 'display: flex; align-items: center; padding: 8px 12px; border-radius: 6px; background: white; border: 1px solid #e0e0e0;';
+                legendItem.innerHTML = `<div style="width: 12px; height: 12px; background-color: ${item.color}; border-radius: 2px; margin-right: 8px;"></div><div style="font-size: 13px; color: #333;">${item.label}</div>`;
                 legendContent.appendChild(legendItem);
             });
         }
 
-        function updatePieLegendHover(hoveredIndex) {
-            const legendItems = document.querySelectorAll('#pieLegendContent > div');
-            legendItems.forEach((item, index) => {
-                if (index === hoveredIndex) {
-                    item.style.background = '#e3f2fd';
-                    item.style.borderColor = '#2196F3';
-                } else {
-                    item.style.background = 'white';
-                    item.style.borderColor = '#e0e0e0';
-                }
-            });
-        }
-
         function clearCharts() {
-            if (lineChart) {
-                lineChart.destroy();
-                lineChart = null;
-            }
-            if (barChart) {
-                barChart.destroy();
-                barChart = null;
-            }
-            if (pieChart) {
-                pieChart.destroy();
-                pieChart = null;
-            }
+            if (lineChart) { lineChart.destroy(); lineChart = null; }
+            if (barChart) { barChart.destroy(); barChart = null; }
+            if (pieChart) { pieChart.destroy(); pieChart = null; }
         }
 
         function downloadData(type) {
             let data, filename;
-            
             if (type === 'full') {
-                const allData = typeof embeddedDataA !== 'undefined' ? embeddedDataA : [];
+                const allData = typeof embeddedDataA !== 'undefined' && Array.isArray(embeddedDataA) ? embeddedDataA : currentFilteredData;
                 data = convertToCSV(allData, allYears);
                 filename = 'birincil_enerji_tam_veri.csv';
             } else {
-                if (currentFilteredData.length === 0) {
-                    alert('İndirilecek filtrelenmiş veri yok.');
-                    return;
-                }
+                if (currentFilteredData.length === 0) { alert('İndirilecek filtrelenmiş veri yok.'); return; }
                 const yearsInRange = allYears.filter(year => year >= startYear && year <= endYear);
                 data = convertToCSV(currentFilteredData, yearsInRange);
                 filename = `birincil_enerji_filtreli_${startYear}_${endYear}.csv`;
             }
-            
             triggerDownload(data, filename);
         }
 
         function convertToCSV(data, years) {
             const headers = ['Kategori', ...years.map(String)];
             const rows = [headers];
-            
             data.forEach(item => {
                 const row = [item.Kategori];
                 years.forEach(year => {
-                    let value = item[year];
-                    if (value === null || value === undefined) {
-                        value = '';
-                    }
+                    let value = parseRedValue(item[year]);
+                    if (value === null || value === undefined) value = '';
                     row.push(value);
                 });
                 rows.push(row);
             });
-            
-            return rows.map(row => 
-                row.map(cell => {
-                    const str = String(cell);
-                    return str.includes(',') ? `"${str}"` : str;
-                }).join(',')
-            ).join('\r\n');
+            return rows.map(row => row.map(cell => { const str = String(cell); return str.includes(',') ? `"${str}"` : str; }).join(',')).join('\r\n');
         }
 
         function triggerDownload(csvData, filename) {
-            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(['\uFEFF' + csvData], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
+            link.setAttribute('href', URL.createObjectURL(blob));
             link.setAttribute('download', filename);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
@@ -2101,344 +1508,37 @@ let embeddedDataA = [];
 
         function downloadChart(chartId, filename) {
             const canvas = document.getElementById(chartId);
-            if (!canvas) {
-                alert('Grafik bulunamadı.');
-                return;
-            }
-
-            // Create enhanced canvas with professional layout
-            createProfessionalChartImage(canvas, filename, chartId);
-        }
-
-        function createProfessionalChartImage(chartCanvas, filename, chartType) {
-            // Create a larger canvas for the professional layout with higher DPI
-            const exportCanvas = document.createElement('canvas');
-            const ctx = exportCanvas.getContext('2d');
-            
-            // Set high DPI canvas dimensions for better quality
-            const pixelRatio = window.devicePixelRatio || 3;
-            const width = 1800;
-            let height = 1200; // Base height
-            
-            // Check if we have external legends and adjust height accordingly
-            const hasLineLegend = document.getElementById('lineLegendContainer').style.display !== 'none';
-            const hasPieLegend = document.getElementById('pieLegendContainer').style.display !== 'none';
-            
-            // Store legend data before processing
-            let legendData = null;
-            let legendHeight = 0;
-            
-            if (hasLineLegend && lineChart && lineChart.data) {
-                legendData = {
-                    type: 'line',
-                    items: lineChart.data.datasets.map((dataset, index) => ({
-                        label: dataset.label,
-                        color: dataset.borderColor,
-                        visible: lineChart.isDatasetVisible(index)
-                    }))
-                };
-                
-                // Calculate required legend height
-                const itemsPerRow = Math.floor((width - 160) / 280);
-                const visibleItems = legendData.items.filter(item => item.visible);
-                const totalRows = Math.ceil(visibleItems.length / itemsPerRow);
-                legendHeight = 60 + (totalRows * 30) + 20; // Title + rows + padding
-                
-            } else if (hasPieLegend && pieChart && pieChart.data) {
-                legendData = {
-                    type: 'pie',
-                    items: pieChart.data.datasets[0].data.map((value, index) => ({
-                        label: pieChart.data.labels[index],
-                        color: pieChart.data.datasets[0].backgroundColor[index],
-                        value: value,
-                        visible: !pieChart.getDatasetMeta(0).data[index].hidden
-                    }))
-                };
-                
-                // Calculate required legend height
-                const itemsPerRow = Math.floor((width - 160) / 280);
-                const visibleItems = legendData.items.filter(item => item.visible);
-                const totalRows = Math.ceil(visibleItems.length / itemsPerRow);
-                legendHeight = 60 + (totalRows * 30) + 20; // Title + rows + padding
-            }
-            
-            if (hasLineLegend || hasPieLegend) {
-                height += legendHeight + 40; // Add legend height plus some extra padding
-            }
-            
-            // Set actual canvas size (high DPI)
-            exportCanvas.width = width * pixelRatio;
-            exportCanvas.height = height * pixelRatio;
-            
-            // Set display size
-            exportCanvas.style.width = width + 'px';
-            exportCanvas.style.height = height + 'px';
-            
-            // Scale context for high DPI
-            ctx.scale(pixelRatio, pixelRatio);
-            
-            // Enable high-quality rendering settings
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            ctx.textRenderingOptimization = 'optimizeQuality';
-            if (ctx.textRendering) ctx.textRendering = 'geometricPrecision';
-            
-            // Fill with white background
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, width, height);
-            
-            // Load and draw logo
-            const logo = new Image();
-            logo.crossOrigin = 'anonymous';
-            logo.onload = function() {
-                // High-quality logo rendering with preserved aspect ratio
-                const maxLogoSize = 200;
-                const logoAspectRatio = 1.500;
-                const logoMargin = 40;
-                
-                let logoWidth, logoHeight;
-                if (logoAspectRatio > 1) {
-                    logoWidth = maxLogoSize;
-                    logoHeight = maxLogoSize / logoAspectRatio;
-                } else {
-                    logoHeight = maxLogoSize;
-                    logoWidth = maxLogoSize * logoAspectRatio;
-                }
-                
-                // Enable high-quality rendering for logo
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                
-                // Calculate position (top-right with better spacing)
-                const logoX = width - logoWidth - logoMargin;
-                const logoY = logoMargin;
-                
-                // Draw logo with high quality
-                ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
-                
-                // Optional: Add subtle drop shadow for better visibility
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetX = 2;
-                ctx.shadowOffsetY = 2;
-                
-                // Reset shadow for subsequent drawing
-                ctx.shadowColor = 'transparent';
-                ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
-                
-                // Continue with rest of the drawing
-                drawChartContent();
-            };
-            
-            logo.onerror = function() {
-                console.warn('Logo could not be loaded, continuing without it');
-                drawChartContent();
-            };
-            
-            // Try to load logo
-            logo.src = 'data:image/jpeg;base64,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';
-            
-            function drawChartContent() {
-                // Set up high-quality typography
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                
-                // Main title with improved typography
-                ctx.fillStyle = '#1a1a1a';
-                ctx.font = 'bold 42px "Segoe UI", Arial, sans-serif';
-                const mainTitle = getChartTitle(chartType);
-                ctx.fillText(mainTitle, 60, 50);
-                
-                // Subtitle with data info
-                ctx.fillStyle = '#4a4a4a';
-                ctx.font = '24px "Segoe UI", Arial, sans-serif';
-                const subtitle = getChartSubtitle(chartType);
-                ctx.fillText(subtitle, 60, 105);
-                
-                // Data source and period with improved styling
-                ctx.fillStyle = '#666666';
-                ctx.font = '18px "Segoe UI", Arial, sans-serif';
-                const dataInfo = `Dönem: ${startYear}-${endYear} | Veri Kaynağı: Türkiye'nin Enerji Geleceği (1923-2123)`;
-                ctx.fillText(dataInfo, 60, 145);
-                
-                // Calculate chart area
-                const chartAreaTop = 200;
-                let chartAreaHeight = height - chartAreaTop - 150;
-                const chartAreaWidth = width - 120;
-                
-                // Adjust chart height if we have external legends
-                let legendAreaTop = chartAreaTop + chartAreaHeight + 20;
-                if (hasLineLegend || hasPieLegend) {
-                    chartAreaHeight -= (legendHeight + 40); // Reduce chart height to make room for legend
-                    legendAreaTop = chartAreaTop + chartAreaHeight + 20;
-                }
-                
-                // Create a temporary high-resolution canvas to scale the original chart
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                // Set high resolution for chart scaling
-                const chartPixelRatio = 3;
-                tempCanvas.width = chartAreaWidth * chartPixelRatio;
-                tempCanvas.height = chartAreaHeight * chartPixelRatio;
-                
-                // Scale context
-                tempCtx.scale(chartPixelRatio, chartPixelRatio);
-                
-                // Enable high-quality rendering for chart
-                tempCtx.imageSmoothingEnabled = true;
-                tempCtx.imageSmoothingQuality = 'high';
-                
-                // Fill temp canvas with white background
-                tempCtx.fillStyle = '#ffffff';
-                tempCtx.fillRect(0, 0, chartAreaWidth, chartAreaHeight);
-                
-                // Draw the original chart scaled to fit with high quality
-                tempCtx.drawImage(chartCanvas, 0, 0, chartAreaWidth, chartAreaHeight);
-                
-                // Draw the scaled chart onto main canvas with high quality
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(tempCanvas, 60, chartAreaTop, chartAreaWidth, chartAreaHeight);
-                
-                // Draw external legend if present
-                if (legendData) {
-                    drawExternalLegendFromData(ctx, legendData, legendAreaTop, width);
-                }
-                
-                // Add footer with website info
-                ctx.fillStyle = '#888888';
-                ctx.font = '16px "Segoe UI", Arial, sans-serif';
-                ctx.textAlign = 'right';
-                ctx.fillText('Türkiye Enerji Veri Platformu', width - 60, height - 50);
-                
-                // Add border around chart area with better styling
-                ctx.strokeStyle = '#d0d0d0';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(60, chartAreaTop, chartAreaWidth, chartAreaHeight);
-                
-                // Download the final image with high quality
-                exportCanvas.toBlob(function(blob) {
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                }, 'image/png', 1.0);
-            }
-        }
-
-        function drawExternalLegendFromData(ctx, legendData, startY, canvasWidth) {
-            if (!legendData || !legendData.items || legendData.items.length === 0) return;
-            
-            // Calculate required dimensions
-            const itemWidth = 280;
-            const itemHeight = 25;
-            const itemsPerRow = Math.floor((canvasWidth - 160) / itemWidth);
-            const visibleItems = legendData.items.filter(item => item.visible);
-            const totalRows = Math.ceil(visibleItems.length / itemsPerRow);
-            const legendHeight = 60 + (totalRows * (itemHeight + 5)) + 20; // Title + rows + padding
-            
-            // Set up legend styling with dynamic height
-            ctx.fillStyle = '#f8f9fa';
-            ctx.fillRect(60, startY, canvasWidth - 120, legendHeight);
-            
-            // Draw legend border
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(60, startY, canvasWidth - 120, legendHeight);
-            
-            // Draw legend title
-            ctx.fillStyle = '#333333';
-            ctx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
-            ctx.textAlign = 'left';
-            const legendTitle = legendData.type === 'line' ? 'Veri Serileri:' : 'Kategori Dağılımı:';
-            ctx.fillText(legendTitle, 80, startY + 20);
-            
-            // Draw legend items
-            let currentX = 80;
-            let currentY = startY + 50;
-            let visibleIndex = 0;
-            
-            legendData.items.forEach((item, index) => {
-                if (!item.visible) return; // Skip hidden items
-                
-                if (visibleIndex > 0 && visibleIndex % itemsPerRow === 0) {
-                    currentY += itemHeight + 5;
-                    currentX = 80;
-                }
-                
-                // Convert color to canvas format
-                let canvasColor = item.color;
-                if (typeof canvasColor === 'string' && canvasColor.startsWith('#')) {
-                    // Already a hex color
-                } else if (typeof canvasColor === 'string' && canvasColor.startsWith('rgb')) {
-                    // Already an RGB color
-                } else {
-                    canvasColor = '#333333'; // Fallback
-                }
-                
-                // Draw color indicator
-                if (legendData.type === 'line') {
-                    // Draw line for line charts
-                    ctx.strokeStyle = canvasColor;
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(currentX, currentY + 8);
-                    ctx.lineTo(currentX + 30, currentY + 8);
-                    ctx.stroke();
-                } else {
-                    // Draw rectangle for pie charts
-                    ctx.fillStyle = canvasColor;
-                    ctx.fillRect(currentX, currentY + 2, 12, 12);
-                }
-                
-                // Draw text
-                ctx.fillStyle = '#333333';
-                ctx.font = '13px "Segoe UI", Arial, sans-serif';
-                ctx.textAlign = 'left';
-                const displayText = item.label && item.label.length > 25 ? 
-                    item.label.substring(0, 22) + '...' : (item.label || '');
-                ctx.fillText(displayText, currentX + 40, currentY + 12);
-                
-                currentX += itemWidth;
-                visibleIndex++;
-            });
-        }
-
-        function getChartTitle(chartType) {
-            const baseTitle = 'Türkiye Birincil Enerji';
-            switch(chartType) {
-                case 'lineChart':
-                    return `${baseTitle} - Zaman Serisi Analizi`;
-                case 'barChart':
-                    const barMode = document.querySelector('input[name="barChartMode"]:checked').value;
-                    return `${baseTitle} - ${barMode === 'sum' ? 'Toplam' : 'Ortalama'} Değerler`;
-                case 'pieChart':
-                    const pieMode = document.querySelector('input[name="pieChartMode"]:checked').value;
-                    return `${baseTitle} - Kaynak Dağılımı (${pieMode === 'sum' ? 'Toplam' : 'Ortalama'})`;
-                default:
-                    return baseTitle;
-            }
-        }
-
-        function getChartSubtitle(chartType) {
-            const selectedCount = document.querySelectorAll('#seriesCheckboxes input[type="checkbox"]:checked').length;
-            switch(chartType) {
-                case 'lineChart':
-                    return `${selectedCount} kategori için yıllık değişim trendi (Mtep)`;
-                case 'barChart':
-                    return `${selectedCount} kategori için karşılaştırmalı analiz (Mtep)`;
-                case 'pieChart':
-                    return `${selectedCount} kategori için oransal dağılım analizi (Mtep)`;
-                default:
-                    return `Birincil enerji üretim ve tüketim verileri (Mtep)`;
-            }
+            if (!canvas) { alert('Grafik bulunamadı.'); return; }
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
         }
     </script>
+
+    <style>
+        /* Additional styles for Balance Table */
+        .balance-table th,
+        .balance-table td {
+            min-width: 90px;
+            text-align: right;
+            padding: 0.6rem 0.8rem;
+        }
+
+        .balance-table .sticky-col {
+            text-align: left;
+            min-width: 200px;
+        }
+
+        .balance-table .section-header td {
+            background: #e8f5e9 !important;
+            font-weight: 600;
+        }
+
+        .balance-table .negative-value {
+            color: #c62828;
+        }
+    </style>
 </body>
+
 </html>
